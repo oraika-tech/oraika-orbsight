@@ -3,7 +3,9 @@
 CREATE TABLE raw_data (
     id SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
-    source_id INT,
+    observer_id INT,
+    reference_id VARCHAR, -- external id - tweet id, app review id, youtube comment id etc
+    parent_reference_id VARCHAR, -- external id - tweet id, app review id, youtube comment id etc
     processing_status SMALLINT,
     tags VARCHAR[],
     raw_text TEXT,
