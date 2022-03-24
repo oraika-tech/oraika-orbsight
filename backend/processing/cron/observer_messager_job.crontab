@@ -1,0 +1,1 @@
+* * * * * ec2-user bash ~/obsights/processing/cron/active_observer_publisher.sh >> ~/.obsights/observer_cron.log
