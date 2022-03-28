@@ -1,0 +1,78 @@
+Name	Description	Tags	Categories	Entity Map
+NEFT	National Electronic Fund Transfer	Payment,Transfer	Fraud,Complaint,Charges,Harassment	{"Payment":"NEFT","Transfer":"NEFT"}
+UPI	Unified Payments Interface	Payment,Transfer	Fraud,Complaint,Charges,Harassment	{"Payment":"UPI","Transfer":"UPI"}
+RTGS	Real Time Gross Settlement	Payment,Transfer	Fraud,Complaint,Charges,Harassment	{"Payment":"RTGS","Transfer":"RTGS"}
+NRE	Non Resident External	Account Type	Complaint,Charges,Harassment	{"Account Type":"NRE"}
+NRO	Non Resident Ordinary	Account Type	Complaint,Charges,Harassment	{"Account Type":"NRO"}
+NRI	Non Resident Indian	Account Type	Complaint,Charges,Harassment	{"Account Type":"NRI"}
+FCNR	FCNR	Account Type	Complaint,Charges,Harassment	{"Account Type":"FCNR"}
+IMPS	Immediate Payment Service	Payment,Transfer	Fraud,Complaint,Charges,Harassment	{"Payment":"IMPS","Transfer":"IMPS"}
+KYC	Know Your Customer	Identification	Fraud,Complaint,Harassment	{"Identification":"KYC"}
+OTP	One Time Password	Service,Security	Fraud,Complaint,Access,Delay	{"Service":"OTP","Security":"OTP"}
+ATM	Automated Teller Machine	Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"ATM","Card":"ATM","Payment":"ATM"}
+PoS	Point of Sale	Payment	Complaint	{"Payment":"PoS"}
+IPO	Initial Public Offering	Stock Market	Complaint	{"Stock Market":"IPO"}
+Ombudsman	Banking Ombudsman	RBI	Complaint,Service,Harassment	{"Service":"Ombudsman", "RBI": "Ombudsman"}
+QR Code		Payment,Transfer	Fraud,Complaint,Harassment	{"Payment":"QR Code","Transfer":"QR Code"}
+QR		Payment,Transfer	Fraud,Complaint,Harassment	{"Payment":"QR Code","Transfer":"QR Code"}
+MFA		Service,Security	Fraud	{"Service":"MFA","Security":"MFA"}
+2FA		Service,Security	Fraud	{"Service":"2FA","Security":"2FA"}
+SMS		Service,Security	Fraud,Complaint,Access,Delay	{"Service":"SMS","Security":"SMS"}
+MTS	Mass Transit Systems	Payment,Transfer	Fraud,Complaint,Charges	{"Payment":"MTS","Transfer":"MTS"}
+MTSS	Money Transfer Service Scheme	Payment,Transfer	Fraud,Complaint,Charges	{"Payment":"MTSS","Transfer":"MTSS"}
+Wallet		Payment,Transfer	Fraud,Complaint,Charges	{"Payment":"Wallet","Transfer":"Wallet"}
+EMI		Loan,Payment	Complaint,Charges	{"Loan":"EMI","Payment":"EMI"}
+CTS	Cheque Truncation System	Service,Payment	Fraud,Complaint,Charges	{"Service":"CTS","Payment":"CTS"}
+Cheque		Service,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Cheque","Payment":"Cheque"}
+Debit Card		Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Card","Card":"Debit Card","Payment":"Card"}
+Credit Card		Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Card","Card":"Credit Card","Payment":"Card"}
+Prepaid Card		Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Card","Card":"Prepaid Card","Payment":"Card"}
+Electronic Card		Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Card","Card":"Electronic Card","Payment":"Card"}
+Card		Service,Card,Payment	Fraud,Complaint,Charges,Harassment	{"Service":"Card","Payment":"Card"}
+e-commerce		Service	Fraud,Complaint,Harassment	{"Service":"e-commerce"}
+NFC		Payment,Transfer	Fraud,Complaint,Charges,Harassment	{"Payment":"NFC","Transfer":"NFC"}
+PAN	Primary Account Number	Identification	Fraud,Complaint,Harassment	{"Identification":"PAN"}
+Aadhar		Identification	Fraud,Complaint,Harassment	{"Identification":"Aadhar"}
+PMJDY	Pradhan Mantri Jan Dhan Yojana	Account Type	Complaint,Charges,Harassment	{"Account Type":"PMJDY"}
+JanDhan	Pradhan Mantri Jan Dhan Yojana	Account Type	Complaint,Charges,Harassment	{"Account Type":"PMJDY"}
+Jan Dhan	Pradhan Mantri Jan Dhan Yojana	Account Type	Complaint,Charges,Harassment	{"Account Type":"PMJDY"}
+PIN	Personal Identification Number	Service,Security	Fraud,Complaint,Access	{"Service":"PIN","Security":"PIN"}
+Saving Account		Account Type	Complaint,Charges	{"Account Type":"Saving"}
+Current Account		Account Type	Complaint,Charges	{"Account Type":"Current"}]
+MasterCard		Network,Payment	Fraud,Complaint,Charges	{"Network":"MasterCard","Payment":"MasterCard"}
+Visa		Network,Payment	Fraud,Complaint,Charges	{"Network":"Visa","Payment":"Visa"}
+RuPay		Network,Payment	Fraud,Complaint,Charges	{"Network":"RuPay","Payment":"RuPay"}
+Western Union		Payment,Transfer	Fraud,Complaint,Charges	{"Payment":"Western Union","Transfer":"Western Union"}
+MoneyGram		Payment,Transfer	Fraud,Complaint,Charges	{"Payment":"MoneyGram","Transfer":"MoneyGram"}
+ECS	Electronic Clearing Service	Service,Payment	Fraud,Complaint,Charges	{"Service":"ECS","Payment":"ECS"}
+NPCI	National Payments Corporation of India	RBI	Fraud,Complaint,Service,Charges	{"RBI": "NPCI"}
+Wire Transfer		Payment	Fraud,Complaint,Charges	{"Payment":"Wire Transfer"}
+authorization form		Service,Payment	Fraud	{"Service":"Authorization Form","Payment":"Authorization Form"}
+mandate form		Service,Payment	Complaint,Charges	{"Service":"Mandate Form","Payment":"Mandate Form"}
+Cash		Payment	Fraud,Complaint	{"Payment":"Cash"}
+$	US Dollar	Currency	Fraud,Complaint,Charges	{"Currency":"USD"}
+USD	US Dollar	Currency	Fraud,Complaint,Charges	{"Currency":"USD"}
+US Dollar	US Dollar	Currency	Fraud,Complaint,Charges	{"Currency":"USD"}
+Rupee	Rupees	Currency	Fraud,Complaint,Charges	{"Currency":"Rupee"}
+Rupees	Rupees	Currency	Fraud,Complaint,Charges	{"Currency":"Rupee"}
+Rs	Rupees	Currency	Fraud,Complaint,Charges	{"Currency":"Rupee"}
+/-	Rupees	Currency	Fraud,Complaint,Charges	{"Currency":"Rupee"}
+₹	Rupees	Currency	Fraud,Complaint,Charges	{"Currency":"Rupee"}
+Euro	Euro	Currency	Fraud,Complaint,Charges	{"Currency":"Euro"}
+Pound	Pound	Currency	Fraud,Complaint,Charges	{"Currency":"Pound"}
+€	Euro	Currency	Fraud,Complaint,Charges	{"Currency":"Euro"}
+£	Pound	Currency	Fraud,Complaint,Charges	{"Currency":"Pound"}
+¥	Yen	Currency	Fraud,Complaint,Charges	{"Currency":"Yen"}
+Yen	Yen	Currency	Fraud,Complaint,Charges	{"Currency":"Yen"}
+Fixed Deposit	Fixed Deposit	Service,Payment	Fraud,Complaint,Charges	{"Service":"Fixed Deposit","Payment":"Fixed Deposit"}
+FD	Fixed Deposit	Service,Payment	Fraud,Complaint,Charges	{"Service":"Fixed Deposit","Payment":"Fixed Deposit"}
+draft	Demand Draft	Service,Payment	Fraud,Complaint,Charges	{"Service":"Draft","Payment":"Draft"}
+Interest Rate		Payment	Fraud,Complaint,Charges,Harassment	{"Payment":"Interest"}
+grievance		Service,Complaint	Fraud,Complaint,Charges,Harassment,Delay	{"Service":"Grievance"}
+Loan		Loan	Fraud,Complaint,Charges,Harassment	{"Loan":"Loan"}
+Home Loan		Loan	Fraud,Complaint,Charges,Harassment	{"Loan":"Home Loan"}
+Car Loan		Loan	Fraud,Complaint,Charges,Harassment	{"Loan":"Car Loan"}
+Insurance			Fraud,Complaint,Charges,Harassment	{}
+Personal Loan		Loan	Fraud,Complaint,Charges,Harassment	{"Loan":"Personal Loan"}
+Password		Security	Fraud,Complaint,Access	{"Security":"Password"}
+RBI		RBI	Complaint	{"RBI": "RBI Mentioned"}

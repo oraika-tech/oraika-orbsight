@@ -1,0 +1,13 @@
+# advertools
+# obsei
+# ekphrasis
+# pycld3 ; sys_platform != 'win32' and sys_platform != 'cygwin'
+# dateparser # need with Obsei
+fastapi
+sqlmodel
+uvicorn
+psycopg2-binary
+langdetect
+nltk
+pandas
+requests
