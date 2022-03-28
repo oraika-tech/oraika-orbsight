@@ -2,7 +2,7 @@
 
 
 CREATE TABLE company (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     type SMALLINT NOT NULL, -- CORPORATE | GOV | INDIVIDUAL
     is_enabled boolean DEFAULT TRUE,
@@ -13,7 +13,7 @@ CREATE TABLE company (
 
 
 CREATE TABLE employee (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     email VARCHAR,
     company_id INT, --
@@ -26,7 +26,7 @@ CREATE TABLE employee (
 );
 
 CREATE TABLE role (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     company_id INT, -- NULL for global role or company_id for company specific role
     is_enabled boolean DEFAULT TRUE,
@@ -36,7 +36,7 @@ CREATE TABLE role (
 );
 
 CREATE TABLE role_permission (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     role_id INT NOT NULL,
     permission VARCHAR NOT NULL,
     is_enabled boolean DEFAULT TRUE,

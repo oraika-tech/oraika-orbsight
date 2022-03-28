@@ -1,0 +1,15 @@
+{
+  "company_id": 1,
+  "entity_city": null,
+  "entity_country": null,
+  "entity_identifier": 1403,
+  "entity_simple_name": "Bank of India",
+  "entity_type": "bank",
+  "lookup_period": "5m",
+  "limit_count": 20,
+  "observer_identifier": 953,
+  "observer_name": "BOI Mobile",
+  "observer_type": 2,
+  "twitter_handle": null,
+  "app_url": "https://play.google.com/store/apps/details?id=com.boi.mpay"
+}

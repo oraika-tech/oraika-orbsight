@@ -1,6 +1,6 @@
 
 CREATE TABLE organization (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     is_enabled boolean DEFAULT TRUE,
     is_deleted boolean DEFAULT FALSE,
@@ -9,7 +9,7 @@ CREATE TABLE organization (
 )
 
 CREATE TABLE account (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
     is_enabled boolean DEFAULT TRUE,
     is_deleted boolean DEFAULT FALSE,

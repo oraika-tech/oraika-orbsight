@@ -7,7 +7,7 @@ Each step might require few environment variables. Export them to override defau
 |:----------------------|:---------------|:--------------------------|
 | **ADMIN_DB_USER**     | postgres       | admin username            |
 | **ADMIN_DB_PASSWORD** | postgres       | admin password            |
-| **DB_HOST**           | localhost:5432 | host and post             |
+| **DB_HOST**           | localhost:5432 | host and port             |
 | **DB_USER**           | obsights       | user username             |
 | **DB_PASSWORD**       | obsights       | user password             |
 | **FLYWAY_EXECUTABLE** | flyway         | path of flyway executable |

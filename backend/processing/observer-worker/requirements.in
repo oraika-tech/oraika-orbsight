@@ -1,0 +1,6 @@
+sqlmodel
+obsei
+fastapi
+uvicorn
+psycopg2-binary
+boto3

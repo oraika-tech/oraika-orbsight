@@ -2,8 +2,9 @@
 
 
 CREATE TABLE configuration (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
+    observer_id INT NOT NULL,
     name VARCHAR NOT NULL,
     node_type SMALLINT,  -- observer|analyser|informer
     config_json jsonb, -- obsei parameters required
@@ -16,7 +17,7 @@ CREATE TABLE configuration (
 );
 
 CREATE TABLE domain_dictionary (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     keyword VARCHAR NOT NULL,
     tags jsonb, -- Map ( entities:[sbi], categories:[fraud] );
@@ -26,12 +27,12 @@ CREATE TABLE domain_dictionary (
 );
 
 CREATE TABLE observer (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     name VARCHAR,
     observer_type SMALLINT, -- twitter, app_android, app_ios, youtube
     entity_id INT,
-    tags VARCHAR[],
+    tags jsonb,
     is_enabled boolean DEFAULT TRUE,
     data jsonb, -- ( app_id, app_info);
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
@@ -40,7 +41,7 @@ CREATE TABLE observer (
 );
 
 CREATE TABLE entity (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     name VARCHAR,
     simple_name VARCHAR,
@@ -55,7 +56,7 @@ CREATE TABLE entity (
 
 -- access token refresh MECHANISM
 CREATE TABLE vault (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     encrypted_value VARCHAR NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),

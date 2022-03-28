@@ -1,22 +1,24 @@
 /* Migration script to create all tables */
 
 CREATE TABLE raw_data (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     observer_id INT,
-    reference_id VARCHAR, -- external id - tweet id, app review id, youtube comment id etc
-    parent_reference_id VARCHAR, -- external id - tweet id, app review id, youtube comment id etc
-    processing_status SMALLINT,
-    tags VARCHAR[],
+    reference_id VARCHAR UNIQUE, -- external id - tweet id, app review id, youtube comment id etc
+    parent_reference_id VARCHAR,
+    processing_status SMALLINT DEFAULT 0,
+    tags jsonb,
     raw_text TEXT,
     data jsonb,
     is_deleted boolean DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
+CREATE UNIQUE INDEX reference_id_idx ON raw_data (reference_id);
+
 
 CREATE TABLE processed_data (
-    id SERIAL PRIMARY KEY,
+    identifier SERIAL PRIMARY KEY,
     company_id INT NOT NULL,
     raw_data_id INT NOT NULL,
     processed_text TEXT NOT NULL,
