@@ -148,3 +148,6 @@ models*
 .vscode/*
 
 .terraform*
+
+*.zip
+*.bak

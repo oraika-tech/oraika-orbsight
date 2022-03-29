@@ -22,12 +22,14 @@ ENV KEYWORDS_DATA_SOURCE /home/user/keywords.tsv
 ENV TIYARO_API_KEY api_key
 
 # install few required tools
-RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5
+RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential
 RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
+COPY requirements.txt setup.py /home/user/
+COPY analyzer /home/user/analyzer
+
 # install as a package
-COPY requirements.txt analyzer setup.py /home/user/
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir gunicorn uvloop
 RUN pip install --no-cache-dir -r requirements.txt
@@ -40,4 +42,4 @@ USER user
 EXPOSE 8080
 
 # cmd for running the API
-CMD ["gunicorn", "analyzer.api.api:app",  "-b", "0.0.0.0:${SERVER_PORT}", "-k", "${WORKER_TYPE}", "--workers", "${NUM_OF_WORKERS}", "--timeout", "${WORKER_TIMEOUT}"]
+CMD ["sh", "-c", "gunicorn analyzer.api.api:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT}"]

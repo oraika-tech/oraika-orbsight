@@ -1,6 +1,6 @@
 sqlmodel
 obsei
 fastapi
-uvicorn
+uvicorn[standard]
 psycopg2-binary
 boto3
