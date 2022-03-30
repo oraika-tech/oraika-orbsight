@@ -24,7 +24,7 @@ class ObserverJobHandler:
         }
         self.obsei_client = ObseiClient(ObseiClientConfig(
             twitter_config=SourceConfig(lookup_period='5m', limit_count=100),
-            android_config=SourceConfig(lookup_period='5m', limit_count=200),
+            android_config=SourceConfig(lookup_period='5m', limit_count=10),
             ios_config=SourceConfig(lookup_period='5m', limit_count=450)
         ))
         self.rawDataEntityManager = RawDataEntityManager()

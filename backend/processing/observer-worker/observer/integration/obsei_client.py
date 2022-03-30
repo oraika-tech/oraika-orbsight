@@ -87,7 +87,7 @@ class ObseiClient(BaseSettings):
         ]
 
     def fetch_app_ios_data(self, url, config: Optional[SourceConfig] = None):
-        config = self.get_source_config(self.config.android_config, config)
+        config = self.get_source_config(self.config.ios_config, config)
         source_config = AppStoreScrapperConfig(
             app_url=url,
             lookup_period=config.lookup_period,
