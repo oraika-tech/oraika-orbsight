@@ -4,6 +4,7 @@ from typing import Any, List, Optional
 
 import boto3
 # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/sqs-example-sending-receiving-msgs.html
+from obsei.misc.utils import obj_to_json
 from pydantic import BaseSettings, SecretStr, Field, BaseModel
 
 logger = logging.getLogger(__name__)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ObserverMessage(BaseModel):
     identifier: int
     name: str
-    type: str
+    type: int
 
 
 class EntityMessage(BaseModel):
@@ -55,7 +56,7 @@ class SqsPublisher(BaseSettings):
     def publish(self, messages: List[RawDataEvent]):
         message_ids = []
         for message in messages:
-            message_body = json.dumps(message)
+            message_body = obj_to_json(message).decode('UTF-8')
             logger.debug("Message: %s", message_body)
             response = self.sqs.send_message(
                 QueueUrl=self.queue_url,

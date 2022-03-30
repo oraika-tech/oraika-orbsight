@@ -1,6 +1,8 @@
-from typing import Union, Set, Dict, List, Optional
+from typing import Optional
 
 from pydantic import BaseModel
+
+from analyzer.model.structure_data_request import StructuredData
 
 
 class ObserverInfo(BaseModel):
@@ -18,24 +20,8 @@ class EntityInfo(BaseModel):
 
 
 class DBStoreRequest(BaseModel):
-    structured_data: Dict[str, Union[str, Set[str], bool, int]]
+    structured_data: StructuredData
     raw_data_identifier: int
     company_id: int
     observer_info: ObserverInfo
     entity_info: EntityInfo
-
-    def get_structured_data_of_list_type(self, key: str, default: Optional[List[str]] = None) -> Optional[List[str]]:
-        value = self.structured_data.get(key, None)
-        return list(value) if value and isinstance(value, Set) else default
-
-    def get_structured_data_of_str_type(self, key: str, default: Optional[str] = None) -> Optional[str]:
-        value = self.structured_data.get(key, None)
-        return value if value and isinstance(value, str) else default
-
-    def get_structured_data_of_int_type(self, key: str, default: Optional[int] = None) -> Optional[int]:
-        value = self.structured_data.get(key, None)
-        return value if value and isinstance(value, int) else default
-
-    def get_structured_data_of_bool_type(self, key: str, default: Optional[bool] = None) -> Optional[bool]:
-        value = self.structured_data.get(key, None)
-        return value if value and isinstance(value, bool) else default

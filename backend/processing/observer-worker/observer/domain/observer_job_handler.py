@@ -1,7 +1,5 @@
-import logging
+import os
 from typing import Any, Dict
-
-from obsei.misc.utils import obj_to_json
 
 from observer.domain.raw_data import RawData
 from observer.integration.obsei_client import ObseiClient, ObseiClientConfig, SourceConfig
@@ -16,6 +14,7 @@ class ObserverJobHandler:
     obsei_client: ObseiClient
     rawDataEntityManager: RawDataEntityManager
     sqsPublisher: SqsPublisher
+    min_raw_text_length: int
 
     def __init__(self):
         self.data_fetcher = {
@@ -29,7 +28,8 @@ class ObserverJobHandler:
             ios_config=SourceConfig(lookup_period='5m', limit_count=450)
         ))
         self.rawDataEntityManager = RawDataEntityManager()
-        # self.sqsPublisher = SqsPublisher()
+        self.sqsPublisher = SqsPublisher()
+        self.min_raw_text_length = os.environ.get('MIN_TEXT_LENGTH', 20)
 
     def get_config_for_observer(self, observer_id):
         pass
@@ -43,7 +43,6 @@ class ObserverJobHandler:
             RawData(
                 company_id=job.company_id,
                 observer_id=job.observer_identifier,
-                observer_name=job.observer_name,
                 reference_id=data.reference_id,
                 parent_reference_id=data.parent_reference_id,
                 raw_text=data.raw_text,
@@ -54,9 +53,12 @@ class ObserverJobHandler:
 
         success_raw_data_list = self.rawDataEntityManager.insert_raw_data(raw_data_list)
 
-        events = [self.get_raw_data_event(job, raw_data) for raw_data in success_raw_data_list]
-        logging.info(obj_to_json(events))
-        # self.sqsPublisher.publish(events)
+        events = [self.get_raw_data_event(job, raw_data)
+                  for raw_data in success_raw_data_list
+                  if len(raw_data.raw_text) > self.min_raw_text_length]
+
+        if events:
+            self.sqsPublisher.publish(events)
 
         return len(success_raw_data_list)
 
@@ -97,7 +99,7 @@ class ObserverJobHandler:
         observer_message = ObserverMessage(
             identifier=job_data.observer_identifier,
             name=job_data.observer_name,
-            type=job_data.observer_type.name)
+            type=job_data.observer_type.value)
 
         text_data_message = TextDataMessage(
             identifier=raw_data.identifier,

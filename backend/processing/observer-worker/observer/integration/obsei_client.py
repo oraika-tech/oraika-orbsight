@@ -41,7 +41,9 @@ class ObseiClient(BaseSettings):
     def get_twitter_config(self, query, config):
         config = self.get_source_config(self.config.twitter_config, config)
         return TwitterSourceConfig(
-            query=f'@{query}',
+            # Searching tweets tagging handle, it should not be retweet and not by handle itself
+            # For example: @theofficialsbi -is:retweet -from:theofficialsbi
+            query=f'@{query} -is:retweet -from:{query}',
             tweet_fields=["conversation_id", "created_at", "id", "public_metrics", "text"],  # author_id
             user_fields=["id", "name", "public_metrics", "username", "verified"],
             expansions=["author_id"],

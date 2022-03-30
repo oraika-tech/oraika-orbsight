@@ -1,14 +1,14 @@
 import re
-from typing import List, Optional, Tuple, Dict, Set, Union, Any
+from typing import List, Optional, Tuple, Dict, Any
 
 import string
 import nltk
 from langdetect import detect
 from nltk import word_tokenize
 from nltk.corpus import stopwords
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
-from analyzer.model.structure_data_request import UnstructuredDataRequest
+from analyzer.model.structure_data_request import UnstructuredDataRequest, StructuredData
 from analyzer.service.entity_extractor import EntityExtractor
 from analyzer.model.entity_data import EntityData
 from analyzer.service.tiyaro_api import TiyaroClient
@@ -50,6 +50,8 @@ class StructuredDataExtractor(BaseSettings):
 
     # Classification API
     api_client = TiyaroClient()
+
+    min_text_len: int = Field(20, env="MIN_TEXT_LENGTH")
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -136,130 +138,150 @@ class StructuredDataExtractor(BaseSettings):
     def _language_detection(self, text: str) -> str:
         return detect(text)
 
-    def extract_structure_slow(self, data_request: UnstructuredDataRequest) -> Dict[str, Union[str, Set[set], bool, int]]:
+    def extract_structure_slow(self, data_request: UnstructuredDataRequest) -> StructuredData:
         # TODO: Extract, Emojis, URL, Currency, Hashtags, Mention
         # TODO: Expend hashtags and emojis
 
         # Clean text (Remove URL, mention, blank lines, white spaces, Hashtags)
         clean_text = self._clean_text(data_request.raw_text)
 
-        # Detect language
-        text_language = self._language_detection(clean_text)
+        structured_data: StructuredData
+        # Check length of string
+        if len(clean_text) > self.min_text_len:
+            # Detect language
+            text_language = self._language_detection(clean_text)
 
-        # If language is not in SUPPORTED_LANG_CODES then translate it
-        if text_language not in SUPPORTED_LANG_CODES:
-            processed_text = self._translate_text(clean_text)
+            # If language is not in SUPPORTED_LANG_CODES then translate it
+            if text_language not in SUPPORTED_LANG_CODES:
+                processed_text = self._translate_text(clean_text)
+            else:
+                processed_text = clean_text
+
+            # TODO: store processed_text so in future no need for translation and cleaning again
+            #  incase if reclassification is required if user add or update categories
+
+            # Tokenize text and clean tokens
+            tokens = self._tokenize_text(processed_text)
+
+            # Extract entity data
+            entity_data = self._extract_entities(tokens, data_request.company_id)
+
+            # Check number of tokens to take decision whether to classify or not
+            very_small_text = len(tokens) < MINIMUM_TOKENS
+
+            # Emotion detection
+            # TODO: For small text even dictionary based small sentiment detector (like VADER) can also be used
+            # TODO: Get emotions list from company_id if they provided
+            text_emotion, text_emotion_prob = self._emotion_classification(processed_text, EMOTION_LABELS)
+
+            # Find categories to classify text based one emotion and entity
+            # TODO: Handle positive emotion case
+            if text_emotion in NEGATIVE_EMOTIONS:
+                classification_labels = list(entity_data.categories)
+                # TODO: Ideally it should not reach at this level but adding check for hygiene purpose
+                if len(classification_labels) == 0:
+                    classification_labels = NEGATIVE_CLASSIFICATION_LABELS
+            else:
+                classification_labels = []
+
+            # Classify text into categories
+            classified_categories: List[str] = []
+            if not very_small_text and len(classification_labels) > 0:
+                classifier_map = self._classify_text(processed_text, classification_labels)
+                classified_categories = [
+                    category
+                    for category, probability in classifier_map.items()
+                    if probability > MINIMUM_PROBABILITY_LEVEL
+                ]
+
+            # Create structured data map from all the above process and incoming request data
+            # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
+            structured_data = StructuredData(
+                entity_data={
+                    entity: list(entity_vals)
+                    for entity, entity_vals in entity_data.entity_map.items()
+                } if entity_data.entity_map else {},
+                categories=classified_categories,
+                emotion=text_emotion,
+                text_length=len(data_request.raw_text),
+                text_language=text_language,
+                remark="VERY_SMALL_TEXT" if very_small_text else None,
+            )
         else:
-            processed_text = clean_text
+            structured_data = StructuredData(
+                text_length=len(data_request.raw_text),
+                remark="VERY_SMALL_TEXT"
+            )
 
-        # TODO: store processed_text so in future no need for translation and cleaning again
-        #  incase if reclassification is required if user add or update categories
+        return structured_data
 
-        # Tokenize text and clean tokens
-        tokens = self._tokenize_text(processed_text)
-
-        # Extract entity data
-        entity_data = self._extract_entities(tokens, data_request.company_id)
-
-        # Check number of tokens to take decision whether to classify or not
-        very_small_text = len(tokens) < MINIMUM_TOKENS
-
-        # Emotion detection
-        # TODO: For small text even dictionary based small sentiment detector (like VADER) can also be used
-        # TODO: Get emotions list from company_id if they provided
-        text_emotion, text_emotion_prob = self._emotion_classification(processed_text, EMOTION_LABELS)
-
-        # Find categories to classify text based one emotion and entity
-        # TODO: Handle positive emotion case
-        if text_emotion in NEGATIVE_EMOTIONS:
-            classification_labels = list(entity_data.categories)
-            # TODO: Ideally it should not reach at this level but adding check for hygiene purpose
-            if len(classification_labels) == 0:
-                classification_labels = NEGATIVE_CLASSIFICATION_LABELS
-        else:
-            classification_labels = []
-
-        # Classify text into categories
-        classified_categories: List[str] = []
-        if not very_small_text and len(classification_labels) > 0:
-            classifier_map = self._classify_text(processed_text, classification_labels)
-            classified_categories = [
-                category
-                for category, probability in classifier_map.items()
-                if probability > MINIMUM_PROBABILITY_LEVEL
-            ]
-
-        # Create structured data map from all the above process and incoming request data
-        # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
-        structured_data_map: Dict[str, Union[str, Set[set], bool, int]] = entity_data.entity_map or {}
-        for classified_category in classified_categories:
-            structured_data_map[classified_category] = True
-
-        structured_data_map["emotion"] = text_emotion
-        if very_small_text:
-            structured_data_map["unprocessed"] = True
-        structured_data_map["text_len"] = len(data_request.raw_text)
-
-        return structured_data_map
-
-    def extract_structure_fast(self, data_request: UnstructuredDataRequest) -> \
-            Dict[str, Union[str, Set[set], bool, int]]:
+    def extract_structure_fast(self, data_request: UnstructuredDataRequest) -> StructuredData:
         # TODO: Extract, Emojis, URL, Currency, Hashtags, Mention
         # TODO: Expend hashtags and emojis
 
         # Clean text (Remove URL, mention, blank lines, white spaces, Hashtags)
         clean_text = self._clean_text(data_request.raw_text)
 
-        # Detect language
-        text_language = self._language_detection(clean_text)
+        structured_data: StructuredData
+        # Check length of string
+        if len(clean_text) > self.min_text_len:
+            # Detect language
+            text_language = self._language_detection(clean_text)
 
-        # If language is not in SUPPORTED_LANG_CODES then translate it
-        if text_language not in SUPPORTED_LANG_CODES:
-            processed_text = self._translate_text(clean_text)
+            # If language is not in SUPPORTED_LANG_CODES then translate it
+            if text_language not in SUPPORTED_LANG_CODES:
+                processed_text = self._translate_text(clean_text)
+            else:
+                processed_text = clean_text
+
+            # TODO: store processed_text so in future no need for translation and cleaning again
+            #  incase if reclassification is required if user add or update categories
+
+            # Tokenize text and clean tokens
+            tokens = self._tokenize_text(processed_text)
+
+            # Extract entity data
+            entity_data = self._extract_entities(tokens, data_request.company_id)
+
+            # Check number of tokens to take decision whether to classify or not
+            very_small_text = len(tokens) < MINIMUM_TOKENS
+
+            # Categories to classify and detect emotions
+            classification_labels = NEGATIVE_CLASSIFICATION_LABELS + EMOTION_LABELS
+
+            # Classify text into categories
+            classified_categories: List[str] = []
+            text_emotion = "positive"
+            if not very_small_text and len(classification_labels) > 0:
+                classifier_map = self._classify_text(processed_text, classification_labels)
+                classified_categories = [
+                    category
+                    for category, probability in classifier_map.items()
+                    if probability > MINIMUM_PROBABILITY_LEVEL
+                ]
+
+                if "negative" in classified_categories:
+                    text_emotion = "negative"
+                    if "positive" in classified_categories:
+                        classified_categories.remove("positive")
+
+            # Create structured data map from all the above process and incoming request data
+            # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
+            structured_data = StructuredData(
+                entity_data={
+                    entity: list(entity_vals)
+                    for entity, entity_vals in entity_data.entity_map.items()
+                } if entity_data.entity_map else {},
+                categories=classified_categories,
+                emotion=text_emotion,
+                text_length=len(data_request.raw_text),
+                text_language=text_language,
+                remark="VERY_SMALL_TEXT" if very_small_text else None,
+            )
         else:
-            processed_text = clean_text
+            structured_data = StructuredData(
+                text_length=len(data_request.raw_text),
+                remark="VERY_SMALL_TEXT"
+            )
 
-        # TODO: store processed_text so in future no need for translation and cleaning again
-        #  incase if reclassification is required if user add or update categories
-
-        # Tokenize text and clean tokens
-        tokens = self._tokenize_text(processed_text)
-
-        # Extract entity data
-        entity_data = self._extract_entities(tokens, data_request.company_id)
-
-        # Check number of tokens to take decision whether to classify or not
-        very_small_text = len(tokens) < MINIMUM_TOKENS
-
-        # Categories to classify and detect emotions
-        classification_labels = NEGATIVE_CLASSIFICATION_LABELS + EMOTION_LABELS
-
-        # Classify text into categories
-        classified_categories: List[str] = []
-        text_emotion = "positive"
-        if not very_small_text and len(classification_labels) > 0:
-            classifier_map = self._classify_text(processed_text, classification_labels)
-            classified_categories = [
-                category
-                for category, probability in classifier_map.items()
-                if probability > MINIMUM_PROBABILITY_LEVEL
-            ]
-
-            if "negative" in classified_categories:
-                text_emotion = "negative"
-                if "positive" in classified_categories:
-                    classified_categories.remove("positive")
-
-        # Create structured data map from all the above process and incoming request data
-        # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
-        structured_data_map: Dict[str, Union[str, Set[set], bool, int]] = entity_data.entity_map or {}
-        for classified_category in classified_categories:
-            structured_data_map[classified_category] = True
-
-        structured_data_map["emotion"] = text_emotion
-        if very_small_text:
-            structured_data_map["remark"] = "VERY_SMALL_TEXT"
-        structured_data_map["text_length"] = len(data_request.raw_text)
-        structured_data_map["text_lang"] = text_language
-
-        return structured_data_map
+        return structured_data
