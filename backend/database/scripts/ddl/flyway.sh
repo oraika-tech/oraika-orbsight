@@ -44,24 +44,37 @@ function flyway_repair() {
     repair
 }
 
+CMD=$1
+MODULE=$2
+
+case $MODULE in
+  business)
+    DB_NAME_ARG=obsights_business
+    ;;
+  company)
+    DB_NAME_ARG=obsights_company
+    ;;
+  processing)
+    DB_NAME_ARG=obsights_rbi
+    ;;
+  *)
+    echo "Usage: $0 {migrate|clean|repair} {business|company|processing}"
+    exit 128
+esac
+
+
 case $1 in
   migrate)
-    flyway_migrate business obsights_business
-    flyway_migrate processing obsights_rbi
-    flyway_migrate company obsights_company
+    flyway_migrate "$MODULE" $DB_NAME_ARG
   ;;
   clean)
-    flyway_clean obsights_business
-    flyway_clean obsights_rbi
-    flyway_clean obsights_company
+    flyway_clean $DB_NAME_ARG
   ;;
   repair)
-    flyway_repair business obsights_business
-    flyway_repair processing obsights_rbi
-    flyway_repair company obsights_company
+    flyway_repair "$MODULE" $DB_NAME_ARG
   ;;
   *)
-    echo "Usage: $0 {migrate|clean|repair}"
+    echo "Usage: $0 {migrate|clean|repair} {business|company|processing}"
     exit 128
 esac
 
