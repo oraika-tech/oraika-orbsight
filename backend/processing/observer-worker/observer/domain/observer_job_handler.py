@@ -29,7 +29,7 @@ class ObserverJobHandler:
         ))
         self.rawDataEntityManager = RawDataEntityManager()
         self.sqsPublisher = SqsPublisher()
-        self.min_raw_text_length = os.environ.get('MIN_TEXT_LENGTH', 20)
+        self.min_raw_text_length = int(os.environ.get('MIN_TEXT_LENGTH', 20))
 
     def get_config_for_observer(self, observer_id):
         pass
