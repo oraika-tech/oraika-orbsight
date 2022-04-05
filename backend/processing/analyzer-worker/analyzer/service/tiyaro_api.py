@@ -3,6 +3,8 @@ from typing import Optional, List, Any, Dict
 import requests
 from pydantic import BaseSettings, Field, PrivateAttr
 
+from analyzer.api.tiyaro_exception import TiyaroException
+
 TIYARO_API_ENDPOINT = "https://api.tiyaro.ai/v1/ent/huggingface/1/{model}"
 ZERO_SHOT_MODEL = "joeddav/xlm-roberta-large-xnli"
 TRANSLATION_MODEL = "Helsinki-NLP/opus-mt-mul-en"
@@ -38,9 +40,9 @@ class TiyaroClient(BaseSettings):
                 json_response = response.json()
                 return dict(zip(json_response["response"]["labels"], json_response["response"]["scores"]))
 
-            raise RuntimeError("Error: {}".format(response.text))
+            raise TiyaroException(f"Tiyaro ZS API Error: {response.text}")
         except Exception as ex:
-            raise RuntimeError(f"Tiyaro API error {ex}")
+            raise TiyaroException(f"Tiyaro ZS API Exception: {ex}")
 
     def translate_text(self, text: str) -> str:
         endpoint = self.endpoint_format.format(model=TRANSLATION_MODEL)
@@ -54,6 +56,6 @@ class TiyaroClient(BaseSettings):
                 if "response" in json_response and len(json_response["response"]) > 0:
                     return json_response["response"][0]["translation_text"]
 
-            raise RuntimeError(f"Error: {response.text}")
+            raise TiyaroException(f"Tiyaro Translate API Error: {response.text}")
         except Exception as ex:
-            raise RuntimeError("Tiyaro API error {}".format(ex))
+            raise TiyaroException(f"Tiyaro Translate API Exception: {ex}")

@@ -18,11 +18,12 @@ MSG_FILE=/tmp/observer_rows.json
 
 SQL_QUERY="
 SELECT row_to_json(ob) FROM (
-  SELECT o.company_id, o.identifier as observer_identifier, o.observer_type, o.name as observer_name,
+  SELECT o.company_id,
+         o.identifier as observer_identifier, o.name as observer_name, o.observer_type, o.regulated_entity_type,
+         e.identifier as entity_identifier, e.simple_name as entity_simple_name, e.regulated_type,
          o.data->'url' as app_url, o.data->'official_handle' as twitter_handle,
          '$LOOKUP_PERIOD' as lookup_period,
-         e.identifier as entity_identifier, e.simple_name as entity_simple_name,
-         e.type as entity_type, e.country as entity_country, e.city as entity_city
+         e.country as entity_country, e.city as entity_city
  FROM observer o JOIN entity e on o.entity_id = e.identifier
  WHERE o.is_enabled = true and e.is_enabled = true
 ) as ob LIMIT 200 "

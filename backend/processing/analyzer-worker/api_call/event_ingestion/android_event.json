@@ -1,0 +1,22 @@
+{
+    "company_id": 1,
+    "entity": {
+        "city": null,
+        "country": null,
+        "identifier": 1403,
+        "simple_name": "Bank of India"
+    },
+    "observer": {
+        "identifier": 953,
+        "name": "BOI Mobile",
+        "type": 2,
+        "regulated_entity_type": [
+            "Bank"
+        ]
+    },
+    "text_data": {
+        "event_time": "2022-04-04T00:18:11+05:30",
+        "identifier": 81,
+        "raw_text": "Couldn't login for past 6 months... The abv review I sent 2 months before. Till now I'm not able to use the app. There is no response from BOI. No one knows the issue. Finally I found the issue, the app is not supported in Android 11. Kindly update your app to Android 11 (oxygen os)."
+    }
+}

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List, Any
 
 from pydantic import BaseSettings, Field
@@ -12,6 +13,7 @@ class ProcessedDataEntity(SQLModel, table=True):
     identifier: Optional[int] = SqlField(default=None, primary_key=True)
     company_id: int
     raw_data_id: int
+    event_time: datetime
     # Extraction from Text
     service: List[str]
     payment: List[str]
@@ -38,9 +40,9 @@ class ProcessedDataEntity(SQLModel, table=True):
     text_lang: str
     # Entity Info
     entity_name: str
-    entity_type: str
     entity_country: str
     entity_city: str
+    regulated_entity_type: List[str]
     # Observer Info
     observer_name: str
     observer_type: str
@@ -66,43 +68,57 @@ class ProcessedDataEntityManager(BaseSettings):
 
     @staticmethod
     def convert_to_entity(data_request: DBStoreRequest):
+        if data_request.structured_data.categories is None:
+            fraud = complaint = harassment = access = delay = interface = charges = None
+        else:
+            categories = data_request.structured_data.categories
+            fraud = "fraud" in categories
+            complaint = "complaint" in categories
+            harassment = "harassment" in categories
+            access = "access" in categories
+            delay = "delay" in categories
+            interface = "interface" in categories
+            charges = "charges" in categories
+
+        entity_data = data_request.structured_data.entity_data
         return ProcessedDataEntity(
             company_id=data_request.company_id,
             raw_data_id=data_request.raw_data_identifier,
+            event_time=data_request.event_time,
 
-            service=data_request.structured_data.entity_data.get("service", None),
-            payment=data_request.structured_data.entity_data.get("payment", None),
-            transfer=data_request.structured_data.entity_data.get("transfer", None),
-            account_type=data_request.structured_data.entity_data.get("account type", None),
-            card=data_request.structured_data.entity_data.get("card", None),
-            identification=data_request.structured_data.entity_data.get("identification", None),
-            security=data_request.structured_data.entity_data.get("security", None),
-            currency=data_request.structured_data.entity_data.get("currency", None),
-            stock_market=data_request.structured_data.entity_data.get("stock market", None),
-            loan=data_request.structured_data.entity_data.get("loan", None),
-            network=data_request.structured_data.entity_data.get("network", None),
+            service=entity_data.get("service", None),
+            payment=entity_data.get("payment", None),
+            transfer=entity_data.get("transfer", None),
+            account_type=entity_data.get("account type", None),
+            card=entity_data.get("card", None),
+            identification=entity_data.get("identification", None),
+            security=entity_data.get("security", None),
+            currency=entity_data.get("currency", None),
+            stock_market=entity_data.get("stock market", None),
+            loan=entity_data.get("loan", None),
+            network=entity_data.get("network", None),
 
             emotion=data_request.structured_data.emotion,
 
-            fraud="fraud" in data_request.structured_data.categories,
-            complaint="complaint" in data_request.structured_data.categories,
-            harassment="harassment" in data_request.structured_data.categories,
-            access="access" in data_request.structured_data.categories,
-            delay="delay" in data_request.structured_data.categories,
-            interface="interface" in data_request.structured_data.categories,
-            charges="charges" in data_request.structured_data.categories,
+            fraud=fraud,
+            complaint=complaint,
+            harassment=harassment,
+            access=access,
+            delay=delay,
+            interface=interface,
+            charges=charges,
 
             text_length=data_request.structured_data.text_length,
             text_lang=data_request.structured_data.text_language,
             remark=data_request.structured_data.remark,
 
             entity_name=data_request.entity_info.simple_name,
-            entity_type=data_request.entity_info.type,
             entity_country=data_request.entity_info.country,
             entity_city=data_request.entity_info.city,
 
             observer_name=data_request.observer_info.name,
             observer_type=data_request.observer_info.type,
+            regulated_entity_type=data_request.observer_info.regulated_entity_type,
         )
 
     def insert_structure_data(self, data_request: DBStoreRequest) -> int:

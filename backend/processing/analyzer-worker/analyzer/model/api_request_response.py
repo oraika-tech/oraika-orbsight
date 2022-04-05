@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
@@ -14,12 +14,12 @@ class ObserverData(BaseModel):
     identifier: int
     name: str
     type: ObserverType
+    regulated_entity_type: List[str]
 
 
 class EntityData(BaseModel):
     identifier: int
     simple_name: str
-    type: str
     country: Optional[str]
     city: Optional[str]
 
@@ -27,6 +27,7 @@ class EntityData(BaseModel):
 class TextData(BaseModel):
     identifier: int
     raw_text: str
+    event_time: str
 
 
 class AnalyzerAPIRequest(BaseModel):

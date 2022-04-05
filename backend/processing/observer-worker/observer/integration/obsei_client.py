@@ -1,4 +1,5 @@
-from typing import Optional, Dict, Any
+from datetime import datetime
+from typing import Optional, Dict, Any, List
 
 from obsei.source import TwitterSourceConfig, TwitterSource, TwitterCredentials
 from obsei.source.appstore_scrapper import AppStoreScrapperConfig, AppStoreScrapperSource
@@ -21,6 +22,7 @@ class ObseiResponse(BaseModel):
     reference_id: str
     parent_reference_id: Optional[str]
     raw_text: str
+    event_time: datetime
     data: Optional[Dict[str, Any]]
 
 
@@ -55,17 +57,11 @@ class ObseiClient(BaseSettings):
 
     def fetch_twitter_data(self, query, config: Optional[SourceConfig] = None):
         source_config = self.get_twitter_config(query, config)
-
         source_response_list = self.source_twitter.lookup(source_config)
-
-        return [
-            ObseiResponse(
-                reference_id=str(source_response.meta['id']),
-                raw_text=source_response.processed_text,
-                data=source_response.meta
-            )
-            for source_response in source_response_list
-        ]
+        return self._create_obsei_response(source_response_list,
+                                           id_column='id',
+                                           text_column='text',
+                                           time_column='created_at')
 
     def fetch_app_android_data(self, url, config: Optional[SourceConfig] = None):
         config = self.get_source_config(self.config.android_config, config)
@@ -74,17 +70,11 @@ class ObseiClient(BaseSettings):
             lookup_period=config.lookup_period,
             max_count=config.limit_count
         )
-
         source_response_list = self.source_playstore.lookup(source_config)
-
-        return [
-            ObseiResponse(
-                reference_id=source_response.meta['reviewId'],
-                raw_text=source_response.processed_text,
-                data=source_response.meta
-            )
-            for source_response in source_response_list
-        ]
+        return self._create_obsei_response(source_response_list,
+                                           id_column='reviewId',
+                                           text_column='content',
+                                           time_column='at')
 
     def fetch_app_ios_data(self, url, config: Optional[SourceConfig] = None):
         config = self.get_source_config(self.config.ios_config, config)
@@ -93,14 +83,30 @@ class ObseiClient(BaseSettings):
             lookup_period=config.lookup_period,
             max_count=config.limit_count
         )
-
         source_response_list = self.source_appstore.lookup(source_config)
+        return self._create_obsei_response(source_response_list,
+                                           id_column='id',
+                                           text_column='content',
+                                           time_column='date')
 
-        return [
-            ObseiResponse(
-                reference_id=str(source_response.meta['id']),
+    @staticmethod
+    def _create_obsei_response(source_response_list: List, id_column: str, text_column: str, time_column: str):
+        obsei_response_list = []
+
+        for source_response in source_response_list:
+            reference_id = str(source_response.meta[id_column])
+            event_time = source_response.meta[time_column]
+
+            # removing text to reduce DB size
+            source_response.meta.pop(text_column, None)
+            source_response.meta.pop(id_column, None)
+            source_response.meta.pop(time_column, None)
+
+            obsei_response_list.append(ObseiResponse(
+                reference_id=reference_id,
                 raw_text=source_response.processed_text,
+                event_time=event_time,
                 data=source_response.meta
-            )
-            for source_response in source_response_list
-        ]
+            ))
+
+        return obsei_response_list

@@ -1,12 +1,16 @@
+import logging
 import os
 from typing import Any, Dict
 
 from observer.domain.raw_data import RawData
 from observer.integration.obsei_client import ObseiClient, ObseiClientConfig, SourceConfig
 from observer.persistence.postgresql.raw_data_entity_manager import RawDataEntityManager
-from observer.persistence.sqs.sqs_publisher import SqsPublisher, ObserverMessage, \
-    RawDataEvent, TextDataMessage, EntityMessage
+from observer.persistence.sqs.sqs_publisher import SqsPublisher, \
+    ObserverMessage, RawDataEvent, TextDataMessage, EntityMessage
 from observer.presentation.model.observer_job_event import ObserverJobEvent, ObserverType
+from observer.utils.dateutils import datetime_to_iso_format
+
+logger = logging.getLogger(__name__)
 
 
 class ObserverJobHandler:
@@ -36,17 +40,23 @@ class ObserverJobHandler:
 
     def handle_job(self, job: ObserverJobEvent):
         data_list = self.data_fetcher[job.observer_type](job)
-        # config = BusinessEntityManager.get_config_by_observer_id(job.observer_id)
-        # config = {"tags": None}
+        logger.info(
+            f'{job.observer_identifier}:{job.observer_name}:{job.observer_type.name} fetch count: {len(data_list)}')
 
         raw_data_list = [
             RawData(
                 company_id=job.company_id,
                 observer_id=job.observer_identifier,
+                observer_name=job.observer_name,
+                observer_type=job.observer_type,
+                entity_id=job.entity_identifier,
+                entity_name=job.entity_simple_name,
+                regulated_entity_type=job.regulated_entity_type,
                 reference_id=data.reference_id,
                 parent_reference_id=data.parent_reference_id,
                 raw_text=data.raw_text,
-                data=data.data or {}
+                data=data.data or {},
+                event_time=data.event_time
             )
             for data in data_list
         ]
@@ -92,18 +102,19 @@ class ObserverJobHandler:
         entity_message = EntityMessage(
             identifier=job_data.entity_identifier,
             simple_name=job_data.entity_simple_name,
-            type=job_data.entity_type,
             country=job_data.entity_country,
             city=job_data.entity_city)
 
         observer_message = ObserverMessage(
             identifier=job_data.observer_identifier,
             name=job_data.observer_name,
-            type=job_data.observer_type.value)
+            type=job_data.observer_type.value,
+            regulated_entity_type=job_data.regulated_entity_type)
 
         text_data_message = TextDataMessage(
             identifier=raw_data.identifier,
-            raw_text=raw_data.raw_text)
+            raw_text=raw_data.raw_text,
+            event_time=datetime_to_iso_format(raw_data.event_time))
 
         return RawDataEvent(
             company_id=raw_data.company_id,

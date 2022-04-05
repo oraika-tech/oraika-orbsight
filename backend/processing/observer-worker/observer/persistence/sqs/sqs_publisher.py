@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Any, List, Optional
 
@@ -14,12 +13,12 @@ class ObserverMessage(BaseModel):
     identifier: int
     name: str
     type: int
+    regulated_entity_type: List[str]
 
 
 class EntityMessage(BaseModel):
     identifier: int
     simple_name: str
-    type: str
     country: Optional[str]
     city: Optional[str]
 
@@ -27,6 +26,7 @@ class EntityMessage(BaseModel):
 class TextDataMessage(BaseModel):
     identifier: int
     raw_text: str
+    event_time: str
 
 
 class RawDataEvent(BaseModel):

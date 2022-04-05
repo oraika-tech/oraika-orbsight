@@ -1,0 +1,90 @@
+[
+  {
+    "company_id": 1,
+    "observer": {
+      "identifier": 819,
+      "name": "Skrill - Pay & Transfer Money",
+      "type": 3,
+      "regulated_entity_type": [
+        "Bank"
+      ]
+    },
+    "entity": {
+      "identifier": 1330,
+      "simple_name": "Fast Encash Money Transfer Services",
+      "country": "UK",
+      "city": "Londo"
+    },
+    "text_data": {
+      "identifier": 140,
+      "raw_text": "Skrill Review. Skrill as been a very useful platform for me for a year now.\nFrom receiving payment from client, to spending and to saving.\nI donâ€™t know what I will do without Skrill. Thanks so much for this Opportunity. @thejamesnicks",
+      "event_time": "2022-03-18T14:47:51+05:30"
+    }
+  },
+  {
+    "company_id": 1,
+    "observer": {
+      "identifier": 819,
+      "name": "Skrill - Pay & Transfer Money",
+      "type": 3,
+      "regulated_entity_type": [
+        "Bank"
+      ]
+    },
+    "entity": {
+      "identifier": 1330,
+      "simple_name": "Fast Encash Money Transfer Services",
+      "country": "UK",
+      "city": "Londo"
+    },
+    "text_data": {
+      "identifier": 141,
+      "raw_text": "Theives. You all allowed me to send 208$ to my skrill you didnâ€™t ask for verification itâ€™s till I sent money to the account you restricted and I provided all the necessary document but you keep rejecting And now you permanently closed the account meaning I canâ€™t get my money back go will punish you guys you are just theives nothing but thieves no flexibility at all I ensure nobody download this app for their safety now I am left with nothing \nThieves...you all are thieves \n\nI wish I never rated but I will to get my message to you",
+      "event_time": "2022-03-17T17:41:54+05:30"
+    }
+  },
+  {
+    "company_id": 1,
+    "observer": {
+      "identifier": 819,
+      "name": "Skrill - Pay & Transfer Money",
+      "type": 3,
+      "regulated_entity_type": [
+        "Bank"
+      ]
+    },
+    "entity": {
+      "identifier": 1330,
+      "simple_name": "Fast Encash Money Transfer Services",
+      "country": "UK",
+      "city": "Londo"
+    },
+    "text_data": {
+      "identifier": 142,
+      "raw_text": "Scam - Used my email address without permission, unable to cancel acclunt. Apple please consider removing skrill. I did not create account. Used email email without permission and will not cancel account",
+      "event_time": "2022-03-14T18:45:50+05:30"
+    }
+  },
+  {
+    "company_id": 1,
+    "observer": {
+      "identifier": 819,
+      "name": "Skrill - Pay & Transfer Money",
+      "type": 3,
+      "regulated_entity_type": [
+        "Bank"
+      ]
+    },
+    "entity": {
+      "identifier": 1330,
+      "simple_name": "Fast Encash Money Transfer Services",
+      "country": "UK",
+      "city": "Londo"
+    },
+    "text_data": {
+      "identifier": 143,
+      "raw_text": "Me encanta esta buena y funciona. Funciona bien",
+      "event_time": "2022-03-11T05:05:40+05:30"
+    }
+  }
+]

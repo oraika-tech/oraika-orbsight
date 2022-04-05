@@ -3,13 +3,18 @@
   "observer_identifier": 1137,
   "observer_type": 1,
   "observer_name": "sbmbankindia",
+  "regulated_entity_type": [
+    "Bank"
+  ],
   "url": null,
   "twitter_handle": "sbmbankindia",
   "lookup_period": "1d",
   "limit_count": 20,
   "entity_identifier": 1435,
   "entity_simple_name": "SBM BANK (INDIA) LTD.",
-  "entity_type": "bank",
+  "regulated_type": [
+    "Bank"
+  ],
   "entity_country": null,
   "entity_city": null
 }

@@ -1,9 +1,10 @@
+import logging
 import re
 from typing import List, Optional, Tuple, Dict, Any
 
 import string
 import nltk
-from langdetect import detect
+from langdetect import detect, LangDetectException
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from pydantic import BaseSettings, Field
@@ -29,6 +30,8 @@ MINIMUM_PROBABILITY_LEVEL = 0.6
 # This is Obsights internal, if company require data in other language then a translation can be added to their desire
 # language
 SUPPORTED_LANG_CODES = ["en"]
+
+logger = logging.getLogger(__name__)
 
 
 class StructuredDataExtractor(BaseSettings):
@@ -135,8 +138,12 @@ class StructuredDataExtractor(BaseSettings):
         )
 
     # Detect Language
-    def _language_detection(self, text: str) -> str:
-        return detect(text)
+    def _language_detection(self, text: str) -> Optional[str]:
+        try:
+            return detect(text)
+        except LangDetectException as ex:
+            logger.error(f"Error in language detection of `{text}`: {ex}")
+            return None
 
     def extract_structure_slow(self, data_request: UnstructuredDataRequest) -> StructuredData:
         # TODO: Extract, Emojis, URL, Currency, Hashtags, Mention
@@ -152,7 +159,7 @@ class StructuredDataExtractor(BaseSettings):
             text_language = self._language_detection(clean_text)
 
             # If language is not in SUPPORTED_LANG_CODES then translate it
-            if text_language not in SUPPORTED_LANG_CODES:
+            if text_language is not None and text_language not in SUPPORTED_LANG_CODES:
                 processed_text = self._translate_text(clean_text)
             else:
                 processed_text = clean_text

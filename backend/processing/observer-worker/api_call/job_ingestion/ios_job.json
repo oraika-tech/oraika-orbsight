@@ -1,15 +1,20 @@
 {
   "company_id": 1,
   "observer_identifier": 819,
-  "observer_type": 3,
   "observer_name": "Skrill - Pay & Transfer Money",
+  "observer_type": 3,
+  "regulated_entity_type": [
+    "Bank"
+  ],
   "app_url": "https://apps.apple.com/us/app/skrill-pay-transfer-money/id718248239",
   "twitter_handle": null,
-  "lookup_period": "3d",
-  "limit_count": 20,
+  "lookup_period": "30d",
+  "limit_count": 5,
   "entity_identifier": 1330,
   "entity_simple_name": "Fast Encash Money Transfer Services",
-  "entity_type": "Cross border Money Transfer – in-bound only",
-  "entity_country": "UK",
-  "entity_city": "Londo"
+  "regulated_type": [
+    "Cross border Money Transfer – in-bound only"
+  ],
+  "entity_city": "Londo",
+  "entity_country": "UK"
 }

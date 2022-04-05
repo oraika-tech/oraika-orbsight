@@ -10,7 +10,7 @@ class UnstructuredDataRequest(BaseModel):
 
 class StructuredData(BaseModel):
     entity_data: Dict[str, List[str]] = {}
-    categories: List[str] = []
+    categories: Optional[List[str]] = None
     text_length: int
     emotion: Optional[str]
     remark: Optional[str] = None

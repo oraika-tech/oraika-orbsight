@@ -6,6 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
+from analyzer.api.tiyaro_exception import TiyaroException
 from analyzer.model.api_request_response import AnalyzerAPIResponse, AnalyzerAPIRequest
 from analyzer.model.data_store_request import DBStoreRequest, ObserverInfo, EntityInfo
 from analyzer.model.structure_data_request import UnstructuredDataRequest
@@ -51,32 +52,37 @@ def app_init():
     tags=["worker", "analyzer", "processing"]
 )
 def update_workflow(request: AnalyzerAPIRequest):
-    structured_data = structure_data_extractor.extract_structure_fast(
-        UnstructuredDataRequest(
-            company_id=request.company_id,
-            raw_text=request.text_data.raw_text
-        )
-    )
-    structured_data_identifier = structured_data_store.insert_structure_data(
-        data_request=DBStoreRequest(
-            structured_data=structured_data,
-            raw_data_identifier=request.text_data.identifier,
-            company_id=request.company_id,
-            observer_info=ObserverInfo(
-                identifier=request.observer.identifier,
-                name=request.observer.name,
-                type=request.observer.type.name
-            ),
-            entity_info=EntityInfo(
-                identifier=request.entity.identifier,
-                simple_name=request.entity.simple_name,
-                type=request.entity.type,
-                country=request.entity.country,
-                city=request.entity.city
+    try:
+        structured_data = structure_data_extractor.extract_structure_fast(
+            UnstructuredDataRequest(
+                company_id=request.company_id,
+                raw_text=request.text_data.raw_text
             )
         )
-    )
-    return AnalyzerAPIResponse(identifier=structured_data_identifier)
+        structured_data_identifier = structured_data_store.insert_structure_data(
+            data_request=DBStoreRequest(
+                structured_data=structured_data,
+                raw_data_identifier=request.text_data.identifier,
+                company_id=request.company_id,
+                event_time=request.text_data.event_time,
+                observer_info=ObserverInfo(
+                    identifier=request.observer.identifier,
+                    name=request.observer.name,
+                    type=request.observer.type.name,
+                    regulated_entity_type=request.observer.regulated_entity_type,
+                ),
+                entity_info=EntityInfo(
+                    identifier=request.entity.identifier,
+                    simple_name=request.entity.simple_name,
+                    country=request.entity.country,
+                    city=request.entity.city
+                )
+            )
+        )
+        return AnalyzerAPIResponse(identifier=structured_data_identifier)
+    except TiyaroException as ex:
+        logger.error(f"Tiyaro Exception occur: {ex}")
+        raise HTTPException(status_code=500, detail=f"Tiyaro error")
 
 
 if __name__ == "__main__":
