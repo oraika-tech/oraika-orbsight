@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, List
 
 from pydantic import BaseModel
 
-from analyzer.model.api_request_response import ObserverType
+from observer.presentation.model.observer_job_event import ObserverType
 
 
 class RawData(BaseModel):

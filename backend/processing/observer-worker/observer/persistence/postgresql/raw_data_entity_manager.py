@@ -8,8 +8,8 @@ from sqlalchemy import UniqueConstraint, Column
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field as SqlField, Session, SQLModel, create_engine
 
-from analyzer.model.api_request_response import ObserverType
 from observer.domain.raw_data import RawData
+from observer.presentation.model.observer_job_event import ObserverType
 
 logger = logging.getLogger(__name__)
 
