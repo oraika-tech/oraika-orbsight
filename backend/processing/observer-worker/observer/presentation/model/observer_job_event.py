@@ -5,9 +5,9 @@ from pydantic import BaseModel
 
 
 class ObserverType(int, Enum):
-    twitter = 1
-    android = 2
-    ios = 3
+    Twitter = 1
+    Android = 2
+    iOS = 3
 
 
 class ObserverJobEvent(BaseModel):
