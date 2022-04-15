@@ -7,11 +7,11 @@ import nltk
 from langdetect import detect, LangDetectException
 from nltk import word_tokenize
 from nltk.corpus import stopwords
-from pydantic import BaseSettings, Field
+from pydantic import BaseSettings, Field, PrivateAttr
 
 from analyzer.model.structure_data_request import UnstructuredDataRequest, StructuredData
-from analyzer.service.entity_extractor import EntityExtractor
-from analyzer.model.entity_data import EntityData
+from analyzer.service.taxonomy_extractor import TaxonomyExtractor
+from analyzer.model.taxonomy_data import TaxonomyData
 from analyzer.service.tiyaro_api import TiyaroClient
 
 HTTP_REGEX = r'http\S+'
@@ -35,6 +35,9 @@ logger = logging.getLogger(__name__)
 
 
 class StructuredDataExtractor(BaseSettings):
+    # Taxonomy Extractor
+    _taxonomy_extractor: TaxonomyExtractor = PrivateAttr()
+
     # Text cleaning
     regex_substitute = " "
     http_regex = re.compile(HTTP_REGEX)
@@ -47,9 +50,6 @@ class StructuredDataExtractor(BaseSettings):
     # Token cleaning functions
     stop_words: Optional[List[str]]
     stop_words_language = 'english'
-
-    # Entity Extractor
-    entity_extractor = EntityExtractor()
 
     # Classification API
     api_client = TiyaroClient()
@@ -69,6 +69,8 @@ class StructuredDataExtractor(BaseSettings):
             except LookupError:
                 nltk.download("stopwords")
             self.stop_words = stopwords.words(self.stop_words_language)
+
+        self._taxonomy_extractor = TaxonomyExtractor()
 
     # Clean text
     def _clean_text(self, text: str) -> str:
@@ -113,9 +115,9 @@ class StructuredDataExtractor(BaseSettings):
         tokenized_tokens = _to_lower(tokenized_tokens)
         return tokenized_tokens
 
-    # Extract entities via keywords
-    def _extract_entities(self, tokens: List[str], entity_owner_id: int) -> EntityData:
-        return self.entity_extractor.extract_entities(tokens, entity_owner_id)
+    # Extract taxonomy via keywords
+    def _extract_keywords(self, tokens: List[str], company_id: int) -> TaxonomyData:
+        return self._taxonomy_extractor.extract_taxonomy(tokens, company_id)
 
     # Emotion detection
     def _emotion_classification(self, text: str, labels: Optional[List[str]] = None) -> Tuple[str, float]:
@@ -170,8 +172,8 @@ class StructuredDataExtractor(BaseSettings):
             # Tokenize text and clean tokens
             tokens = self._tokenize_text(processed_text)
 
-            # Extract entity data
-            entity_data = self._extract_entities(tokens, data_request.company_id)
+            # Extract taxonomy data
+            taxonomy_data = self._extract_keywords(tokens, data_request.company_id)
 
             # Check number of tokens to take decision whether to classify or not
             very_small_text = len(tokens) < MINIMUM_TOKENS
@@ -181,10 +183,10 @@ class StructuredDataExtractor(BaseSettings):
             # TODO: Get emotions list from company_id if they provided
             text_emotion, text_emotion_prob = self._emotion_classification(processed_text, EMOTION_LABELS)
 
-            # Find categories to classify text based one emotion and entity
+            # Find categories to classify text based one emotion and taxonomy
             # TODO: Handle positive emotion case
             if text_emotion in NEGATIVE_EMOTIONS:
-                classification_labels = list(entity_data.categories)
+                classification_labels = list(taxonomy_data.categories)
                 # TODO: Ideally it should not reach at this level but adding check for hygiene purpose
                 if len(classification_labels) == 0:
                     classification_labels = NEGATIVE_CLASSIFICATION_LABELS
@@ -204,10 +206,10 @@ class StructuredDataExtractor(BaseSettings):
             # Create structured data map from all the above process and incoming request data
             # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
             structured_data = StructuredData(
-                entity_data={
-                    entity: list(entity_vals)
-                    for entity, entity_vals in entity_data.entity_map.items()
-                } if entity_data.entity_map else {},
+                taxonomy_data={
+                    taxonomy: list(taxonomy_vals)
+                    for taxonomy, taxonomy_vals in taxonomy_data.taxonomy_map.items()
+                } if taxonomy_data.taxonomy_map else {},
                 categories=classified_categories,
                 emotion=text_emotion,
                 text_length=len(data_request.raw_text),
@@ -247,8 +249,8 @@ class StructuredDataExtractor(BaseSettings):
             # Tokenize text and clean tokens
             tokens = self._tokenize_text(processed_text)
 
-            # Extract entity data
-            entity_data = self._extract_entities(tokens, data_request.company_id)
+            # Extract taxonomy data
+            taxonomy_data = self._extract_keywords(tokens, data_request.company_id)
 
             # Check number of tokens to take decision whether to classify or not
             very_small_text = len(tokens) < MINIMUM_TOKENS
@@ -275,10 +277,10 @@ class StructuredDataExtractor(BaseSettings):
             # Create structured data map from all the above process and incoming request data
             # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
             structured_data = StructuredData(
-                entity_data={
-                    entity: list(entity_vals)
-                    for entity, entity_vals in entity_data.entity_map.items()
-                } if entity_data.entity_map else {},
+                taxonomy_data={
+                    taxonomy: list(taxonomy_vals)
+                    for taxonomy, taxonomy_vals in taxonomy_data.taxonomy_map.items()
+                } if taxonomy_data.taxonomy_map else {},
                 categories=classified_categories,
                 emotion=text_emotion,
                 text_length=len(data_request.raw_text),

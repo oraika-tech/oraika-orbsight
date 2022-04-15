@@ -3,7 +3,6 @@ from typing import Set, Dict, Union
 from pydantic import BaseModel, Field
 
 
-class EntityData(BaseModel):
+class TaxonomyData(BaseModel):
     categories: Set[str] = Field([])
-    tags: Set[str] = Field([])
-    entity_map: Dict[str, Set[str]] = Field({})
+    taxonomy_map: Dict[str, Set[str]] = Field({})

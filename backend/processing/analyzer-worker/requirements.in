@@ -11,3 +11,4 @@ langdetect
 nltk
 pandas
 requests
+cachetools

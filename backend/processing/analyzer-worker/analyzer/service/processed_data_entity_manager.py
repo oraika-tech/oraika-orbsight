@@ -52,9 +52,9 @@ class ProcessedDataEntity(SQLModel, table=True):
 
 class ProcessedDataEntityManager(BaseSettings):
     db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("obsights_rbi", env='DB_NAME')
-    db_user: str = Field("obsights", env='DB_USER')
-    db_password: str = Field("obsights", env='DB_PASSWORD')
+    db_name: str = Field("obsights_rbi", env='DATA_DB_NAME')
+    db_user: str = Field("obsights", env='DATA_DB_USER')
+    db_password: str = Field("obsights", env='DATA_DB_PASSWORD')
     engine: Any
 
     def __init__(self, **values: Any):
@@ -80,23 +80,23 @@ class ProcessedDataEntityManager(BaseSettings):
             interface = "interface" in categories
             charges = "charges" in categories
 
-        entity_data = data_request.structured_data.entity_data
+        taxonomy_data = data_request.structured_data.taxonomy_data
         return ProcessedDataEntity(
             company_id=data_request.company_id,
             raw_data_id=data_request.raw_data_identifier,
             event_time=data_request.event_time,
 
-            service=entity_data.get("service", None),
-            payment=entity_data.get("payment", None),
-            transfer=entity_data.get("transfer", None),
-            account_type=entity_data.get("account type", None),
-            card=entity_data.get("card", None),
-            identification=entity_data.get("identification", None),
-            security=entity_data.get("security", None),
-            currency=entity_data.get("currency", None),
-            stock_market=entity_data.get("stock market", None),
-            loan=entity_data.get("loan", None),
-            network=entity_data.get("network", None),
+            service=taxonomy_data.get("service", None),
+            payment=taxonomy_data.get("payment", None),
+            transfer=taxonomy_data.get("transfer", None),
+            account_type=taxonomy_data.get("account type", None),
+            card=taxonomy_data.get("card", None),
+            identification=taxonomy_data.get("identification", None),
+            security=taxonomy_data.get("security", None),
+            currency=taxonomy_data.get("currency", None),
+            stock_market=taxonomy_data.get("stock market", None),
+            loan=taxonomy_data.get("loan", None),
+            network=taxonomy_data.get("network", None),
 
             emotion=data_request.structured_data.emotion,
 

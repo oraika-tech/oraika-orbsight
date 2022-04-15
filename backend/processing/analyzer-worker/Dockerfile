@@ -12,12 +12,15 @@ ENV WORKER_TIMEOUT 180
 ENV SERVER_PORT 8080
 ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
-ENV DB_NAME obsights
 ENV DB_HOST localhost:5432
-ENV DB_USER obsights
-ENV DB_PASSWORD obsights
 
-ENV KEYWORDS_DATA_SOURCE /home/user/keywords.tsv
+ENV DATA_DB_NAME obsights
+ENV DATA_DB_USER obsights
+ENV DATA_DB_PASSWORD obsights
+
+ENV CONFIG_DB_NAME obsights
+ENV CONFIG_DB_USER obsights
+ENV CONFIG_DB_PASSWORD obsights
 
 ENV TIYARO_API_KEY api_key
 
@@ -34,9 +37,6 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir gunicorn uvloop
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
-
-# copy rbi data
-COPY rbi_keywords.tsv /home/user/keywords.tsv
 
 USER user
 EXPOSE 8080
