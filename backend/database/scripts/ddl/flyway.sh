@@ -17,7 +17,7 @@ function flyway_migrate() {
   FOLDER=$1
   DB_NAME=$2
   $FLYWAY_EXECUTABLE \
-    -locations="filesystem:$DIR_PATH/../../$FOLDER,filesystem:$DIR_PATH/../../common" \
+    -locations="filesystem:$DIR_PATH/../../$FOLDER/flyway,filesystem:$DIR_PATH/../../common/flyway" \
     -url="jdbc:postgresql://$DB_HOST/$DB_NAME" \
     -user="$DB_USER" \
     -password="$DB_PASSWORD" \
@@ -37,7 +37,7 @@ function flyway_repair() {
   FOLDER=$1
   DB_NAME=$2
   $FLYWAY_EXECUTABLE \
-    -locations="filesystem:$DIR_PATH/../../$FOLDER,filesystem:$DIR_PATH/../../common" \
+    -locations="filesystem:$DIR_PATH/../../$FOLDER/flyway,filesystem:$DIR_PATH/../../common/flyway" \
     -url="jdbc:postgresql://$DB_HOST/$DB_NAME" \
     -user="$DB_USER" \
     -password="$DB_PASSWORD" \
