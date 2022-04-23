@@ -12,20 +12,20 @@ from sqlmodel import Field as SqlField, Session, SQLModel, create_engine
 
 
 class TaxonomyEntity(SQLModel, table=True):
-    __tablename__ = "domain_dictionary"
+    __tablename__ = "taxonomy"
 
     identifier: Optional[int] = SqlField(default=None, primary_key=True)
     company_id: int
     term: str
     categories: Optional[List[str]]
-    data: Optional[Dict[str, Any]] = SqlField(default='{}', sa_column=Column(JSONB))
+    taxonomy_type: Optional[Dict[str, Any]] = SqlField(default='{}', sa_column=Column(JSONB))
     is_deleted: bool
 
     def as_dict(self):
         return {
             "term": self.term,
             "categories": ",".join(self.categories),
-            "data": str(self.data)
+            "taxonomy_type": str(self.taxonomy_type)
         }
 
 
@@ -48,13 +48,13 @@ class TaxonomyExtractor(BaseSettings):
     @cached(cache=TTLCache(maxsize=32, ttl=300), key=hash_key)
     def get_taxonomy(self, company_id: int) -> DataFrame:
         with Session(self.engine) as session:
-            domain_dictionary = session.query(TaxonomyEntity).filter(
+            taxonomy = session.query(TaxonomyEntity).filter(
                 TaxonomyEntity.company_id == company_id,
                 TaxonomyEntity.is_deleted == False,
             )
-            if domain_dictionary is not None:
+            if taxonomy is not None:
                 return DataFrame(
-                    [term.as_dict() for term in domain_dictionary]
+                    [term.as_dict() for term in taxonomy]
                 ).convert_dtypes().apply(lambda col: col.str.lower())
 
             return DataFrame()
@@ -76,7 +76,7 @@ class TaxonomyExtractor(BaseSettings):
                     categories.update(categories_string.split(","))
 
             taxonomy_dict_list = []
-            for taxonomy_dict_string in set(keywords_present_df['data'].to_list()):
+            for taxonomy_dict_string in set(keywords_present_df['taxonomy_type'].to_list()):
                 if taxonomy_dict_string is not None and taxonomy_dict_string != "" and taxonomy_dict_string != "{}":
                     taxonomy_dict_list.append(ast.literal_eval(taxonomy_dict_string))
             taxonomy_map = TaxonomyExtractor._merge_dicts(taxonomy_dict_list)

@@ -318,7 +318,7 @@
         },
         {
           "column": {
-            "name": "data",
+            "name": "taxonomy_type",
             "nullable": true,
             "order": "6!{java.lang.Integer}",
             "relation": "liquibase.structure.core.Table#26b7193",
@@ -1407,7 +1407,7 @@
             "columns": [
               "liquibase.structure.core.Column#26b7199"]
             ,
-            "name": "domain_dictionary_pkey",
+            "name": "taxonomy_pkey",
             "snapshotId": "26b7198",
             "table": "liquibase.structure.core.Table#26b7193",
             "unique": true
@@ -1510,7 +1510,7 @@
             "columns": [
               "liquibase.structure.core.Column#26b7199"]
             ,
-            "name": "domain_dictionary_pkey",
+            "name": "taxonomy_pkey",
             "snapshotId": "26b7207",
             "table": "liquibase.structure.core.Table#26b7193"
           }
@@ -1658,7 +1658,7 @@
               "liquibase.structure.core.Index#26b7197",
               "liquibase.structure.core.Index#26b7198"]
             ,
-            "name": "domain_dictionary",
+            "name": "taxonomy",
             "primaryKey": "liquibase.structure.core.PrimaryKey#26b7207",
             "schema": "liquibase.structure.core.Schema#26b7101",
             "snapshotId": "26b7193",
