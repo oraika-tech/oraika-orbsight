@@ -1,0 +1,17 @@
+[
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "BUSINESS_DB_PASSWORD",
+    "Value": "<Enter during deployment and dont commit>"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "DATA_DB_PASSWORD",
+    "Value": "Enter during deployment and dont commit"
+  },
+  {
+    "Namespace": "aws:elasticbeanstalk:application:environment",
+    "OptionName": "USER_DB_PASSWORD",
+    "Value": "<Enter during deployment and dont commit>"
+  }
+]

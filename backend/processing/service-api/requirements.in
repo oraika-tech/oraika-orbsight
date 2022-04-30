@@ -1,0 +1,9 @@
+fastapi
+sqlmodel
+uvicorn[standard]
+uvloop ; sys_platform != 'win32' and sys_platform != 'cygwin'
+psycopg2-binary
+cachetools
+bcrypt
+python-jose[cryptography]
+python-multipart
