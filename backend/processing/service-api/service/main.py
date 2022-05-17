@@ -3,6 +3,8 @@ import logging
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from service import api_router
@@ -23,7 +25,16 @@ app = FastAPI(
 )
 
 app.add_middleware(
-    CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=settings.CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+app.add_middleware(
+    TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS
 )
 
 app.add_exception_handler(HTTPException, http_error_handler)

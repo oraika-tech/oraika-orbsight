@@ -17,7 +17,7 @@ class TokenPayload(BaseModel):
 
 
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/access-token"
+    tokenUrl=f"{settings.API_V1_STR}/auth/login"
 )
 
 
@@ -51,5 +51,5 @@ def get_current_user(token: str = Depends(reusable_oauth2), handler=Depends(get_
     user_id = token_data.sub
     user_info = handler.user_info(user_id)
     if not user_info:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user_info

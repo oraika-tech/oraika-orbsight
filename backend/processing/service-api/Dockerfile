@@ -26,13 +26,18 @@ ENV DATA_DB_NAME data_db
 ENV DATA_DB_USER username
 ENV DATA_DB_PASSWORD password
 
+ENV CORS_ORIGINS ["*"]
+ENV ALLOWED_HOSTS ["*"]
+
+ENV SECRET_KEY "secrety_key"
+
 # install few required tools
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential
 RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 COPY requirements.txt setup.py /home/user/
-COPY service /home/user/
+COPY service /home/user/service
 
 # install as a package
 RUN pip install --upgrade pip
