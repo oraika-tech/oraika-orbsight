@@ -3,13 +3,16 @@ from datetime import date, datetime
 from typing import Optional, List, Union
 
 from fastapi import APIRouter, Depends
-
-from service.data import data_domain_handler
-from service.data.domain.model.processed_data import ProcessedDataInfo
-from .response import DataResponse
+from starlette.exceptions import HTTPException
 
 from service.common.deps import get_current_user
-from starlette.exceptions import HTTPException
+from service.data import data_domain_handler
+from ..domain.model.text_analysis_data import TextAnalysisData
+from ..domain.model.entity import DataEntity
+from ..domain.model.source_type import DataSourceType
+from ..domain.model.key_phrase import EmotionKeyPhrases
+from ..domain.model.word_freq import EmotionWordFrequency
+from ..domain.model.filter_query_params import FilterQueryParams
 
 logger = logging.getLogger(__name__)
 
@@ -21,52 +24,132 @@ def get_handler():
 routes = APIRouter()
 
 
-@routes.get("", response_model=List[DataResponse])
-def get_processed_data_with_raw_data(
-    start_date: Union[datetime, date] = None,
-    end_date: Union[datetime, date] = None,
-    text_lang: Optional[str] = 'en',
-    entity_name: Optional[str] = 'All',
-    observer_type: Optional[str] = 'All',
-    user_info=Depends(get_current_user),
-    handler=Depends(get_handler)
-):
+@routes.get("/text", response_model=List[TextAnalysisData])
+def get_raw_and_processed(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        limit: Optional[int] = None,
+        text_lang: Optional[str] = 'en',
+        entity_name: Optional[str] = 'All',
+        observer_type: Optional[str] = 'All',
+        emotion: Optional[str] = 'All',
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    processed_data = handler.get_processed_data_with_raw_data(
+    return handler.get_text_analysis_data(FilterQueryParams(
         company_id=user_info.company_id,
         start_date=start_date,
         end_date=end_date,
-        text_lang=text_lang,
+        lang_code=text_lang,
         entity_name=entity_name,
-        observer_type=observer_type
-    )
-
-    return [
-        DataResponse(
-            text="" if not data.raw_data else data.raw_data.raw_text,
-            emotion=data.emotion
-        )
-        for data in processed_data
-    ]
+        observer_type=observer_type,
+        emotion=emotion,
+        limit=limit
+    ))
 
 
-@routes.get("/entities", response_model=Optional[List[str]])
-def get_distinct_entity_names(
-    user_info=Depends(get_current_user), handler=Depends(get_handler)
-):
+@routes.get("/languages", response_model=List[str], response_model_exclude_none=True)
+def get_languages_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        entity_name: Optional[str] = 'All',
+        observer_type: Optional[str] = 'All',
+        emotion: Optional[str] = 'All',
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
+    return handler.get_languages(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        entity_name=entity_name,
+        observer_type=observer_type,
+        emotion=emotion
+    ))
+
+
+@routes.get("/entities", response_model=List[DataEntity], response_model_exclude_none=True)
+def get_unique_entities_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        text_lang: Optional[str] = 'en',
+        observer_type: Optional[str] = None,
+        emotion: Optional[str] = None,
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
+    return handler.get_data_entities(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        lang_code=text_lang,
+        observer_type=observer_type,
+        emotion=emotion
+    ))
+
+
+@routes.get("/source-types", response_model=List[DataSourceType], response_model_exclude_none=True)
+def get_data_sources_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        text_lang: Optional[str] = 'en',
+        entity_name: Optional[str] = 'All',
+        emotion: Optional[str] = 'All',
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
+    return handler.get_data_sources_types(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        lang_code=text_lang,
+        entity_name=entity_name,
+        emotion=emotion
+    ))
+
+
+@routes.get("/key-phrases", response_model=List[EmotionKeyPhrases], response_model_exclude_none=True)
+def get_key_phrases_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        text_lang: Optional[str] = 'en',
+        entity_name: Optional[str] = 'All',
+        observer_type: Optional[str] = 'All',
+        emotion: Optional[str] = 'All',
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_distinct_entity_names(user_info.company_id)
+    return handler.get_key_phrases(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        entity_name=entity_name,
+        lang_code=text_lang,
+        observer_type=observer_type,
+        emotion=emotion
+    ))
 
 
-@routes.get("/observers", response_model=Optional[List[str]])
-def get_distinct_observer_types(
-    user_info=Depends(get_current_user), handler=Depends(get_handler)
-):
+@routes.get("/word-cloud", response_model=List[EmotionWordFrequency])
+def get_word_cloud_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        text_lang: Optional[str] = 'en',
+        entity_name: Optional[str] = 'All',
+        observer_type: Optional[str] = 'All',
+        emotion: Optional[str] = 'All',
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_distinct_observer_types(user_info.company_id)
+    return handler.get_word_cloud(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        entity_name=entity_name,
+        lang_code=text_lang,
+        observer_type=observer_type,
+        emotion=emotion
+    ))

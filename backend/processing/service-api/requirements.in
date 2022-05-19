@@ -7,3 +7,8 @@ cachetools
 bcrypt
 python-jose[cryptography]
 python-multipart
+pandas
+nltk
+stopwordsiso
+keybert
+cachetools

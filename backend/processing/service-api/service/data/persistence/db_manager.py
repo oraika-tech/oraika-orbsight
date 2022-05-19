@@ -1,5 +1,5 @@
-from datetime import datetime, date, time
-from typing import Optional, Any, List, Union, Dict
+from datetime import datetime
+from typing import Optional, Any, List, Dict
 
 from pydantic import Field
 from sqlalchemy import Column, select, distinct
@@ -7,9 +7,10 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field as SqlField, create_engine, Session, SQLModel
 
 from service.data.domain.base import BasePersistenceManager
-
-from service.data.domain.model.raw_data import RawDataInfo
+from service.data.domain.model.text_analysis_data import TextAnalysisData
+from service.data.domain.model.filter_query_params import FilterQueryParams
 from service.data.domain.model.processed_data import ProcessedDataInfo
+from service.data.domain.model.raw_data import RawDataInfo
 
 
 class RawData(SQLModel, table=True):
@@ -90,6 +91,49 @@ class ProcessedData(SQLModel, table=True):
         )
 
 
+class TextAnalysisDataEntity(SQLModel, table=True):
+    __tablename__ = "processed_data_view_v1"
+    __table_args__ = {'extend_existing': True}
+
+    raw_data_id: Optional[int] = SqlField(default=None, primary_key=True)
+    processed_data_id: Optional[int]
+    reference_id: Optional[int]
+    conversation_id: Optional[int]
+    company_id: Optional[int]
+    event_time: Optional[datetime]
+
+    emotion: Optional[str]
+    rating: Optional[int]
+    author_name: Optional[str]
+    text_lang: Optional[str]
+    text_hash: Optional[str]
+    text_length: Optional[int]
+    raw_text: Optional[str]
+    url: Optional[str]
+
+    entity_name: str
+    regulated_entity_type: List[str]
+    observer_type: str
+
+    taxonomy_fields: List[str]
+    taxonomy_values: List[str]
+    categories: List[str]
+
+    def convert_to_model(self) -> TextAnalysisData:
+        return TextAnalysisData(
+            raw_data_id=self.raw_data_id,
+            event_time=self.event_time,
+            emotion=self.emotion,
+            entity_name=self.entity_name,
+            observer_type=self.observer_type,
+            raw_text=self.raw_text,
+            text_lang=self.text_lang,
+            author_name=self.author_name,
+            categories=self.categories,
+            taxonomies=self.taxonomy_values
+        )
+
+
 class DataDBManager(BasePersistenceManager):
     db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
     db_name: str = Field("obsights_rbi", env='DATA_DB_NAME')
@@ -101,73 +145,86 @@ class DataDBManager(BasePersistenceManager):
     def __init__(self, **values: Any):
         super().__init__(**values)
         connection_string = f"{self.db_engine_name}://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}"
-        # self.engine = create_engine(connection_string, echo="debug")
         self.engine = create_engine(connection_string)
 
-    def get_processed_data_with_raw_data(
-            self,
-            company_id: int,
-            start_date: Union[datetime, date, time],
-            end_date: Union[datetime, date, time],
-            text_lang: str = 'en',
-            entity_name: str = 'All',
-            observer_type: str = 'All'
-    ) -> Optional[List[ProcessedDataInfo]]:
+    @staticmethod
+    def _get_updated_query_with_params(entity, query, params: FilterQueryParams):
+
+        query = query.filter(entity.company_id == params.company_id)
+
+        if params.start_date:
+            query = query.filter(entity.event_time >= params.start_date)
+
+        if params.end_date:
+            query = query.filter(entity.event_time <= params.end_date)
+
+        if params.entity_name and params.entity_name != 'All':
+            query = query.filter(entity.entity_name == params.entity_name)
+
+        if params.observer_type and params.observer_type != 'All':
+            query = query.filter(entity.observer_type == params.observer_type)
+
+        if params.lang_code and params.lang_code != 'All':
+            query = query.filter(entity.text_lang == params.lang_code)
+
+        if params.emotion and params.emotion != 'All':
+            query = query.filter(entity.emotion == params.emotion)
+        else:
+            query = query.filter(entity.emotion != None)
+
+        return query
+
+    @staticmethod
+    def _execute_query(session, query):
+        row_list = session.exec(query)
+        if row_list is not None:
+            return [row[0] for row in row_list]
+        else:
+            return []
+
+    def get_text_analysis_data(self, params: FilterQueryParams) -> Optional[List[TextAnalysisData]]:
         with Session(self.engine) as session:
-
-            query = session.query(ProcessedData, RawData).filter(
-                ProcessedData.is_deleted == False,
-                ProcessedData.company_id == company_id,
-                ProcessedData.raw_data_id == RawData.identifier,
-                ProcessedData.text_lang == text_lang,
-                ProcessedData.remark == None,
-                ProcessedData.emotion != None,
-                ProcessedData.event_time >= start_date,
-                ProcessedData.event_time <= end_date,
-            )
-
-            if entity_name != 'All':
-                query = query.filter(
-                    ProcessedData.entity_name == entity_name
-                )
-
-            if observer_type != 'All':
-                query = query.filter(
-                    ProcessedData.observer_type == observer_type
-                )
-
+            query = session.query(TextAnalysisDataEntity)
+            query = self._get_updated_query_with_params(TextAnalysisDataEntity, query, params)
+            query = query.order_by(TextAnalysisDataEntity.event_time.desc())
+            if params.limit:
+                query = query.limit(params.limit)
             result_set = query.all()
-
             if result_set is not None:
-                return [
-                    processed_data.convert_to_model(raw_data)
-                    for processed_data, raw_data in result_set
-                ]
+                return [text_analysis_data.convert_to_model() for text_analysis_data in result_set]
+            else:
+                return []
 
-    def get_distinct_entity_names(
-            self, company_id: int
-    ) -> Optional[List[str]]:
+    def get_distinct_languages(self, params: FilterQueryParams) -> Optional[List[str]]:
         with Session(self.engine) as session:
-            stmt = select(distinct(ProcessedData.entity_name)).filter(
+            query = select(distinct(ProcessedData.text_lang)).filter(
                 ProcessedData.is_deleted == False,
-                ProcessedData.company_id == company_id,
+                ProcessedData.text_lang != None
+            ).order_by(
+                ProcessedData.text_lang
+            )
+            query = self._get_updated_query_with_params(ProcessedData, query, params)
+            return self._execute_query(session, query)
+
+    def get_distinct_entity_names(self, params: FilterQueryParams) -> Optional[List[str]]:
+        with Session(self.engine) as session:
+            query = select(distinct(ProcessedData.entity_name)).filter(
+                ProcessedData.is_deleted == False,
                 ProcessedData.entity_name != None
+            ).order_by(
+                ProcessedData.entity_name
             )
-            row_list = session.exec(stmt)
+            query = self._get_updated_query_with_params(ProcessedData, query, params)
+            query = query.order_by(ProcessedData.entity_name)
+            return self._execute_query(session, query)
 
-            if row_list is not None:
-                return [row[0] for row in row_list]
-
-    def get_distinct_observer_types(
-            self, company_id: int
-    ) -> Optional[List[str]]:
+    def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
         with Session(self.engine) as session:
-            stmt = select(distinct(ProcessedData.observer_type)).filter(
+            query = select(distinct(ProcessedData.observer_type)).filter(
                 ProcessedData.is_deleted == False,
-                ProcessedData.company_id == company_id,
                 ProcessedData.observer_type != None
+            ).order_by(
+                ProcessedData.observer_type
             )
-            row_list = session.exec(stmt)
-
-            if row_list is not None:
-                return [row[0] for row in row_list]
+            query = self._get_updated_query_with_params(ProcessedData, query, params)
+            return self._execute_query(session, query)

@@ -21,9 +21,7 @@ routes = APIRouter()
 
 
 @routes.get("", response_model=List[TaxonomyInfo])
-def get_taxonomy_data(
-        user_info=Depends(get_current_user), handler=Depends(get_handler)
-):
+def get_taxonomy_data(user_info=Depends(get_current_user), handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 

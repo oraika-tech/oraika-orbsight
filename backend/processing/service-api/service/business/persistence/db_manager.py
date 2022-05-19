@@ -31,7 +31,7 @@ class TaxonomyEntity(SQLModel, table=True):
             term=self.term,
             term_description=self.term_description,
             issue_categories=self.categories,
-            issue_mapping=self.taxonomy_type
+            issue_mapping=list(self.taxonomy_type.keys())
         )
 
 
@@ -117,8 +117,11 @@ class BusinessDBManager(BasePersistenceManager):
             query = session.query(Entity).filter(
                 Entity.company_id == company_id,
                 Entity.is_deleted == False,
+            ).order_by(
+                Entity.is_enabled.desc(),
+                Entity.simple_name
             )
-            if enabled:
+            if enabled is not None:
                 query = query.filter(
                     Entity.is_enabled == enabled
                 )
@@ -198,8 +201,12 @@ class BusinessDBManager(BasePersistenceManager):
             query = session.query(Observer).filter(
                 Observer.company_id == company_id,
                 Observer.is_deleted == False,
+            ).order_by(
+                Observer.is_enabled.desc(),
+                Observer.entity_id,
+                Observer.name
             )
-            if enabled:
+            if enabled is not None:
                 query = query.filter(
                     Observer.is_enabled == enabled
                 )
@@ -366,4 +373,3 @@ class BusinessDBManager(BasePersistenceManager):
             for key, value in taxonomy_types_freq.items()
             if key is not None and key != ""
         ]
-

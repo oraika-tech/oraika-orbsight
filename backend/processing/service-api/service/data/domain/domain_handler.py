@@ -1,34 +1,74 @@
-from datetime import datetime, date
-from typing import Union, List, Optional
+from typing import Set, List
 
+from cachetools import cached, TTLCache
 from pydantic import BaseSettings
 from .base import BasePersistenceManager
-from .model.processed_data import ProcessedDataInfo
+from .key_phrases_handler import KeyPhrasesHandler
+from .word_freq_handler import WordFreqHandler
+from .model.filter_query_params import FilterQueryParams
+from .model.text_analysis_data import TextAnalysisData
+from .model.entity import DataEntity
+from .model.source_type import DataSourceType
+from service.common.settings import settings
+
+
+LANG_CODE_TO_NAME = {
+    "en": "English",
+    "hi": "Hindi",
+    "ta": "Tamil",
+    "te": "Telugu",
+    "gu": "Gujarati",
+    "kn": "Kannada",
+    "bn": "Bengali",
+    "mr": "Marathi",
+    "ml": "Malayalam",
+    "pa": "Punjabi",
+    "ur": "Urdu"
+}
 
 
 class DataDomainHandler(BaseSettings):
     persistence_manager: BasePersistenceManager
+    word_freq_handler: WordFreqHandler
+    key_phrases_handler: KeyPhrasesHandler
 
-    def get_processed_data_with_raw_data(
-        self,
-        company_id: int,
-        start_date: Union[datetime, date],
-        end_date: Union[datetime, date],
-        text_lang: str = 'en',
-        entity_name: str = 'All',
-        observer_type: str = 'All'
-    ) -> Optional[List[ProcessedDataInfo]]:
-        return self.persistence_manager.get_processed_data_with_raw_data(
-            company_id=company_id,
-            start_date=start_date,
-            end_date=end_date,
-            text_lang=text_lang,
-            entity_name=entity_name,
-            observer_type=observer_type
+    def hash_key(self, filter_query_params: FilterQueryParams):
+        return (
+            filter_query_params.company_id,
+            filter_query_params.start_date,
+            filter_query_params.end_date,
+            filter_query_params.entity_name,
+            filter_query_params.lang_code,
+            filter_query_params.observer_type,
+            filter_query_params.emotion
         )
 
-    def get_distinct_entity_names(self, company_id: int) -> Optional[List[str]]:
-        return self.persistence_manager.get_distinct_entity_names(company_id)
+    def get_text_analysis_data(self, filter_query_params: FilterQueryParams) -> List[TextAnalysisData]:
+        if not filter_query_params.limit:
+            filter_query_params.limit = settings.DEFAULT_QUERY_LIMIT
+        return self.persistence_manager.get_text_analysis_data(filter_query_params)
 
-    def get_distinct_observer_types(self, company_id: int) -> Optional[List[str]]:
-        return self.persistence_manager.get_distinct_observer_types(company_id)
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_data_entities(self, filter_query_params: FilterQueryParams):
+        entity_names = self.persistence_manager.get_distinct_entity_names(filter_query_params)
+        return [DataEntity(name=name) for name in entity_names]
+
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_data_sources_types(self, filter_query_params: FilterQueryParams):
+        data_sources = self.persistence_manager.get_distinct_observer_types(filter_query_params)
+        return [DataSourceType(name=name) for name in data_sources]
+
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_languages(self, filter_query_params: FilterQueryParams):
+        language_codes: Set[str] = set(self.persistence_manager.get_distinct_languages(filter_query_params))
+        return [code for code in LANG_CODE_TO_NAME if code in language_codes]
+
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_word_cloud(self, filter_query_params: FilterQueryParams):
+        data = self.get_text_analysis_data(filter_query_params)
+        return self.word_freq_handler.generate_word_freq(data=data, lang_code=filter_query_params.lang_code)
+
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_key_phrases(self, filter_query_params: FilterQueryParams):
+        data = self.get_text_analysis_data(filter_query_params)
+        return self.key_phrases_handler.generate_key_phrases(data=data, lang_code=filter_query_params.lang_code)

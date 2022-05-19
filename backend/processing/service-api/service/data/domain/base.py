@@ -1,29 +1,26 @@
 from abc import abstractmethod
-from datetime import datetime, date, time
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import BaseSettings
-from .model.processed_data import ProcessedDataInfo
+
+from .model.text_analysis_data import TextAnalysisData
+from .model.filter_query_params import FilterQueryParams
 
 
 class BasePersistenceManager(BaseSettings):
 
     @abstractmethod
-    def get_processed_data_with_raw_data(
-            self,
-            company_id: int,
-            start_date: Union[datetime, date, time],
-            end_date: Union[datetime, date, time],
-            text_lang: str = 'en',
-            entity_name: str = 'All',
-            observer_type: str = 'All'
-    ) -> Optional[List[ProcessedDataInfo]]:
+    def get_text_analysis_data(self, params: FilterQueryParams) -> Optional[List[TextAnalysisData]]:
         pass
 
     @abstractmethod
-    def get_distinct_entity_names(self, company_id: int) -> Optional[List[str]]:
+    def get_distinct_entity_names(self, params: FilterQueryParams) -> Optional[List[str]]:
         pass
 
     @abstractmethod
-    def get_distinct_observer_types(self, company_id: int) -> Optional[List[str]]:
+    def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
+        pass
+
+    @abstractmethod
+    def get_distinct_languages(self, params: FilterQueryParams) -> Optional[List[str]]:
         pass

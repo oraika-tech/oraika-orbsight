@@ -9,6 +9,7 @@ select
     pd.identifier as processed_data_id,
     rd.reference_id,
     rd.data ->>'conversation_id' as conversation_id,
+    rd.company_id as company_id,
     -- entity info -------
     pd.observer_type,
     rd.entity_name,
@@ -45,11 +46,15 @@ select
     || case when stock_market is not null then array['stock_market'] end
     || case when loan is not null then array['loan'] end
     || case when network is not null then array['network'] end
+    || case when raw_text like '%language%' then array['language'] end
     ) as taxonomy_fields,
-    array(select distinct unnest(
+    (
+      array(select distinct unnest(
         service || payment || transfer || account_type || card || identification ||
         security || currency || stock_market || loan || network
-    ))::text[] as taxonomy_values,
+      ))::text[]
+      || case when raw_text like '%language%' then array['language'] end
+    ) as taxonomy_values,
     (array[]::text[]
     || case when fraud = true then array['fraud'] end
     || case when complaint = true then array['complaint'] end
@@ -61,8 +66,8 @@ select
     ) as categories
 from raw_data rd
 inner join processed_data pd on rd.identifier = pd.raw_data_id
-where rd.is_deleted = false and emotion is not null
-order by event_time desc
+where rd.is_deleted = false and pd.emotion is not null
+order by rd.event_time desc
 ;
 
 --rollback DROP VIEW processed_data_view_v1;
