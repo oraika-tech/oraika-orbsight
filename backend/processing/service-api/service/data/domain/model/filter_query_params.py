@@ -13,6 +13,7 @@ class FilterQueryParams(BaseModel):
     observer_type: Optional[str] = None
     emotion: Optional[str] = None
     limit: Optional[int] = None
+    # any field modification need changes at DataDomainHandler::hash_key() also
 
     @validator('entity_name', 'lang_code', 'observer_type', 'emotion')
     def set_all_as_none(cls, value):

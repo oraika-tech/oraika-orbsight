@@ -115,6 +115,7 @@ def get_key_phrases_from_data(
         entity_name: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
+        limit: Optional[int] = None,
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
     if not user_info:
@@ -127,7 +128,8 @@ def get_key_phrases_from_data(
         entity_name=entity_name,
         lang_code=text_lang,
         observer_type=observer_type,
-        emotion=emotion
+        emotion=emotion,
+        limit=limit
     ))
 
 

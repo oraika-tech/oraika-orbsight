@@ -40,7 +40,8 @@ class DataDomainHandler(BaseSettings):
             filter_query_params.entity_name,
             filter_query_params.lang_code,
             filter_query_params.observer_type,
-            filter_query_params.emotion
+            filter_query_params.emotion,
+            filter_query_params.limit
         )
 
     def get_text_analysis_data(self, filter_query_params: FilterQueryParams) -> List[TextAnalysisData]:
