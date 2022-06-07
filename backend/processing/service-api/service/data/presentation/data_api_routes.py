@@ -3,10 +3,11 @@ from datetime import date, datetime
 from typing import Optional, List, Union
 
 from fastapi import APIRouter, Depends
+from service.data.domain.model.dashboard_data import DashboardData
 from starlette.exceptions import HTTPException
 
 from service.common.deps import get_current_user
-from service.data import data_domain_handler
+from service.data import data_domain_handler, dashboard_service
 from ..domain.model.text_analysis_data import TextAnalysisData
 from ..domain.model.entity import DataEntity
 from ..domain.model.source_type import DataSourceType
@@ -19,6 +20,10 @@ logger = logging.getLogger(__name__)
 
 def get_handler():
     return data_domain_handler
+
+
+def get_dashboard_service():
+    return dashboard_service
 
 
 routes = APIRouter()
@@ -155,3 +160,24 @@ def get_word_cloud_from_data(
         observer_type=observer_type,
         emotion=emotion
     ))
+
+
+@routes.get("/dashboards", response_model=List[DashboardData])
+def get_dashboard_data(
+        user_info=Depends(get_current_user),
+        handler=Depends(get_dashboard_service)):
+    if not user_info:
+        raise HTTPException(status_code=400, detail="User not found")
+
+    return handler.get_dashboards()
+
+
+@routes.get("/dashboards/panels", response_model=DashboardData)
+def get_live_feed_dashboard_data(
+        panel: str,
+        user_info=Depends(get_current_user),
+        handler=Depends(get_dashboard_service)):
+    if not user_info:
+        raise HTTPException(status_code=400, detail="User not found")
+
+    return handler.get_dashboard_panel_data(panel)

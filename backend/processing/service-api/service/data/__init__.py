@@ -1,6 +1,9 @@
+from service.data.domain.dashboard_service import DashboardService
+from service.data.domain.grafana_service import GrafanaService
 from service.data.domain.key_phrases_handler import KeyPhrasesHandler
 from service.data.domain.text_processor import TextProcessor
 from service.data.domain.word_freq_handler import WordFreqHandler
+from service.data.integration.grafana_client import GrafanaClient
 from service.data.persistence.db_manager import DataDBManager
 from service.data.domain.domain_handler import DataDomainHandler
 
@@ -13,3 +16,8 @@ data_domain_handler = DataDomainHandler(
     word_freq_handler=word_freq_handler,
     key_phrases_handler=key_phrases_handler
 )
+
+grafana_client = GrafanaClient()
+grafana_service = GrafanaService(grafana_client=grafana_client)
+
+dashboard_service = DashboardService()
