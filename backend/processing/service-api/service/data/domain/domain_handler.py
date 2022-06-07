@@ -2,6 +2,8 @@ from typing import Set, List
 
 from cachetools import cached, TTLCache
 from pydantic import BaseSettings
+from service.data.domain.model.term import DataTerm
+
 from .base import BasePersistenceManager
 from .key_phrases_handler import KeyPhrasesHandler
 from .word_freq_handler import WordFreqHandler
@@ -38,6 +40,7 @@ class DataDomainHandler(BaseSettings):
             filter_query_params.start_date,
             filter_query_params.end_date,
             filter_query_params.entity_name,
+            filter_query_params.term,
             filter_query_params.lang_code,
             filter_query_params.observer_type,
             filter_query_params.emotion,
@@ -53,6 +56,11 @@ class DataDomainHandler(BaseSettings):
     def get_data_entities(self, filter_query_params: FilterQueryParams):
         entity_names = self.persistence_manager.get_distinct_entity_names(filter_query_params)
         return [DataEntity(name=name) for name in entity_names]
+
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
+    def get_data_terms(self, filter_query_params: FilterQueryParams):
+        terms = self.persistence_manager.get_distinct_terms(filter_query_params)
+        return [DataTerm(name=name) for name in terms]
 
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_data_sources_types(self, filter_query_params: FilterQueryParams):

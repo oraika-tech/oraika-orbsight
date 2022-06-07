@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from pydantic import BaseSettings, Field
 
@@ -8,7 +8,7 @@ from .text_processor import TextProcessor
 
 
 class WordFreqHandler(BaseSettings):
-    minimum_frequency: int = Field(2, env='MINIMUM_FREQUENCY')
+    max_word_count: int = Field(100, env='MAX_WORD_COUNT')
     text_processor: TextProcessor
 
     def generate_word_freq(self, data: List[TextAnalysisData], lang_code: str):
@@ -35,16 +35,15 @@ class WordFreqHandler(BaseSettings):
                 EmotionWordFrequency(
                     name=key,
                     word_cloud=[
-                        TextWordWeight(term=word, weight=frequency)
-                        for word, frequency in self.generate_freq_map(lang_code=lang_code, text=value).items()
-                        if frequency > self.minimum_frequency
-                    ]
+                                   TextWordWeight(term=word, weight=frequency)
+                                   for word, frequency in self.generate_freq_map(lang_code=lang_code, text=value)
+                               ][:self.max_word_count]
                 )
             )
 
         return response
 
-    def generate_freq_map(self, lang_code: str, text: str) -> Dict[str, int]:
+    def generate_freq_map(self, lang_code: str, text: str) -> List[Tuple[str, int]]:
         frequency_count: Dict[str, int] = {}
         word_list = text.split()
         for word in word_list:
@@ -55,4 +54,4 @@ class WordFreqHandler(BaseSettings):
                 else:
                     frequency_count[word] = 1
 
-        return frequency_count
+        return sorted(frequency_count.items(), key=lambda item: item[1], reverse=True)

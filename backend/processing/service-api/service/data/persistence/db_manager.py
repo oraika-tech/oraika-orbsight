@@ -2,15 +2,15 @@ from datetime import datetime
 from typing import Optional, Any, List, Dict
 
 from pydantic import Field
-from sqlalchemy import Column, select, distinct
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field as SqlField, create_engine, Session, SQLModel
-
 from service.data.domain.base import BasePersistenceManager
-from service.data.domain.model.text_analysis_data import TextAnalysisData
 from service.data.domain.model.filter_query_params import FilterQueryParams
 from service.data.domain.model.processed_data import ProcessedDataInfo
 from service.data.domain.model.raw_data import RawDataInfo
+from service.data.domain.model.text_analysis_data import TextAnalysisData
+from sqlalchemy import Column, select, distinct, func, Text
+from sqlalchemy.dialects.postgresql import Any as ArrayAny, ARRAY
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlmodel import Field as SqlField, create_engine, Session, SQLModel
 
 
 class RawData(SQLModel, table=True):
@@ -116,7 +116,7 @@ class TextAnalysisDataEntity(SQLModel, table=True):
     observer_type: str
 
     taxonomy_fields: List[str]
-    taxonomy_values: List[str]
+    taxonomy_values: List[str] = SqlField(default='{}', sa_column=Column(ARRAY(Text)))
     categories: List[str]
 
     def convert_to_model(self) -> TextAnalysisData:
@@ -148,29 +148,30 @@ class DataDBManager(BasePersistenceManager):
         self.engine = create_engine(connection_string)
 
     @staticmethod
-    def _get_updated_query_with_params(entity, query, params: FilterQueryParams):
+    def _get_updated_query_with_params(data, query, params: FilterQueryParams):
 
-        query = query.filter(entity.company_id == params.company_id)
+        query = query.filter(data.company_id == params.company_id)
 
         if params.start_date:
-            query = query.filter(entity.event_time >= params.start_date)
+            query = query.filter(data.event_time >= params.start_date)
 
         if params.end_date:
-            query = query.filter(entity.event_time <= params.end_date)
+            query = query.filter(data.event_time <= params.end_date)
 
         if params.entity_name and params.entity_name != 'All':
-            query = query.filter(entity.entity_name == params.entity_name)
+            query = query.filter(data.entity_name == params.entity_name)
 
         if params.observer_type and params.observer_type != 'All':
-            query = query.filter(entity.observer_type == params.observer_type)
+            query = query.filter(data.observer_type == params.observer_type)
 
         if params.lang_code and params.lang_code != 'All':
-            query = query.filter(entity.text_lang == params.lang_code)
+            query = query.filter(data.text_lang == params.lang_code)
+
+        if params.term and params.term != 'All':
+            query = query.filter(data.taxonomy_values.any(params.term))
 
         if params.emotion and params.emotion != 'All':
-            query = query.filter(entity.emotion == params.emotion)
-        else:
-            query = query.filter(entity.emotion != None)
+            query = query.filter(data.emotion == params.emotion)
 
         return query
 
@@ -195,36 +196,41 @@ class DataDBManager(BasePersistenceManager):
             else:
                 return []
 
+    def get_distinct_terms(self, params: FilterQueryParams) -> Optional[List[str]]:
+        with Session(self.engine) as session:
+            query = select(func.unnest(TextAnalysisDataEntity.taxonomy_values).label('taxonomy_value')) \
+                .distinct() \
+                .filter(TextAnalysisDataEntity.taxonomy_values != None) \
+                .order_by('taxonomy_value')
+            query = self._get_updated_query_with_params(TextAnalysisDataEntity, query, params)
+            return self._execute_query(session, query)
+
     def get_distinct_languages(self, params: FilterQueryParams) -> Optional[List[str]]:
         with Session(self.engine) as session:
-            query = select(distinct(ProcessedData.text_lang)).filter(
-                ProcessedData.is_deleted == False,
-                ProcessedData.text_lang != None
+            query = select(distinct(TextAnalysisDataEntity.text_lang)).filter(
+                TextAnalysisDataEntity.text_lang != None
             ).order_by(
-                ProcessedData.text_lang
+                TextAnalysisDataEntity.text_lang
             )
-            query = self._get_updated_query_with_params(ProcessedData, query, params)
+            query = self._get_updated_query_with_params(TextAnalysisDataEntity, query, params)
             return self._execute_query(session, query)
 
     def get_distinct_entity_names(self, params: FilterQueryParams) -> Optional[List[str]]:
         with Session(self.engine) as session:
-            query = select(distinct(ProcessedData.entity_name)).filter(
-                ProcessedData.is_deleted == False,
-                ProcessedData.entity_name != None
+            query = select(distinct(TextAnalysisDataEntity.entity_name)).filter(
+                TextAnalysisDataEntity.entity_name != None
             ).order_by(
-                ProcessedData.entity_name
+                TextAnalysisDataEntity.entity_name
             )
-            query = self._get_updated_query_with_params(ProcessedData, query, params)
-            query = query.order_by(ProcessedData.entity_name)
+            query = self._get_updated_query_with_params(TextAnalysisDataEntity, query, params)
             return self._execute_query(session, query)
 
     def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
         with Session(self.engine) as session:
-            query = select(distinct(ProcessedData.observer_type)).filter(
-                ProcessedData.is_deleted == False,
-                ProcessedData.observer_type != None
+            query = select(distinct(TextAnalysisDataEntity.observer_type)).filter(
+                TextAnalysisDataEntity.observer_type != None
             ).order_by(
-                ProcessedData.observer_type
+                TextAnalysisDataEntity.observer_type
             )
-            query = self._get_updated_query_with_params(ProcessedData, query, params)
+            query = self._get_updated_query_with_params(TextAnalysisDataEntity, query, params)
             return self._execute_query(session, query)

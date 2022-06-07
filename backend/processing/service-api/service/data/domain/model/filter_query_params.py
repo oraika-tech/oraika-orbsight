@@ -9,6 +9,7 @@ class FilterQueryParams(BaseModel):
     start_date: Union[datetime, date] = None
     end_date: Union[datetime, date] = None
     entity_name: Optional[str] = None
+    term: Optional[str] = None
     lang_code: Optional[str] = None
     observer_type: Optional[str] = None
     emotion: Optional[str] = None

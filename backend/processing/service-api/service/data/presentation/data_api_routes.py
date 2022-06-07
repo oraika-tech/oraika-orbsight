@@ -4,6 +4,7 @@ from typing import Optional, List, Union
 
 from fastapi import APIRouter, Depends
 from service.data.domain.model.dashboard_data import DashboardData
+from service.data.domain.model.term import DataTerm
 from starlette.exceptions import HTTPException
 
 from service.common.deps import get_current_user
@@ -36,6 +37,7 @@ def get_raw_and_processed(
         limit: Optional[int] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
+        term: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
         user_info=Depends(get_current_user),
@@ -49,6 +51,7 @@ def get_raw_and_processed(
         end_date=end_date,
         lang_code=text_lang,
         entity_name=entity_name,
+        term=term,
         observer_type=observer_type,
         emotion=emotion,
         limit=limit
@@ -60,6 +63,7 @@ def get_languages_from_data(
         start_date: Union[datetime, date] = None,
         end_date: Union[datetime, date] = None,
         entity_name: Optional[str] = 'All',
+        term: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
         user_info=Depends(get_current_user),
@@ -69,6 +73,7 @@ def get_languages_from_data(
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
+        term=term,
         observer_type=observer_type,
         emotion=emotion
     ))
@@ -79,6 +84,7 @@ def get_unique_entities_from_data(
         start_date: Union[datetime, date] = None,
         end_date: Union[datetime, date] = None,
         text_lang: Optional[str] = 'en',
+        term: Optional[str] = 'All',
         observer_type: Optional[str] = None,
         emotion: Optional[str] = None,
         user_info=Depends(get_current_user),
@@ -87,6 +93,28 @@ def get_unique_entities_from_data(
         company_id=user_info.company_id,
         start_date=start_date,
         end_date=end_date,
+        term=term,
+        lang_code=text_lang,
+        observer_type=observer_type,
+        emotion=emotion
+    ))
+
+
+@routes.get("/terms", response_model=List[DataTerm], response_model_exclude_none=True)
+def get_unique_terms_from_data(
+        start_date: Union[datetime, date] = None,
+        end_date: Union[datetime, date] = None,
+        text_lang: Optional[str] = 'en',
+        entity_name: Optional[str] = 'All',
+        observer_type: Optional[str] = None,
+        emotion: Optional[str] = None,
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
+    return handler.get_data_terms(FilterQueryParams(
+        company_id=user_info.company_id,
+        start_date=start_date,
+        end_date=end_date,
+        entity_name=entity_name,
         lang_code=text_lang,
         observer_type=observer_type,
         emotion=emotion
@@ -99,6 +127,7 @@ def get_data_sources_from_data(
         end_date: Union[datetime, date] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
+        term: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
@@ -108,6 +137,7 @@ def get_data_sources_from_data(
         end_date=end_date,
         lang_code=text_lang,
         entity_name=entity_name,
+        term=term,
         emotion=emotion
     ))
 
@@ -118,6 +148,7 @@ def get_key_phrases_from_data(
         end_date: Union[datetime, date] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
+        term: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
         limit: Optional[int] = None,
@@ -131,6 +162,7 @@ def get_key_phrases_from_data(
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
+        term=term,
         lang_code=text_lang,
         observer_type=observer_type,
         emotion=emotion,
@@ -144,6 +176,7 @@ def get_word_cloud_from_data(
         end_date: Union[datetime, date] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
+        term: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
         emotion: Optional[str] = 'All',
         user_info=Depends(get_current_user),
@@ -156,6 +189,7 @@ def get_word_cloud_from_data(
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
+        term=term,
         lang_code=text_lang,
         observer_type=observer_type,
         emotion=emotion

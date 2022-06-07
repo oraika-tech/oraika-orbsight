@@ -16,7 +16,7 @@ class DashboardService(BaseSettings):
             ),
             'entity-distribution': DashboardData(
                 title='Entity Distribution',
-                link='https://metabase.obsights.com/public/question/cd07b038-b80a-481a-82cb-68a762cb853b'
+                link='https://metabase.obsights.com/public/question/cd07b038-b80a-481a-82cb-68a762cb853b#refresh=300'
             )
         }
 
@@ -31,16 +31,16 @@ class DashboardService(BaseSettings):
             DashboardData(
                 title="Entity Comparison",
                 link="https://metabase.obsights.com/public/dashboard/5b754ec2-b210-417a-966e-469d85cbabe7"
-                     "?date_filter=past7days&category=fraud"
+                     "?date_filter=past7days&category=fraud#refresh=300"
             ),
             DashboardData(
                 title="Entity Analysis",
                 link="https://metabase.obsights.com/public/dashboard/23e75808-2057-42e0-9949-0999e7422e0d"
-                     "?entity_name=State%20Bank%20of%20India"
+                     "?entity_name=State%20Bank%20of%20India#refresh=300"
             ),
             DashboardData(
                 title="Data Crunching",
-                link="https://grafana.obsights.com/d/DDPElelnz/data-crunching?orgId=1&theme=light"
+                link="https://grafana.obsights.com/d/DDPElelnz/data-crunching?orgId=1&theme=light&refresh=5m"
             )
         ]
 

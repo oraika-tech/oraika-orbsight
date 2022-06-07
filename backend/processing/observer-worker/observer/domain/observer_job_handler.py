@@ -22,9 +22,9 @@ class ObserverJobHandler:
 
     def __init__(self):
         self.data_fetcher = {
-            ObserverType.twitter: self.fetch_twitter_data,
-            ObserverType.android: self.fetch_android_data,
-            ObserverType.ios: self.fetch_ios_data,
+            ObserverType.Twitter: self.fetch_twitter_data,
+            ObserverType.Android: self.fetch_android_data,
+            ObserverType.iOS: self.fetch_ios_data,
         }
         self.obsei_client = ObseiClient(ObseiClientConfig(
             twitter_config=SourceConfig(lookup_period='5m', limit_count=100),

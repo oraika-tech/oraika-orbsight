@@ -18,6 +18,10 @@ class BasePersistenceManager(BaseSettings):
         pass
 
     @abstractmethod
+    def get_distinct_terms(self, params: FilterQueryParams) -> Optional[List[str]]:
+        pass
+
+    @abstractmethod
     def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
         pass
 
