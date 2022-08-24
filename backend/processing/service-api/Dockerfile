@@ -26,8 +26,8 @@ ENV DATA_DB_NAME data_db
 ENV DATA_DB_USER username
 ENV DATA_DB_PASSWORD password
 
-ENV CORS_ORIGINS ["*"]
-ENV ALLOWED_HOSTS ["*"]
+# ENV CORS_ORIGINS ["*"]
+# ENV ALLOWED_HOSTS ["*"]
 
 ENV SECRET_KEY "secrety_key"
 

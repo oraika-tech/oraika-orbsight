@@ -1,7 +1,7 @@
 import secrets
 from typing import List
 
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
 
 class Settings(BaseSettings):
@@ -15,8 +15,8 @@ class Settings(BaseSettings):
 
     DEFAULT_QUERY_LIMIT = 500
 
-    CORS_ORIGINS: List[str] = ["*"]
-    ALLOWED_HOSTS: List[str] = ["*"]
+    CORS_ORIGINS: List[str] = Field(["*"])
+    ALLOWED_HOSTS: List[str] = Field(["*"])
 
     class Config:
         case_sensitive = True
