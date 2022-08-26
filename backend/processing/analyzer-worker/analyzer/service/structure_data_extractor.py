@@ -27,7 +27,7 @@ NEGATIVE_EMOTIONS = ["negative", "sarcasm"]
 MINIMUM_TOKENS = 3
 MINIMUM_PROBABILITY_LEVEL = 0.6
 
-# This is Obsights internal, if company require data in other language then a translation can be added to their desire
+# This is orbsight internal, if company require data in other language then a translation can be added to their desire
 # language
 SUPPORTED_LANG_CODES = ["en"]
 

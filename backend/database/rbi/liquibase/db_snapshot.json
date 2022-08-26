@@ -6,7 +6,7 @@
       "shortName": "postgresql",
       "majorVersion": "13",
       "minorVersion": "3",
-      "user": "obsights",
+      "user": "orbsight",
       "productName": "PostgreSQL"
     },
     "objects": {
@@ -14,7 +14,7 @@
         {
           "catalog": {
             "default": true,
-            "name": "obsights_rbi",
+            "name": "orbsight_data",
             "snapshotId": "8ca4100"
           }
         }]

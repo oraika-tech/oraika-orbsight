@@ -4,17 +4,17 @@ According to our design, we will be using cron to trigger data ingestion jobs.
 
 ## Steps to enable jobs
 
-1. Create obsights working directory
+1. Create orbsight working directory
 
 ```shell
-mkdir ~/.obsights
+mkdir ~/.orbsight
 ```
 
 2. Populate `env` file, it will be source in and will be used by script.
 
 ```shell
-echo "export DB_HOST=10.0.1.167:5432" > ~/.obsights/env
-echo "export OBSERVER_CRON_ENABLED=false" >> ~/.obsights/env
+echo "export DB_HOST=prod-orbsight.cu4iby7ba2we.eu-west-1.rds.amazonaws.com:5432" > ~/.orbsight/env
+echo "export OBSERVER_CRON_ENABLED=false" >> ~/.orbsight/env
 ```
 
 | Environment Variable      | Default Value  | Description                                                           |
@@ -22,19 +22,19 @@ echo "export OBSERVER_CRON_ENABLED=false" >> ~/.obsights/env
 | **HOME**                  | ~              | user home directory path                                              |
 | **OBSERVER_CRON_ENABLED** | false          | true/false Flag to enable/disable cron jobs Change values accordingly |
 | **DB_HOST**               | localhost:5432 | host and port                                                         |
-| **DB_USER**               | obsights       | user username                                                         |
-| **DB_PASSWORD**           | obsights       | user password                                                         |
+| **DB_USER**               | orbsight       | user username                                                         |
+| **DB_PASSWORD**           | orbsight       | user password                                                         |
 | **LOOKUP_PERIOD**         | 7m             | lookup period for observer                                            |
 
 3. Copy crontab file to cron.d folder
 
 ```shell
-sudo cp ~/obsights/processing/cron/observer_messager_job.crontab /etc/cron.d/
+sudo cp ~/orbsight/processing/cron/observer_messager_job.crontab /etc/cron.d/
 ```
 
-Assuming project root at `~/obsights`. Change paths accordingly if required.
+Assuming project root at `~/orbsight`. Change paths accordingly if required.
 
-Monitor logs at `~/.obsights/observer_cron.log`
+Monitor logs at `~/.orbsight/observer_cron.log`
 
 ------------------------------------------------------------------------------
 

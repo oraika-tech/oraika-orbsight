@@ -1,1 +1,1 @@
-*/5 * * * * ec2-user bash ~/.obsights/cron/active_observer_publisher.sh >> ~/.obsights/observer_cron.log
+*/5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh >> ~/.orbsight/observer_cron.log

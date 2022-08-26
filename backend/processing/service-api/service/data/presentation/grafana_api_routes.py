@@ -15,7 +15,7 @@ def get_handler():
 
 routes = APIRouter()
 
-GRAFANA_HOST_URL = 'https://grafana.obsights.com/api/alertmanager/grafana/api/v2',
+GRAFANA_HOST_URL = 'https://grafana.oraika.com/api/alertmanager/grafana/api/v2',
 
 
 @routes.get("/alerts", response_model=List[Dict[str, Any]])

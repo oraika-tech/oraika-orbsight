@@ -136,9 +136,9 @@ class TextAnalysisDataEntity(SQLModel, table=True):
 
 class DataDBManager(BasePersistenceManager):
     db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("obsights_rbi", env='DATA_DB_NAME')
-    db_user: str = Field("postgres", env='DATA_DB_USER')
-    db_password: str = Field("studio", env='DATA_DB_PASSWORD')
+    db_name: str = Field("orbsight_data", env='DATA_DB_NAME')
+    db_user: str = Field("orbsight", env='DATA_DB_USER')
+    db_password: str = Field("orbsight", env='DATA_DB_PASSWORD')
     db_engine_name: str = Field("postgresql", env="DB_ENGINE_NAME")
     engine: Any
 

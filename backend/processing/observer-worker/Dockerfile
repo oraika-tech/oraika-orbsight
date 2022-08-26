@@ -12,10 +12,10 @@ ENV WORKER_TIMEOUT 180
 ENV SERVER_PORT 8080
 ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
-ENV DB_NAME obsights
+ENV DB_NAME orbsight
 ENV DB_HOST localhost:5432
-ENV DB_USER obsights
-ENV DB_PASSWORD obsights
+ENV DB_USER orbsight
+ENV DB_PASSWORD orbsight
 
 ENV twitter_consumer_key twitter_consumer_key
 ENV twitter_consumer_secret twitter_consumer_secret

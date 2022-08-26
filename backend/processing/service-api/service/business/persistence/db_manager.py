@@ -99,9 +99,9 @@ class Observer(SQLModel, table=True):
 class BusinessDBManager(BasePersistenceManager):
     _terms: List[TaxonomyInfo] = PrivateAttr()
     db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("obsights_business", env='BUSINESS_DB_NAME')
-    db_user: str = Field("postgres", env='BUSINESS_DB_USER')
-    db_password: str = Field("studio", env='BUSINESS_DB_PASSWORD')
+    db_name: str = Field("orbsight_business", env='BUSINESS_DB_NAME')
+    db_user: str = Field("orbsight", env='BUSINESS_DB_USER')
+    db_password: str = Field("orbsight", env='BUSINESS_DB_PASSWORD')
     db_engine_name: str = Field("postgresql", env="DB_ENGINE_NAME")
 
     engine: Any

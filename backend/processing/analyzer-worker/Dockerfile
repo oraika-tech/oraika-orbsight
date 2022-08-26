@@ -14,13 +14,13 @@ ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
 ENV DB_HOST localhost:5432
 
-ENV DATA_DB_NAME obsights
-ENV DATA_DB_USER obsights
-ENV DATA_DB_PASSWORD obsights
+ENV DATA_DB_NAME orbsight
+ENV DATA_DB_USER orbsight
+ENV DATA_DB_PASSWORD orbsight
 
-ENV CONFIG_DB_NAME obsights
-ENV CONFIG_DB_USER obsights
-ENV CONFIG_DB_PASSWORD obsights
+ENV CONFIG_DB_NAME orbsight
+ENV CONFIG_DB_USER orbsight
+ENV CONFIG_DB_PASSWORD orbsight
 
 ENV TIYARO_API_KEY api_key
 

@@ -5,8 +5,8 @@ set -e
 # Migration script naming
 
 # default values for local dev
-DB_USER=${DB_USER:-obsights}
-DB_PASSWORD=${DB_PASSWORD:-obsights}
+DB_USER=${DB_USER:-orbsight}
+DB_PASSWORD=${DB_PASSWORD:-orbsight}
 DB_HOST=${DB_HOST:-localhost:5432}
 LIQUIBASE_EXECUTABLE=${LIQUIBASE_EXECUTABLE:-liquibase}
 # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
@@ -49,7 +49,7 @@ function liquibase_call() {
     fi
   fi
   $LIQUIBASE_EXECUTABLE \
-    --url="jdbc:postgresql://$DB_HOST/obsights_$DATABASE" \
+    --url="jdbc:postgresql://$DB_HOST/orbsight_$DATABASE" \
     --username="$DB_USER" \
     --password="$DB_PASSWORD" \
     $COMMAND

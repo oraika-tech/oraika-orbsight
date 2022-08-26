@@ -4,8 +4,8 @@
 # https://flywaydb.org/documentation/concepts/migrations.html#naming
 
 # default values for local dev
-DB_USER=${DB_USER:-obsights}
-DB_PASSWORD=${DB_PASSWORD:-obsights}
+DB_USER=${DB_USER:-obsight}
+DB_PASSWORD=${DB_PASSWORD:-obsight}
 DB_HOST=${DB_HOST:-localhost:5432}
 FLYWAY_EXECUTABLE=${FLYWAY_EXECUTABLE:-flyway}
 # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
@@ -49,13 +49,13 @@ MODULE=$2
 
 case $MODULE in
   business)
-    DB_NAME_ARG=obsights_business
+    DB_NAME_ARG=orbsight_business
     ;;
   company)
-    DB_NAME_ARG=obsights_company
+    DB_NAME_ARG=orbsight_company
     ;;
   processing)
-    DB_NAME_ARG=obsights_rbi
+    DB_NAME_ARG=orbsight_rbi
     ;;
   *)
     echo "Usage: $0 {migrate|clean|repair} {business|company|processing}"

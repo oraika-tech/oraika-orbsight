@@ -6,7 +6,7 @@
 
 Following dependencies should be setup before running project:
 
-1. Postgresql with database - obsights_rbi
+1. Postgresql with database - orbsight_data
 2. SQS url accessible from local with aws credentials
 3. Twitter credentials
 
@@ -31,9 +31,9 @@ uvicorn observer.presentation.observer_job_controller:app --reload
 | **AWS_SECRET_ACCESS_KEY**  |                | aws secret access key                   |
 | **AWS_SQS_ANALYSER_QUEUE** |                | sqs analyser queue url                  |
 | **DB_HOST**                | localhost:5432 | host and port                           |
-| **DB_NAME**                | obsights_rbi   | database name                           |
-| **DB_USER**                | obsights       | user username                           |
-| **DB_PASSWORD**            | obsights       | user password                           |
+| **DB_NAME**                | orbsight_data  | database name                           |
+| **DB_USER**                | orbsight       | user username                           |
+| **DB_PASSWORD**            | orbsight       | user password                           |
 | twitter_consumer_key       |                | Twitter consumer key                    |
 | twitter_consumer_secret    |                | Twitter consumer secret                 |
 | twitter_bearer_token       |                | Twitter bearer token for authentication |

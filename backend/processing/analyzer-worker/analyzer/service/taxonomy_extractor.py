@@ -31,9 +31,9 @@ class TaxonomyEntity(SQLModel, table=True):
 
 class TaxonomyExtractor(BaseSettings):
     db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("obsights_business", env='CONFIG_DB_NAME')
-    db_user: str = Field("obsights", env='CONFIG_DB_USER')
-    db_password: str = Field("obsights", env='CONFIG_DB_PASSWORD')
+    db_name: str = Field("orbsight_business", env='CONFIG_DB_NAME')
+    db_user: str = Field("orbsight", env='CONFIG_DB_USER')
+    db_password: str = Field("orbsight", env='CONFIG_DB_PASSWORD')
     engine: Any
 
     def __init__(self, **data: Any):

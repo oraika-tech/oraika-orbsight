@@ -34,9 +34,9 @@ class UserDBManager(BasePersistenceManager):
     _engine: Any = PrivateAttr()
 
     db_host: str = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("obsights_company", env='USER_DB_NAME')
-    db_user: str = Field("postgres", env='USER_DB_USER')
-    db_password: str = Field("studio", env='USER_DB_PASSWORD')
+    db_name: str = Field("orbsight_company", env='USER_DB_NAME')
+    db_user: str = Field("orbsight", env='USER_DB_USER')
+    db_password: str = Field("orbsight", env='USER_DB_PASSWORD')
     db_engine_name: str = Field("postgresql", env="DB_ENGINE_NAME")
 
     def __init__(self, **values: Any):

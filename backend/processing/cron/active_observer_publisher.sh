@@ -2,15 +2,15 @@
 
 echo "Start: $(date)"
 
-source "$HOME/.obsights/env"
+source "$HOME/.orbsight/env"
 
 if [[ "$OBSERVER_CRON_ENABLED" != 'true' ]]; then
   echo "Exit: $(date)"
   exit 0
 fi
 
-DB_USER=${DB_USER:-obsights}
-DB_PASSWORD=${DB_PASSWORD:-obsights}
+DB_USER=${DB_USER:-orbsight}
+DB_PASSWORD=${DB_PASSWORD:-orbsight}
 DB_HOST=${DB_HOST:-localhost:5432}
 LOOKUP_PERIOD=${LOOKUP_PERIOD:-7m}
 TWITTER_LIMIT_COUNT=${TWITTER_LIMIT_COUNT:-100}
@@ -38,7 +38,7 @@ SELECT row_to_json(ob) FROM (
  WHERE o.is_enabled = true and e.is_enabled = true
 ) as ob LIMIT 200 "
 
-psql -t postgresql://"$DB_USER":"$DB_PASSWORD"@"$DB_HOST"/obsights_business <<<"$SQL_QUERY" |
+psql -t postgresql://"$DB_USER":"$DB_PASSWORD"@"$DB_HOST"/orbsight_business <<<"$SQL_QUERY" |
   grep -v '^\s*$' | # remove empty lines
   sed 's/"/\\"/g' | # escape quotes inside message
   sed -E 's/\s*(.*observer_identifier\\":([0-9]+).*)\s*/{"Id":"\2","MessageBody":"\1"}/' \

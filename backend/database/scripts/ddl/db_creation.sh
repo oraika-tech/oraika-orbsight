@@ -22,7 +22,7 @@ function create_db() {
   psql postgresql://"$ADMIN_DB_USER":"$ADMIN_DB_PASSWORD"@"$DB_HOST" -f $FILE_NAME
 }
 
-create_user obsights obsights
-create_db obsights_business obsights
-create_db obsights_company obsights
-create_db obsights_rbi obsights
+create_user orbsight @rbS1ght
+create_db orbsight_business orbsight
+create_db orbsight_company orbsight
+create_db orbsight_data orbsight

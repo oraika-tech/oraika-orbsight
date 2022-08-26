@@ -4,7 +4,7 @@ import requests
 from pydantic import BaseSettings, Field, PrivateAttr
 from requests import Timeout
 
-GRAFANA_API_ENDPOINT = "https://grafana.obsights.com/api/alertmanager/grafana/api/v2/alerts"
+GRAFANA_API_ENDPOINT = "https://grafana.oraika.com/api/alertmanager/grafana/api/v2/alerts"
 
 
 class GrafanaClient(BaseSettings):

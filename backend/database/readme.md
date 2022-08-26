@@ -8,8 +8,8 @@ Each step might require few environment variables. Export them to override defau
 | **ADMIN_DB_USER**     | postgres       | admin username            |
 | **ADMIN_DB_PASSWORD** | postgres       | admin password            |
 | **DB_HOST**           | localhost:5432 | host and port             |
-| **DB_USER**           | obsights       | user username             |
-| **DB_PASSWORD**       | obsights       | user password             |
+| **DB_USER**           | obsight        | user username             |
+| **DB_PASSWORD**       | obsight        | user password             |
 | **FLYWAY_EXECUTABLE** | flyway         | path of flyway executable |
 
 Setup Liquibase using official page - [Installing Liquibase](https://docs.liquibase.com/install/home.html)
