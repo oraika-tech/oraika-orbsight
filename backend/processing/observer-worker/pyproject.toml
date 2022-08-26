@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling>=1.8.0"]
+build-backend = "hatchling.build"
+
+[project]
+requires-python = ">=3.9"
+name = "observer"
+version = "0.0.1"
+description = "Observer tool for fetch text from various sources"
+readme = "readme.md"
+
+dependencies = [
+    "obsei[twitter-api,google-play-scraper,app-store-scraper] @ git+https://github.com/obsei/obsei@optional-dependencies#egg=obsei",
+    "sqlmodel",
+    "fastapi",
+    "uvicorn[standard]",
+    "psycopg2-binary",
+    "boto3",
+]
+
+[project.optional-dependencies]
+
+dev = [
+    "pre-commit",
+    "black",
+    "mypy",
+    "types-requests",
+    "types-python-dateutil",
+    "types-PyYAML",
+    "types-dateparser",
+    "types-protobuf",
+    "types-pytz",
+    "pytest",
+    "pip-tools",
+]
+
+[project.urls]
+repository = "https://github.com/oraika-tech/obsights"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = ["/obsei"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["obsei"]

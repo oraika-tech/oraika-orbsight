@@ -1,7 +1,0 @@
-sqlmodel
-obsei
-fastapi
-uvicorn[standard]
-psycopg2-binary
-boto3
-dateparser

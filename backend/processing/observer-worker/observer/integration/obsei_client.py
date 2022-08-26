@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 
-from obsei.source import TwitterSourceConfig, TwitterSource, TwitterCredentials
+from obsei.source.twitter_source import TwitterSourceConfig, TwitterSource, TwitterCredentials
 from obsei.source.appstore_scrapper import AppStoreScrapperConfig, AppStoreScrapperSource
 from obsei.source.playstore_scrapper import PlayStoreScrapperConfig, PlayStoreScrapperSource
 from pydantic import BaseModel, BaseSettings
