@@ -31,9 +31,9 @@ uvicorn observer.presentation.observer_job_controller:app --reload
 | **AWS_SECRET_ACCESS_KEY**  |                | aws secret access key                   |
 | **AWS_SQS_ANALYSER_QUEUE** |                | sqs analyser queue url                  |
 | **DB_HOST**                | localhost:5432 | host and port                           |
-| **DB_NAME**                | orbsight_data  | database name                           |
-| **DB_USER**                | orbsight       | user username                           |
-| **DB_PASSWORD**            | orbsight       | user password                           |
+| **CORE_DB_NAME**                | orbsight_data  | database name                           |
+| **CORE_DB_USER**                | orbsight       | user username                           |
+| **CORE_DB_PASSWORD**            | orbsight       | user password                           |
 | twitter_consumer_key       |                | Twitter consumer key                    |
 | twitter_consumer_secret    |                | Twitter consumer secret                 |
 | twitter_bearer_token       |                | Twitter bearer token for authentication |

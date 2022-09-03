@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 RUN useradd --create-home user
 WORKDIR /home/user
@@ -14,13 +14,9 @@ ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
 ENV DB_HOST localhost:5432
 
-ENV DATA_DB_NAME orbsight
-ENV DATA_DB_USER orbsight
-ENV DATA_DB_PASSWORD orbsight
-
-ENV CONFIG_DB_NAME orbsight
-ENV CONFIG_DB_USER orbsight
-ENV CONFIG_DB_PASSWORD orbsight
+ENV CORE_DB_NAME orb_core
+ENV CORE_DB_USER orbsight
+ENV CORE_DB_PASSWORD orbsight
 
 ENV TIYARO_API_KEY api_key
 

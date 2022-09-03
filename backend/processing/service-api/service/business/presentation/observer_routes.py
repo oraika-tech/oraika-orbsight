@@ -1,5 +1,6 @@
 import logging
 from typing import List, Optional
+from uuid import UUID
 
 from fastapi import Depends, APIRouter, Body
 
@@ -28,7 +29,7 @@ def get_all_observers(
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_all_observers(user_info.company_id, enabled)
+    return handler.get_all_observers(user_info.tenant_ids[0], enabled)
 
 
 @routes.get("/stats", response_model=List[StatsInfo])
@@ -36,31 +37,23 @@ def enabled_observers_count(user_info=Depends(get_current_user), handler=Depends
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.enabled_observers_count(user_info.company_id)
-
-
-@routes.get("/types/stats", response_model=List[StatsInfo])
-def observer_type_count(user_info=Depends(get_current_user), handler=Depends(get_handler)):
-    if not user_info:
-        raise HTTPException(status_code=400, detail="User not found")
-
-    return handler.observer_type_count(user_info.company_id)
+    return handler.enabled_observers_count(user_info.tenant_ids[0])
 
 
 @routes.get("/{observer_id}", response_model=Optional[ObserverInfo])
-def get_observer(observer_id: int, user_info=Depends(get_current_user), handler=Depends(get_handler)):
+def get_observer(observer_id: UUID, user_info=Depends(get_current_user), handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_observer(user_info.company_id, observer_id)
+    return handler.get_observer(user_info.tenant_ids[0], observer_id)
 
 
 @routes.patch("/{observer_id}")
 def update_observer_enable_state(
-        observer_id: int, status_request: StatusRequest = Body(...), user_info=Depends(get_current_user),
+        observer_id: UUID, status_request: StatusRequest = Body(...), user_info=Depends(get_current_user),
         handler=Depends(get_handler)
 ):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.update_observer_enable_state(user_info.company_id, observer_id, status_request.enabled)
+    return handler.update_observer_enable_state(user_info.tenant_ids[0], observer_id, status_request.enabled)

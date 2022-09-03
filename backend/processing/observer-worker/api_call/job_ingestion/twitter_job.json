@@ -1,6 +1,6 @@
 {
-  "company_id": 1,
-  "observer_identifier": 1137,
+  "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
+  "observer_identifier": "c8ed828d-4604-425d-b57f-11ac0f7c3d48",
   "observer_type": 1,
   "observer_name": "sbmbankindia",
   "regulated_entity_type": [
@@ -10,7 +10,7 @@
   "twitter_handle": "sbmbankindia",
   "lookup_period": "1d",
   "limit_count": 20,
-  "entity_identifier": 1435,
+  "entity_identifier": "fe6a2fe2-6334-4820-8ab2-cef692398866",
   "entity_simple_name": "SBM BANK (INDIA) LTD.",
   "regulated_type": [
     "Bank"

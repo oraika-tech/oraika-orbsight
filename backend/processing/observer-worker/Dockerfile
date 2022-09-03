@@ -12,10 +12,10 @@ ENV WORKER_TIMEOUT 180
 ENV SERVER_PORT 8080
 ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
-ENV DB_NAME orbsight
 ENV DB_HOST localhost:5432
-ENV DB_USER orbsight
-ENV DB_PASSWORD orbsight
+ENV CORE_DB_NAME orb_core
+ENV CORE_DB_USER orbsight
+ENV CORE_DB_PASSWORD orbsight
 
 ENV twitter_consumer_key twitter_consumer_key
 ENV twitter_consumer_secret twitter_consumer_secret
@@ -32,7 +32,6 @@ RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 COPY pyproject.toml /home/user/
-COPY readme.md /home/user/
 COPY observer /home/user/observer
 
 # install as a package

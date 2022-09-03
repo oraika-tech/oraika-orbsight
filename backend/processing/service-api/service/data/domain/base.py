@@ -1,10 +1,11 @@
+import json
 from abc import abstractmethod
 from typing import List, Optional
 
 from pydantic import BaseSettings
 
-from .model.text_analysis_data import TextAnalysisData
 from .model.filter_query_params import FilterQueryParams
+from .model.text_analysis_data import TextAnalysisData
 
 
 class BasePersistenceManager(BaseSettings):

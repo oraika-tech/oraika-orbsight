@@ -1,6 +1,6 @@
 {
-  "company_id": 1,
-  "observer_identifier": 819,
+  "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
+  "observer_identifier": "8fe24cd3-13e6-4aee-b633-0a953ec2296e",
   "observer_name": "Skrill - Pay & Transfer Money",
   "observer_type": 3,
   "regulated_entity_type": [
@@ -10,7 +10,7 @@
   "twitter_handle": null,
   "lookup_period": "30d",
   "limit_count": 5,
-  "entity_identifier": 1330,
+  "entity_identifier": "9380079d-ae74-4857-9e13-ed67558feb92",
   "entity_simple_name": "Fast Encash Money Transfer Services",
   "regulated_type": [
     "Cross border Money Transfer – in-bound only"

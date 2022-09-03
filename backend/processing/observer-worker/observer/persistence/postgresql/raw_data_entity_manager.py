@@ -1,53 +1,37 @@
 import copy
 import logging
 from datetime import datetime
-from typing import Optional, List, Any, Dict
+from typing import Any, Dict, List, Optional
+from uuid import UUID
 
-from pydantic import BaseSettings, Field
-from sqlalchemy import UniqueConstraint, Column
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field as SqlField, Session, SQLModel, create_engine
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB, UUID as DB_UUID
+from sqlmodel import Field as SqlField
+from sqlmodel import Session, SQLModel
 
 from observer.domain.raw_data import RawData
-from observer.presentation.model.observer_job_event import ObserverType
+from observer.persistence.postgresql.base_entity_manager import BaseEntityManager
 
 logger = logging.getLogger(__name__)
 
 
 class RawDataEntity(SQLModel, table=True):
-    __tablename__ = "raw_data"
+    __tablename__ = "insight_raw_data"
     __table_args__ = (UniqueConstraint('reference_id'),)
+
     identifier: Optional[int] = SqlField(default=None, primary_key=True)
-    company_id: int
-    observer_id: int
-    observer_name: str
-    observer_type: str
-    entity_id: int
-    entity_name: str
-    regulated_entity_type: List[str]
+    observer_id: UUID = SqlField(sa_column=Column(DB_UUID(as_uuid=True)))
     reference_id: str
     parent_reference_id: str
-    processing_status: str
-    tags: Optional[Dict[str, str]]
     raw_text: str
-    data: Optional[dict] = SqlField(default='{}', sa_column=Column(JSONB))
+    unstructured_data: Optional[dict] = SqlField(default='{}', sa_column=Column(JSONB))
     event_time: datetime
 
 
-class RawDataEntityManager(BaseSettings):
-    db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("orbsight_data", env='DB_NAME')
-    db_user: str = Field("orbsight", env='DB_USER')
-    db_password: str = Field("orbsight", env='DB_PASSWORD')
-    engine: Any
+class RawDataEntityManager(BaseEntityManager):
 
-    def __init__(self, **values: Any):
-        super().__init__(**values)
-        connection_string = f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}"
-        self.engine = create_engine(connection_string)
-
-    def insert_raw_data(self, raw_data_list: List[RawData]):
-        with Session(self.engine) as session:
+    def insert_raw_data(self, tenant_id: UUID, raw_data_list: List[RawData]):
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             success_raw_data_entity_list = []
             for raw_data in raw_data_list:
                 db_raw_data = session.query(RawDataEntity) \
@@ -73,18 +57,12 @@ class RawDataEntityManager(BaseSettings):
 
     def convert_to_entity(self, raw_data: RawData):
         return RawDataEntity(
-            company_id=raw_data.company_id,
             observer_id=raw_data.observer_id,
-            observer_name=raw_data.observer_name,
-            observer_type=raw_data.observer_type.name,
-            entity_id=raw_data.entity_id,
-            entity_name=raw_data.entity_name,
-            regulated_entity_type=raw_data.regulated_entity_type,
             reference_id=raw_data.reference_id,
             parent_reference_id=raw_data.parent_reference_id,
             raw_text=raw_data.raw_text,
             # data=json.dumps(raw_data.data, default=datetime_handler),
-            data=self.recursive_serialize(raw_data.data),
+            unstructured_data=self.recursive_serialize(raw_data.unstructured_data),
             event_time=raw_data.event_time
         )
 
@@ -92,18 +70,11 @@ class RawDataEntityManager(BaseSettings):
     def convert_from_entity(raw_data_entity: RawDataEntity):
         return RawData(
             identifier=raw_data_entity.identifier,
-            company_id=raw_data_entity.company_id,
             observer_id=raw_data_entity.observer_id,
-            observer_name=raw_data_entity.observer_name,
-            observer_type=ObserverType[raw_data_entity.observer_type],
-            entity_id=raw_data_entity.entity_id,
-            entity_name=raw_data_entity.entity_name,
-            regulated_entity_type=raw_data_entity.regulated_entity_type,
             reference_id=raw_data_entity.reference_id,
             parent_reference_id=raw_data_entity.parent_reference_id,
-            tags=raw_data_entity.tags,
             raw_text=raw_data_entity.raw_text,
-            data=raw_data_entity.data,
+            unstructured_data=raw_data_entity.unstructured_data,
             event_time=raw_data_entity.event_time
         )
 

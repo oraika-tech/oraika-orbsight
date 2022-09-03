@@ -1,1 +1,2 @@
-*/5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh >> ~/.orbsight/observer_cron.log
+*/5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 230139f2-d5e4-4ecf-846f-27e741f833bc orb_tenant_zolve >> ~/.orbsight/observer_cron_zolve.log
+*/5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 4fb6eb48-3966-4582-89c2-d975ec00c968 orb_tenant_oraika >> ~/.orbsight/observer_cron_oraika.log

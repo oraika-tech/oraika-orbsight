@@ -1,7 +1,7 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel
-
 
 OBSERVER_TYPE = {
     1: "Twitter",
@@ -16,21 +16,10 @@ class ObserverData(BaseModel):
 
 
 class ObserverInfo(BaseModel):
-    identifier: Optional[int]
+    identifier: Optional[UUID]
     name: str
-    observer_type: str
-    entity_id: int
+    type: str
+    entity_id: UUID
     entity_name: str
-    data: ObserverData
+    config_data: ObserverData
     is_enabled: bool
-    company_id: Optional[int]
-
-    def as_dict(self):
-        return {
-            'Identifier': self.identifier,
-            'Name': self.name,
-            'Type': self.observer_type,
-            'Entity': self.entity_name,
-            'Data Source': self.data.url if self.data.url else self.data.official_handle,
-            'Enabled': self.is_enabled,
-        }

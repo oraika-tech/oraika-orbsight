@@ -1,42 +1,30 @@
 import logging
 import re
-from typing import List, Optional, Tuple, Dict, Any
-
 import string
+from typing import Any, Dict, List, Optional, Tuple, Set
+from uuid import UUID
+
 import nltk
-from langdetect import detect, LangDetectException
+from langdetect import LangDetectException, detect
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from pydantic import BaseSettings, Field, PrivateAttr
 
-from analyzer.model.structure_data_request import UnstructuredDataRequest, StructuredData
-from analyzer.service.taxonomy_extractor import TaxonomyExtractor
+from analyzer.model.structure_data_request import StructuredData, UnstructuredDataRequest
 from analyzer.model.taxonomy_data import TaxonomyData
+from analyzer.persistence.db_entity_manager import DBEntityManager
 from analyzer.service.tiyaro_api import TiyaroClient
 
 HTTP_REGEX = r'http\S+'
 MENTION_REGEX = "@[A-Za-z0-9_]+"
 HASHTAGS_REGEX = "#[A-Za-z0-9_]+"
 
-# TODO: Currently hardcoded, it should be dependent on company
-NEGATIVE_CLASSIFICATION_LABELS = ["fraud", "complaint", "harassment", "charges", "access", "delay", "interface"]
-EMOTION_LABELS = ["positive", "negative"]
-NEGATIVE_EMOTIONS = ["negative", "sarcasm"]
-
-# TODO: Make it configurable
-MINIMUM_TOKENS = 3
-MINIMUM_PROBABILITY_LEVEL = 0.6
-
-# This is orbsight internal, if company require data in other language then a translation can be added to their desire
-# language
-SUPPORTED_LANG_CODES = ["en"]
-
 logger = logging.getLogger(__name__)
 
 
 class StructuredDataExtractor(BaseSettings):
-    # Taxonomy Extractor
-    _taxonomy_extractor: TaxonomyExtractor = PrivateAttr()
+    # DB Entity Manager
+    _db_entity_manager: DBEntityManager = PrivateAttr()
 
     # Text cleaning
     regex_substitute = " "
@@ -55,6 +43,14 @@ class StructuredDataExtractor(BaseSettings):
     api_client = TiyaroClient()
 
     min_text_len: int = Field(20, env="MIN_TEXT_LENGTH")
+    min_probability_level: float = Field(0.8, env="MINIMUM_PROBABILITY_LEVEL")
+    min_tokens: int = Field(3, env="MINIMUM_TOKENS")
+
+    # TODO: probably get it from tenant config table
+    # This is orbsight internal, if tenant require data in other language then a translation can be added to their
+    # desire language
+    supported_lang_codes: List[str] = Field(["en"], env="SUPPORTED_LANG_CODES")
+    emotion_labels: List[str] = Field(["positive", "negative", "neutral"], env="EMOTION_LABELS")
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -70,7 +66,7 @@ class StructuredDataExtractor(BaseSettings):
                 nltk.download("stopwords")
             self.stop_words = stopwords.words(self.stop_words_language)
 
-        self._taxonomy_extractor = TaxonomyExtractor()
+        self._db_entity_manager = DBEntityManager()
 
     # Clean text
     def _clean_text(self, text: str) -> str:
@@ -116,12 +112,38 @@ class StructuredDataExtractor(BaseSettings):
         return tokenized_tokens
 
     # Extract taxonomy via keywords
-    def _extract_keywords(self, tokens: List[str], company_id: int) -> TaxonomyData:
-        return self._taxonomy_extractor.extract_taxonomy(tokens, company_id)
+    def _extract_keywords(self, text: str, tenant_id: UUID) -> TaxonomyData:
+        taxonomy_df = self._db_entity_manager.get_taxonomy_dataframe(tenant_id)
+
+        taxonomy_df['Search'] = [
+            re.search(r'\b{}\b'.format(re.escape(x)), text, re.IGNORECASE) is not None for x in taxonomy_df['keyword']
+        ]
+
+        keywords_present_df = taxonomy_df[taxonomy_df['Search'] == True]
+
+        keywords_found = keywords_present_df.shape[0]
+
+        if keywords_found > 0:
+            terms: Set[str] = set()
+            tags: Set[str] = set()
+
+            for terms_string in set(keywords_present_df['term'].to_list()):
+                if terms_string is not None and terms_string != "":
+                    terms.add(terms_string)
+
+            for tags_string in set(keywords_present_df['tags'].to_list()):
+                if tags_string is not None and tags_string != "":
+                    tags.update(tags_string.split(","))
+
+            return TaxonomyData(
+                tags=tags,
+                terms=terms
+            )
+
+        return TaxonomyData()
 
     # Emotion detection
-    def _emotion_classification(self, text: str, labels: Optional[List[str]] = None) -> Tuple[str, float]:
-        labels = labels or EMOTION_LABELS
+    def _emotion_classification(self, text: str, labels: List[str]) -> Tuple[str, float]:
         classifier_response = self.api_client.classify_text(
             text=text,
             labels=labels,
@@ -133,11 +155,12 @@ class StructuredDataExtractor(BaseSettings):
 
     # Classification
     def _classify_text(self, text: str, labels: List[str], multi_label: bool = True) -> Dict[str, float]:
-        return self.api_client.classify_text(
+        category_map = self.api_client.classify_text(
             text=text,
             labels=labels,
             multi_label=multi_label
         )
+        return dict(sorted(category_map.items(), key=lambda x: x[1], reverse=True))
 
     # Detect Language
     def _language_detection(self, text: str) -> Optional[str]:
@@ -147,7 +170,10 @@ class StructuredDataExtractor(BaseSettings):
             logger.error(f"Error in language detection of `{text}`: {ex}")
             return None
 
-    def extract_structure_slow(self, data_request: UnstructuredDataRequest) -> StructuredData:
+    def _get_categories(self, tenant_id) -> List[str]:
+        return self._db_entity_manager.get_categories(tenant_id)
+
+    def extract_structure(self, data_request: UnstructuredDataRequest) -> StructuredData:
         # TODO: Extract, Emojis, URL, Currency, Hashtags, Mention
         # TODO: Expend hashtags and emojis
 
@@ -161,126 +187,46 @@ class StructuredDataExtractor(BaseSettings):
             text_language = self._language_detection(clean_text)
 
             # If language is not in SUPPORTED_LANG_CODES then translate it
-            if text_language is not None and text_language not in SUPPORTED_LANG_CODES:
+            # TODO: store processed_text so in future no need for translation and cleaning again
+            #  incase if reclassification is required if user add or update categories
+            if text_language not in self.supported_lang_codes:
                 processed_text = self._translate_text(clean_text)
             else:
                 processed_text = clean_text
 
-            # TODO: store processed_text so in future no need for translation and cleaning again
-            #  incase if reclassification is required if user add or update categories
+            # Extract taxonomy data
+            taxonomy_data = self._extract_keywords(processed_text, data_request.tenant_id)
 
             # Tokenize text and clean tokens
             tokens = self._tokenize_text(processed_text)
 
-            # Extract taxonomy data
-            taxonomy_data = self._extract_keywords(tokens, data_request.company_id)
-
             # Check number of tokens to take decision whether to classify or not
-            very_small_text = len(tokens) < MINIMUM_TOKENS
-
-            # Emotion detection
-            # TODO: For small text even dictionary based small sentiment detector (like VADER) can also be used
-            # TODO: Get emotions list from company_id if they provided
-            text_emotion, text_emotion_prob = self._emotion_classification(processed_text, EMOTION_LABELS)
-
-            # Find categories to classify text based one emotion and taxonomy
-            # TODO: Handle positive emotion case
-            if text_emotion in NEGATIVE_EMOTIONS:
-                classification_labels = list(taxonomy_data.categories)
-                # TODO: Ideally it should not reach at this level but adding check for hygiene purpose
-                if len(classification_labels) == 0:
-                    classification_labels = NEGATIVE_CLASSIFICATION_LABELS
-            else:
-                classification_labels = []
-
-            # Classify text into categories
-            classified_categories: List[str] = []
-            if not very_small_text and len(classification_labels) > 0:
-                classifier_map = self._classify_text(processed_text, classification_labels)
-                classified_categories = [
-                    category
-                    for category, probability in classifier_map.items()
-                    if probability > MINIMUM_PROBABILITY_LEVEL
-                ]
-
-            # Create structured data map from all the above process and incoming request data
-            # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
-            structured_data = StructuredData(
-                taxonomy_data={
-                    taxonomy: list(taxonomy_vals)
-                    for taxonomy, taxonomy_vals in taxonomy_data.taxonomy_map.items()
-                } if taxonomy_data.taxonomy_map else {},
-                categories=classified_categories,
-                emotion=text_emotion,
-                text_length=len(data_request.raw_text),
-                text_language=text_language,
-                remark="VERY_SMALL_TEXT" if very_small_text else None,
-            )
-        else:
-            structured_data = StructuredData(
-                text_length=len(data_request.raw_text),
-                remark="VERY_SMALL_TEXT"
-            )
-
-        return structured_data
-
-    def extract_structure_fast(self, data_request: UnstructuredDataRequest) -> StructuredData:
-        # TODO: Extract, Emojis, URL, Currency, Hashtags, Mention
-        # TODO: Expend hashtags and emojis
-
-        # Clean text (Remove URL, mention, blank lines, white spaces, Hashtags)
-        clean_text = self._clean_text(data_request.raw_text)
-
-        structured_data: StructuredData
-        # Check length of string
-        if len(clean_text) > self.min_text_len:
-            # Detect language
-            text_language = self._language_detection(clean_text)
-
-            # If language is not in SUPPORTED_LANG_CODES then translate it
-            if text_language not in SUPPORTED_LANG_CODES:
-                processed_text = self._translate_text(clean_text)
-            else:
-                processed_text = clean_text
-
-            # TODO: store processed_text so in future no need for translation and cleaning again
-            #  incase if reclassification is required if user add or update categories
-
-            # Tokenize text and clean tokens
-            tokens = self._tokenize_text(processed_text)
-
-            # Extract taxonomy data
-            taxonomy_data = self._extract_keywords(tokens, data_request.company_id)
-
-            # Check number of tokens to take decision whether to classify or not
-            very_small_text = len(tokens) < MINIMUM_TOKENS
+            very_small_text = len(tokens) < self.min_tokens
 
             # Categories to classify and detect emotions
-            classification_labels = NEGATIVE_CLASSIFICATION_LABELS + EMOTION_LABELS
+            classification_labels = self._get_categories(data_request.tenant_id) + self.emotion_labels
 
             # Classify text into categories
             classified_categories: List[str] = []
-            text_emotion = "positive"
+            text_emotion = "undetermined"
             if not very_small_text and len(classification_labels) > 0:
                 classifier_map = self._classify_text(processed_text, classification_labels)
                 classified_categories = [
                     category
                     for category, probability in classifier_map.items()
-                    if probability > MINIMUM_PROBABILITY_LEVEL
+                    if probability > self.min_probability_level
                 ]
 
-                if "negative" in classified_categories:
-                    text_emotion = "negative"
-                    if "positive" in classified_categories:
-                        classified_categories.remove("positive")
+                for emotion in self.emotion_labels:
+                    if emotion in classified_categories:
+                        if text_emotion == "undetermined":
+                            text_emotion = emotion
+                        classified_categories.remove(emotion)
 
             # Create structured data map from all the above process and incoming request data
-            # TODO: Move to proper place, currently difficult to map DB column name and dictionary key name
             structured_data = StructuredData(
-                taxonomy_data={
-                    taxonomy: list(taxonomy_vals)
-                    for taxonomy, taxonomy_vals in taxonomy_data.taxonomy_map.items()
-                } if taxonomy_data.taxonomy_map else {},
+                tags=list(taxonomy_data.tags),
+                terms=list(taxonomy_data.terms),
                 categories=classified_categories,
                 emotion=text_emotion,
                 text_length=len(data_request.raw_text),

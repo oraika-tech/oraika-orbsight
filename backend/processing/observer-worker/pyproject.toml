@@ -7,7 +7,6 @@ requires-python = ">=3.9"
 name = "observer"
 version = "0.0.1"
 description = "Observer tool for fetch text from various sources"
-readme = "readme.md"
 
 dependencies = [
     "obsei[twitter-api,google-play-scraper,app-store-scraper] @ git+https://github.com/obsei/obsei@optional-dependencies#egg=obsei",
@@ -41,7 +40,7 @@ repository = "https://github.com/oraika-tech/obsights"
 allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
-include = ["/obsei"]
+include = ["/observer"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["obsei"]
+packages = ["observer"]

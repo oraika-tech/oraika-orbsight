@@ -1,14 +1,14 @@
 import logging
 from typing import List, Optional
+from uuid import UUID
 
-from fastapi import Depends, APIRouter, Body
-
+from fastapi import APIRouter, Body, Depends
+from service.business import business_domain_handler
 from service.business.domain.model.entity import EntityInfo
 from service.business.domain.model.stats import StatsInfo
-from service.business import business_domain_handler
-
 from service.common.deps import get_current_user
 from starlette.exceptions import HTTPException
+
 from .request import StatusRequest
 
 logger = logging.getLogger(__name__)
@@ -28,7 +28,8 @@ def get_all_entities(
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_all_entities(user_info.company_id, enabled)
+    logger.error("user_info:{}".format(user_info))
+    return handler.get_all_entities(user_info.tenant_ids[0], enabled)
 
 
 @routes.get("/stats", response_model=List[StatsInfo])
@@ -36,31 +37,29 @@ def enabled_entities_count(user_info=Depends(get_current_user), handler=Depends(
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.enabled_entities_count(user_info.company_id)
-
-
-@routes.get("/types/stats", response_model=List[StatsInfo])
-def entities_type_count(user_info=Depends(get_current_user), handler=Depends(get_handler)):
-    if not user_info:
-        raise HTTPException(status_code=400, detail="User not found")
-
-    return handler.entities_type_count(user_info.company_id)
+    return handler.enabled_entities_count(user_info.tenant_ids[0])
 
 
 @routes.get("/{entity_id}", response_model=Optional[EntityInfo])
-def get_entity(entity_id: int, user_info=Depends(get_current_user), handler=Depends(get_handler)):
+def get_entity(entity_id: UUID, user_info=Depends(get_current_user), handler=Depends(get_handler)):
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_entity(user_info.company_id, entity_id)
+    entity = handler.get_entity(user_info.tenant_ids[0], entity_id)
+    if not entity:
+        raise HTTPException(status_code=404, detail="Entity not found")
+
+    return entity
 
 
 @routes.patch("/{entity_id}")
 def update_entity_enable_state(
-        entity_id: int, status_request: StatusRequest = Body(...), user_info=Depends(get_current_user),
-        handler=Depends(get_handler)
-):
+        entity_id: UUID,
+        status_request: StatusRequest = Body(...),
+        user_info=Depends(get_current_user),
+        handler=Depends(get_handler)):
+
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.update_entity_enable_state(user_info.company_id, entity_id, status_request.enabled)
+    return handler.update_entity_enable_state(user_info.tenant_ids[0], entity_id, status_request.enabled)

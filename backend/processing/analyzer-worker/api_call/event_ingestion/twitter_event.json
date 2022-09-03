@@ -1,22 +1,5 @@
 {
-  "company_id": 1,
-  "entity": {
-    "city": null,
-    "country": null,
-    "identifier": 1435,
-    "simple_name": "SBM BANK (INDIA) LTD."
-  },
-  "observer": {
-    "identifier": 1137,
-    "name": "sbmbankindia",
-    "type": 1,
-    "regulated_entity_type": [
-      "Bank"
-    ]
-  },
-  "text_data": {
-    "event_time": "2022-04-04T00:18:11+05:30",
-    "identifier": 365,
-    "raw_text": "@wuweiquest @cifhans311 @none @KutoaCapital @lollafrens @xelaearth @BelfortNFT @Bryanvee.eth @sly_doubt @marmijo @0xbeignet Scam - Used my email address without permission, unable to cancel acclunt. Apple please consider removing skrill. I did not create account. Used email email without permission and will not cancel account"
-  }
+  "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
+  "raw_data_id": 3,
+  "raw_text": "@wuweiquest @cifhans311 @none @KutoaCapital @lollafrens @xelaearth @BelfortNFT @Bryanvee.eth @sly_doubt @marmijo @0xbeignet Scam - Used my email address without permission, unable to cancel acclunt. NEFT, Apple please consider removing skrill. I did not create account. Used email email without permission and will not cancel account"
 }

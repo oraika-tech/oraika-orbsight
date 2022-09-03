@@ -1,4 +1,4 @@
-FROM python:3.8-slim-buster
+FROM python:3.9-slim-buster
 
 RUN useradd --create-home user
 WORKDIR /home/user
@@ -14,22 +14,9 @@ ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 
 ENV DB_HOST localhost:5432
 
-ENV BUSINESS_DB_NAME business_db
-ENV BUSINESS_DB_USER username
-ENV BUSINESS_DB_PASSWORD password
-
-ENV USER_DB_NAME user_db
-ENV USER_DB_USER username
-ENV USER_DB_PASSWORD password
-
-ENV DATA_DB_NAME data_db
-ENV DATA_DB_USER username
-ENV DATA_DB_PASSWORD password
-
-# ENV CORS_ORIGINS ["*"]
-# ENV ALLOWED_HOSTS ["*"]
-
-ENV SECRET_KEY "secrety_key"
+ENV CORE_DB_NAME orb_core
+ENV CORE_DB_USER username
+ENV CORE_DB_PASSWORD password
 
 # install few required tools
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential

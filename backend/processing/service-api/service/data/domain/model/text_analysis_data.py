@@ -9,9 +9,11 @@ class TextAnalysisData(BaseModel):
     event_time: Optional[datetime]
     emotion: Optional[str]
     entity_name: str
+    observer_name: str
     observer_type: str
     raw_text: str
     text_lang: Optional[str]
     author_name: Optional[str]
     categories: List[str]
-    taxonomies: List[str]
+    taxonomy_tags: List[str]
+    taxonomy_terms: List[str]

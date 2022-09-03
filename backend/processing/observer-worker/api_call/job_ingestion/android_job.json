@@ -1,12 +1,12 @@
 {
-  "company_id": 1,
-  "observer_identifier": 953,
+  "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
+  "observer_identifier": "039d4a70-f858-48e5-9835-104cc391cfda",
   "observer_name": "BOI Mobile",
   "observer_type": 2,
   "regulated_entity_type": [
     "Bank"
   ],
-  "entity_identifier": 1403,
+  "entity_identifier": "24b483fe-6548-407c-8ef3-21b1dc45f6c4",
   "entity_simple_name": "Bank of India",
   "regulated_type": [
     "Bank"

@@ -1,18 +1,17 @@
-from typing import Set, List
+from typing import List, Set
 
-from cachetools import cached, TTLCache
+from cachetools import TTLCache, cached
 from pydantic import BaseSettings
+from service.common.settings import settings
 from service.data.domain.model.term import DataTerm
 
 from .base import BasePersistenceManager
 from .key_phrases_handler import KeyPhrasesHandler
-from .word_freq_handler import WordFreqHandler
-from .model.filter_query_params import FilterQueryParams
-from .model.text_analysis_data import TextAnalysisData
 from .model.entity import DataEntity
+from .model.filter_query_params import FilterQueryParams
 from .model.source_type import DataSourceType
-from service.common.settings import settings
-
+from .model.text_analysis_data import TextAnalysisData
+from .word_freq_handler import WordFreqHandler
 
 LANG_CODE_TO_NAME = {
     "en": "English",
@@ -36,7 +35,7 @@ class DataDomainHandler(BaseSettings):
 
     def hash_key(self, filter_query_params: FilterQueryParams):
         return (
-            filter_query_params.company_id,
+            filter_query_params.tenant_id,
             filter_query_params.start_date,
             filter_query_params.end_date,
             filter_query_params.entity_name,

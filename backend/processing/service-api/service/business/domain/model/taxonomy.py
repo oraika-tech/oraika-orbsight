@@ -1,18 +1,13 @@
-from typing import Optional, List
+from typing import List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 
 
 class TaxonomyInfo(BaseModel):
+    identifier: Optional[UUID]
+    keyword: str
     term: str
-    term_description: Optional[str]
-    issue_categories: Optional[List[str]]
-    issue_mapping: Optional[List[str]]
-
-    def as_dict(self):
-        return {
-            "Term": self.term,
-            "Description": self.term_description,
-            "Issue Categories": "" if self.issue_categories is None else ", ".join(self.issue_categories),
-            "Issue Mapping": "" if self.issue_mapping is None else ", ".join(self.issue_mapping)
-        }
+    description: Optional[str]
+    tags: Optional[List[str]]
+    is_enabled: bool

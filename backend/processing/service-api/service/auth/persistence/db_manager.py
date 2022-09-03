@@ -1,73 +1,59 @@
-from typing import Optional, Any, List
+from typing import List, Optional
+from uuid import UUID
 
 import bcrypt
-from pydantic import Field, PrivateAttr
-from sqlmodel import Field as SqlField, create_engine, Session, SQLModel
-
 from service.auth.domain.base import BasePersistenceManager
+from service.common.base_entity_manager import BaseEntityManager
 from service.common.model.user import UserInfo
-
-
-class EmployeeTable(SQLModel, table=True):
-    __tablename__ = "employee"
-    __table_args__ = {'extend_existing': True}
-
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
-    name: str
-    email: str
-    company_id: int
-    role_ids: List[int]
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import ARRAY, UUID as DB_UUID
+from sqlmodel import Field as SqlField
+from sqlmodel import Session, SQLModel
 
 
 class UserTable(SQLModel, table=True):
-    __tablename__ = "user_auth"
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "user_master"
 
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
-    login_name: str
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
+    tenant_ids: List[UUID] = SqlField(sa_column=Column(ARRAY(DB_UUID)))
+    name: str
+    email: str
     hash_password: str
-    employee_id: int
+    is_enabled: bool
     is_deleted: bool
 
 
-class UserDBManager(BasePersistenceManager):
-    _engine: Any = PrivateAttr()
+class UserDBManager(BasePersistenceManager, BaseEntityManager):
 
-    db_host: str = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("orbsight_company", env='USER_DB_NAME')
-    db_user: str = Field("orbsight", env='USER_DB_USER')
-    db_password: str = Field("orbsight", env='USER_DB_PASSWORD')
-    db_engine_name: str = Field("postgresql", env="DB_ENGINE_NAME")
-
-    def __init__(self, **values: Any):
-        super().__init__(**values)
-        connection_string = f"{self.db_engine_name}://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}"
-        self._engine = create_engine(connection_string)
-
-    def verify_user(self, login_name: str, password: str) -> Optional[int]:
-        with Session(self._engine) as session:
+    def verify_user(self, email: str, password: str) -> Optional[UserInfo]:
+        with Session(self.core_db_engine) as session:
             user_entity = session.query(UserTable).filter(
                 UserTable.is_deleted == False,
-                UserTable.login_name == login_name
+                UserTable.is_enabled == True,
+                UserTable.email == email
             ).first()
 
             if user_entity is not None:
                 if bcrypt.checkpw(password.encode(), user_entity.hash_password.encode()):
-                    return user_entity.identifier
+                    return UserInfo(
+                        identifier=user_entity.identifier,
+                        tenant_ids=user_entity.tenant_ids,
+                        name=user_entity.name,
+                        email=user_entity.email
+                    )
 
-    def get_user(self, user_id: int) -> Optional[UserInfo]:
-        with Session(self._engine) as session:
-            user_entity, employee_entity = session.query(UserTable, EmployeeTable).filter(
+    def get_user(self, user_id: str) -> Optional[UserInfo]:
+        with Session(self.core_db_engine) as session:
+            user_entity = session.query(UserTable).filter(
                 UserTable.identifier == user_id,
-                UserTable.employee_id == EmployeeTable.identifier,
+                UserTable.is_enabled == True,
                 UserTable.is_deleted == False,
             ).first()
 
-            if user_entity is not None and employee_entity is not None:
+            if user_entity is not None:
                 return UserInfo(
-                    name=employee_entity.name,
-                    company_id=employee_entity.company_id,
-                    employee_id=employee_entity.identifier,
-                    user_id=user_entity.identifier,
-                    role_ids=employee_entity.role_ids or []
+                    identifier=user_entity.identifier,
+                    tenant_ids=user_entity.tenant_ids,
+                    name=user_entity.name,
+                    email=user_entity.email
                 )

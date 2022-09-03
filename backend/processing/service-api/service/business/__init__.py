@@ -1,5 +1,7 @@
-from service.business.persistence.db_manager import BusinessDBManager
+from service.business.domain.dashboard_service import DashboardService
 from service.business.domain.domain_handler import BusinessDomainHandler
+from service.business.persistence.db_manager import BusinessDBManager
 
 business_db_manager = BusinessDBManager()
 business_domain_handler = BusinessDomainHandler(persistence_manager=business_db_manager)
+dashboard_handler = DashboardService(persistence_manager=business_db_manager)

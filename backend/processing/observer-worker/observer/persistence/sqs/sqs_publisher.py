@@ -1,39 +1,18 @@
 import logging
-from typing import Any, List, Optional
+from typing import Any, List
 
 import boto3
 # https://boto3.amazonaws.com/v1/documentation/api/latest/guide/sqs-example-sending-receiving-msgs.html
 from obsei.misc.utils import obj_to_json
-from pydantic import BaseSettings, SecretStr, Field, BaseModel
+from pydantic import BaseModel, BaseSettings, Field, SecretStr
 
 logger = logging.getLogger(__name__)
 
 
-class ObserverMessage(BaseModel):
-    identifier: int
-    name: str
-    type: int
-    regulated_entity_type: List[str]
-
-
-class EntityMessage(BaseModel):
-    identifier: int
-    simple_name: str
-    country: Optional[str]
-    city: Optional[str]
-
-
-class TextDataMessage(BaseModel):
-    identifier: int
-    raw_text: str
-    event_time: str
-
-
 class RawDataEvent(BaseModel):
-    company_id: int
-    observer: ObserverMessage
-    entity: EntityMessage
-    text_data: TextDataMessage
+    tenant_id: str
+    raw_data_id: int
+    raw_text: str
 
 
 class SqsPublisher(BaseSettings):

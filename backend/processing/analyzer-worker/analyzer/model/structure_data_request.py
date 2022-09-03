@@ -1,15 +1,17 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
+from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class UnstructuredDataRequest(BaseModel):
-    company_id: int
+    tenant_id: UUID
     raw_text: str
 
 
 class StructuredData(BaseModel):
-    taxonomy_data: Dict[str, List[str]] = {}
+    tags: List[str] = Field([])
+    terms: List[str] = Field([])
     categories: Optional[List[str]] = None
     text_length: int
     emotion: Optional[str]

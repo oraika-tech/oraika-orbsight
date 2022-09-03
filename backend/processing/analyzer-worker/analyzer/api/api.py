@@ -8,10 +8,10 @@ from starlette.responses import JSONResponse
 
 from analyzer.api.tiyaro_exception import TiyaroException
 from analyzer.model.api_request_response import AnalyzerAPIResponse, AnalyzerAPIRequest
-from analyzer.model.data_store_request import DBStoreRequest, ObserverInfo, EntityInfo
+from analyzer.model.data_store_request import DBStoreRequest
 from analyzer.model.structure_data_request import UnstructuredDataRequest
+from analyzer.persistence.db_entity_manager import DBEntityManager
 from analyzer.service.structure_data_extractor import StructuredDataExtractor
-from analyzer.service.processed_data_entity_manager import ProcessedDataEntityManager
 
 logger = logging.getLogger(__name__)
 PORT = 8080
@@ -37,7 +37,7 @@ router = APIRouter()
 app.include_router(router)
 
 structure_data_extractor: StructuredDataExtractor = StructuredDataExtractor()
-structured_data_store: ProcessedDataEntityManager = ProcessedDataEntityManager()
+structured_data_store: DBEntityManager = DBEntityManager()
 
 
 @app.on_event("startup")
@@ -53,30 +53,17 @@ def app_init():
 )
 def update_workflow(request: AnalyzerAPIRequest):
     try:
-        structured_data = structure_data_extractor.extract_structure_fast(
+        structured_data = structure_data_extractor.extract_structure(
             UnstructuredDataRequest(
-                company_id=request.company_id,
-                raw_text=request.text_data.raw_text
+                tenant_id=request.tenant_id,
+                raw_text=request.raw_text
             )
         )
-        structured_data_identifier = structured_data_store.insert_structure_data(
+        structured_data_identifier = structured_data_store.insert_structured_data(
             data_request=DBStoreRequest(
                 structured_data=structured_data,
-                raw_data_identifier=request.text_data.identifier,
-                company_id=request.company_id,
-                event_time=request.text_data.event_time,
-                observer_info=ObserverInfo(
-                    identifier=request.observer.identifier,
-                    name=request.observer.name,
-                    type=request.observer.type.name,
-                    regulated_entity_type=request.observer.regulated_entity_type,
-                ),
-                entity_info=EntityInfo(
-                    identifier=request.entity.identifier,
-                    simple_name=request.entity.simple_name,
-                    country=request.entity.country,
-                    city=request.entity.city
-                )
+                raw_data_identifier=request.raw_data_id,
+                tenant_id=request.tenant_id
             )
         )
         return AnalyzerAPIResponse(identifier=structured_data_identifier)

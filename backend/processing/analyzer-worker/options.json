@@ -1,12 +1,7 @@
 [
   {
     "Namespace": "aws:elasticbeanstalk:application:environment",
-    "OptionName": "DATA_DB_PASSWORD",
-    "Value": "<Enter during deployment and dont commit>"
-  },
-  {
-    "Namespace": "aws:elasticbeanstalk:application:environment",
-    "OptionName": "CONFIG_DB_PASSWORD",
+    "OptionName": "CORE_DB_PASSWORD",
     "Value": "<Enter during deployment and dont commit>"
   },
   {

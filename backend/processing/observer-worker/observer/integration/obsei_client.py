@@ -45,7 +45,7 @@ class ObseiClient(BaseSettings):
         return TwitterSourceConfig(
             # Searching tweets tagging handle, it should not be retweet and not by handle itself
             # For example: @theofficialsbi -is:retweet -from:theofficialsbi
-            query=f'@{query} -is:retweet -from:{query}',
+            query=query,
             tweet_fields=["conversation_id", "created_at", "id", "public_metrics", "text"],  # author_id
             user_fields=["id", "name", "public_metrics", "username", "verified"],
             expansions=["author_id"],

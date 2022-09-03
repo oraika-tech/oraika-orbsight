@@ -1,19 +1,23 @@
-from datetime import timedelta, datetime
-from typing import Union, Any, Optional
+import logging
+from datetime import datetime, timedelta
+from typing import Any, Optional, Union
 
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
+from service.auth import auth_handler
 from service.common.settings import settings
 from starlette import status
 from starlette.exceptions import HTTPException
-from service.auth import auth_handler
+
 from .model.user import UserInfo
+
+logger = logging.getLogger(__name__)
 
 
 class TokenPayload(BaseModel):
-    sub: Optional[int] = None
+    sub: Optional[str] = None
 
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -42,14 +46,16 @@ def get_current_user(token: str = Depends(reusable_oauth2), handler=Depends(get_
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
+        logger.error("Token payload: {}".format(payload))
         token_data = TokenPayload(**payload)
-    except (JWTError, ValidationError):
+    except (JWTError, ValidationError) as e:
+        logger.error("Token decoding failed: {}".format(e))
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
     user_id = token_data.sub
-    user_info = handler.user_info(user_id)
+    user_info = handler.get_user_info(user_id)
     if not user_info:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user_info

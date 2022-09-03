@@ -1,15 +1,16 @@
 from typing import Optional
+
 from pydantic import BaseSettings
+from service.common.model.user import UserInfo
 
 from .base import BasePersistenceManager
-from service.common.model.user import UserInfo
 
 
 class AuthHandler(BaseSettings):
     persistence_manager: BasePersistenceManager
 
-    def verify_user(self, login_name: str, password: str) -> Optional[int]:
-        return self.persistence_manager.verify_user(login_name, password)
+    def verify_user(self, email: str, password: str) -> Optional[UserInfo]:
+        return self.persistence_manager.verify_user(email, password)
 
-    def user_info(self, identifier: int) -> Optional[UserInfo]:
+    def get_user_info(self, identifier: str) -> Optional[UserInfo]:
         return self.persistence_manager.get_user(identifier)

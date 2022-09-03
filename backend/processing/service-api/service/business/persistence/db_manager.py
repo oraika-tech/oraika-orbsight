@@ -1,125 +1,129 @@
-from typing import Optional, Any, List, Set, Dict
+from typing import List, Optional
+from uuid import UUID
 
-from pydantic import Field, PrivateAttr
-from sqlalchemy import func, Column, distinct, select
+from sqlalchemy import Column, func, select
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlmodel import Field as SqlField, create_engine, Session, SQLModel
+from sqlmodel import Field as SqlField
+from sqlmodel import Session, SQLModel
 
 from service.business.domain.base import BasePersistenceManager
+from service.business.domain.model.category import CategoryInfo
 from service.business.domain.model.entity import EntityInfo
+from service.business.domain.model.observer import (OBSERVER_TYPE,
+                                                    ObserverData, ObserverInfo)
 from service.business.domain.model.stats import StatsInfo
-from service.business.domain.model.observer import ObserverInfo, OBSERVER_TYPE, ObserverData
 from service.business.domain.model.taxonomy import TaxonomyInfo
-
+from service.common.base_entity_manager import BaseEntityManager
 from service.common.utils import search_dict
 
 
-class TaxonomyEntity(SQLModel, table=True):
-    __tablename__ = "taxonomy"
-    __table_args__ = {'extend_existing': True}
+class TenantConfig(SQLModel, table=True):
+    __tablename__ = "tenant_config"
 
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
-    company_id: int
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
+    config_key: str
+    config_value: dict = SqlField(default='{}', sa_column=Column(JSONB))
+
+
+class TaxonomyEntity(SQLModel, table=True):
+    __tablename__ = "config_taxonomy"
+    # __table_args__ = {'extend_existing': True}
+
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
     term: str
-    term_description: Optional[str]
-    categories: Optional[List[str]]
-    taxonomy_type: Optional[Dict[str, Any]] = SqlField(default='{}', sa_column=Column(JSONB))
+    keyword: str
+    description: Optional[str]
+    tags: Optional[List[str]]
     is_deleted: bool
+    is_enabled: bool
 
     def convert_to_model(self) -> TaxonomyInfo:
         return TaxonomyInfo(
+            identifier=self.identifier,
             term=self.term,
-            term_description=self.term_description,
-            issue_categories=self.categories,
-            issue_mapping=list(self.taxonomy_type.keys())
+            keyword=self.keyword,
+            description=self.description,
+            tags=self.tags,
+            is_enabled=self.is_enabled
+        )
+
+
+class CategoryEntity(SQLModel, table=True):
+    __tablename__ = "config_category"
+    # __table_args__ = {'extend_existing': True}
+
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
+    name: str
+    is_enabled: bool
+    is_deleted: bool
+
+    def convert_to_model(self) -> CategoryInfo:
+        return CategoryInfo(
+            identifier=self.identifier,
+            name=self.name,
+            is_enabled=self.is_enabled,
         )
 
 
 class Entity(SQLModel, table=True):
-    __tablename__ = "entity"
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "config_entity"
+    # __table_args__ = {'extend_existing': True}
 
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
     name: str
-    simple_name: str
-    city: Optional[str]
-    country: Optional[str]
-    regulated_type: Optional[List[str]]
+    tags: Optional[List[str]]
     is_enabled: bool
     is_deleted: bool
-    company_id: int
 
     def convert_to_model(self) -> EntityInfo:
         return EntityInfo(
             identifier=self.identifier,
             name=self.name,
-            simple_name=self.simple_name,
-            regulated_type=self.regulated_type,
+            tags=self.tags,
             is_enabled=self.is_enabled,
-            is_deleted=self.is_deleted,
-            city=self.city,
-            country=self.country,
-            company_id=self.company_id
         )
 
 
 class Observer(SQLModel, table=True):
-    __tablename__ = "observer"
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "config_observer"
+    # __table_args__ = {'extend_existing': True}
 
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
+    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
     name: str
-    observer_type: int
-    entity_id: int
-    data: str
+    type: int
+    entity_id: UUID
+    config_data: str
     is_enabled: bool
     is_deleted: bool
-    company_id: int
 
     def convert_to_model(self, entity: Entity) -> ObserverInfo:
-        data_json = self.data
+        data_json = self.config_data
         official_handle = next(search_dict(data_json, 'official_handle'), None)
         url = next(search_dict(data_json, 'url'), None)
-        observer_type_str = OBSERVER_TYPE.get(self.observer_type)
+        observer_type_str = OBSERVER_TYPE.get(self.type)
         return ObserverInfo(
             identifier=self.identifier,
             name=self.name,
             entity_id=self.entity_id,
-            entity_name=entity.simple_name,
+            entity_name=entity.name if entity is not None else '',
             is_enabled=self.is_enabled,
-            company_id=self.company_id,
-            observer_type=observer_type_str,
-            data=ObserverData(
+            type=observer_type_str,
+            config_data=ObserverData(
                 official_handle=official_handle,
                 url=url
             )
         )
 
 
-class BusinessDBManager(BasePersistenceManager):
-    _terms: List[TaxonomyInfo] = PrivateAttr()
-    db_host: Optional[str] = Field("localhost:5432", env='DB_HOST')
-    db_name: str = Field("orbsight_business", env='BUSINESS_DB_NAME')
-    db_user: str = Field("orbsight", env='BUSINESS_DB_USER')
-    db_password: str = Field("orbsight", env='BUSINESS_DB_PASSWORD')
-    db_engine_name: str = Field("postgresql", env="DB_ENGINE_NAME")
-
-    engine: Any
-
-    def __init__(self, **values: Any):
-        super().__init__(**values)
-        connection_string = f"{self.db_engine_name}://{self.db_user}:{self.db_password}@{self.db_host}/{self.db_name}"
-        self.engine = create_engine(connection_string)
-
+class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
     # Entity Related API
-    def get_all_entities(self, company_id: int, enabled: Optional[bool] = None) -> List[EntityInfo]:
-        with Session(self.engine) as session:
+    def get_all_entities(self, tenant_id: UUID, enabled: Optional[bool] = None) -> List[EntityInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(Entity).filter(
-                Entity.company_id == company_id,
                 Entity.is_deleted == False,
             ).order_by(
                 Entity.is_enabled.desc(),
-                Entity.simple_name
+                Entity.name
             )
             if enabled is not None:
                 query = query.filter(
@@ -132,20 +136,18 @@ class BusinessDBManager(BasePersistenceManager):
                 return [entity.convert_to_model() for entity in entities]
             return []
 
-    def get_entity(self, company_id: int, entity_id: int) -> Optional[EntityInfo]:
-        with Session(self.engine) as session:
+    def get_entity(self, tenant_id: UUID, entity_id: UUID) -> Optional[EntityInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             entity = session.query(Entity).filter(
                 Entity.identifier == entity_id,
-                Entity.company_id == company_id,
                 Entity.is_deleted == False,
             ).first()
             if entity is not None:
                 return entity.convert_to_model()
             return None
 
-    def enabled_entities_count(self, company_id: int) -> List[StatsInfo]:
-        with Session(self.engine) as session:
-            stats: List[StatsInfo] = []
+    def enabled_entities_count(self, tenant_id: UUID) -> List[StatsInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
 
             result_set = session.query(
                 Entity.is_enabled,
@@ -153,42 +155,24 @@ class BusinessDBManager(BasePersistenceManager):
             ).group_by(
                 Entity.is_enabled
             ).filter(
-                Entity.company_id == company_id,
                 Entity.is_deleted == False,
             ).all()
             total = 0
+            tracked = 0
             for flag, count in result_set:
                 total += int(count)
                 if flag:
-                    stats.append(StatsInfo(name="Tracked", value=int(count)))
+                    tracked = int(count)
 
-            stats.append(StatsInfo(name="Total", value=total))
-            return stats
+            return [
+                StatsInfo(name="Tracked", value=tracked),
+                StatsInfo(name="Total", value=total)
+            ]
 
-    def entities_type_count(self, company_id: int) -> List[StatsInfo]:
-        with Session(self.engine) as session:
-            result_set = session.query(
-                Entity.regulated_type,
-                func.count(Entity.regulated_type)
-            ).group_by(
-                Entity.regulated_type
-            ).filter(
-                Entity.company_id == company_id,
-                Entity.is_deleted == False,
-            ).all()
-
-            stats_dict: Dict[str, int] = {}
-            for entity_types, count in result_set:
-                for entity_type in entity_types:
-                    stats_dict[entity_type] = stats_dict.get(entity_type, 0) + count
-            stats = [StatsInfo(name=key, value=value) for key, value in stats_dict.items()]
-            return stats
-
-    def update_entity_enable_state(self, company_id: int, entity_id: int, new_state: bool):
-        with Session(self.engine) as session:
+    def update_entity_enable_state(self, tenant_id: UUID, entity_id: UUID, new_state: bool):
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             session.query(Entity).filter(
                 Entity.identifier == entity_id,
-                Entity.company_id == company_id,
                 Entity.is_deleted == False,
             ).update(
                 {'is_enabled': new_state}
@@ -196,10 +180,9 @@ class BusinessDBManager(BasePersistenceManager):
             session.commit()
 
     # Observer Related API
-    def get_all_observers(self, company_id: int, enabled: Optional[bool] = None) -> List[ObserverInfo]:
-        with Session(self.engine) as session:
+    def get_all_observers(self, tenant_id: UUID, enabled: Optional[bool] = None) -> List[ObserverInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(Observer).filter(
-                Observer.company_id == company_id,
                 Observer.is_deleted == False,
             ).order_by(
                 Observer.is_enabled.desc(),
@@ -216,7 +199,7 @@ class BusinessDBManager(BasePersistenceManager):
                 return [
                     observer.convert_to_model(
                         self.get_entity(
-                            company_id=company_id,
+                            tenant_id=tenant_id,
                             entity_id=observer.entity_id
                         )
                     )
@@ -224,35 +207,33 @@ class BusinessDBManager(BasePersistenceManager):
                 ]
             return []
 
-    def get_observer(self, company_id: int, observer_id: int) -> Optional[ObserverInfo]:
-        with Session(self.engine) as session:
+    def get_observer(self, tenant_id: UUID, observer_id: UUID) -> Optional[ObserverInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             observer = session.query(Observer).filter(
                 Observer.identifier == observer_id,
-                Observer.company_id == company_id,
                 Observer.is_deleted == False,
             ).first()
             if observer is not None:
                 return observer.convert_to_model(
                     self.get_entity(
-                        company_id=company_id,
+                        tenant_id=tenant_id,
                         entity_id=observer.entity_id
                     )
                 )
             return None
 
-    def enabled_observers_count(self, company_id: int) -> List[StatsInfo]:
-        with Session(self.engine) as session:
-            stats: List[StatsInfo] = []
+    def enabled_observers_count(self, tenant_id: UUID) -> List[StatsInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
 
             total_count = session.query(
                 func.count(Observer.is_enabled)
             ).filter(
-                Observer.company_id == company_id,
                 Observer.is_deleted == False,
             ).first()
 
+            total = 0
             for count in total_count:
-                stats.append(StatsInfo(name="Total", value=count))
+                total = count
 
             result_set = session.query(
                 Observer.is_enabled,
@@ -260,43 +241,27 @@ class BusinessDBManager(BasePersistenceManager):
             ).group_by(
                 Observer.is_enabled
             ).filter(
-                Observer.company_id == company_id,
-                Entity.company_id == company_id,
                 Observer.entity_id == Entity.identifier,
                 Entity.is_enabled == True,
                 Entity.is_deleted == False,
                 Observer.is_deleted == False,
             ).all()
 
+            tracked = 0
             for flag, count in result_set:
+                total += int(count)
                 if flag:
-                    stats.append(StatsInfo(name="Tracked", value=count))
+                    tracked = int(count)
 
-            return stats
+            return [
+                StatsInfo(name="Tracked", value=tracked),
+                StatsInfo(name="Total", value=total)
+            ]
 
-    def observer_type_count(self, company_id: int) -> List[StatsInfo]:
-        with Session(self.engine) as session:
-            result_set = session.query(
-                Observer.observer_type,
-                func.count(Observer.observer_type)
-            ).group_by(
-                Observer.observer_type
-            ).filter(
-                Observer.company_id == company_id,
-                Observer.is_deleted == False,
-            ).all()
-
-            stats: List[StatsInfo] = []
-            for observer_type, count in result_set:
-                stats.append(StatsInfo(name=OBSERVER_TYPE.get(observer_type), value=count))
-
-            return stats
-
-    def update_observer_enable_state(self, company_id: int, observer_id: int, new_state: bool):
-        with Session(self.engine) as session:
+    def update_observer_enable_state(self, tenant_id: UUID, observer_id: UUID, new_state: bool):
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             session.query(Observer).filter(
                 Observer.identifier == observer_id,
-                Observer.company_id == company_id,
                 Observer.is_deleted == False,
             ).update(
                 {'is_enabled': new_state}
@@ -304,72 +269,76 @@ class BusinessDBManager(BasePersistenceManager):
             session.commit()
 
     # Taxonomy Related API
-    def get_taxonomy_data(self, company_id: int) -> List[TaxonomyInfo]:
-        with Session(self.engine) as session:
+    def get_taxonomy_data(self, tenant_id: UUID) -> List[TaxonomyInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
             taxonomy_entities = session.query(TaxonomyEntity).filter(
-                TaxonomyEntity.company_id == company_id,
                 TaxonomyEntity.is_deleted == False,
             )
             if taxonomy_entities is not None:
                 return [taxonomy_entity.convert_to_model() for taxonomy_entity in taxonomy_entities]
         return []
 
-    def taxonomy_count(self, company_id: int) -> List[StatsInfo]:
-        count = 0
-        with Session(self.engine) as session:
-            count_data = session.query(
-                func.count(TaxonomyEntity.identifier)
+    def enabled_taxonomy_count(self, tenant_id: UUID) -> List[StatsInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
+
+            result_set = session.query(
+                TaxonomyEntity.is_enabled,
+                func.count(TaxonomyEntity.is_enabled)
+            ).group_by(
+                TaxonomyEntity.is_enabled
             ).filter(
-                TaxonomyEntity.company_id == company_id,
                 TaxonomyEntity.is_deleted == False,
-            ).first()
+            ).all()
+            total = 0
+            tracked = 0
+            for flag, count in result_set:
+                total += int(count)
+                if flag:
+                    tracked = int(count)
 
-            count = count_data[0]
+            return [
+                StatsInfo(name="Tracked", value=tracked),
+                StatsInfo(name="Total", value=total)
+            ]
 
-        return [
-            StatsInfo(name="Total", value=count),
-            StatsInfo(name="Tracked", value=count)
-        ]
-
-    def get_categories(self, company_id: int) -> List[str]:
-        categories: Set[str] = set()
-        with Session(self.engine) as session:
-            stmt = select(distinct(TaxonomyEntity.categories)).filter(
-                TaxonomyEntity.is_deleted == False,
-                TaxonomyEntity.company_id == company_id,
-                TaxonomyEntity.categories != None
+    def get_categories(self, tenant_id: UUID) -> List[CategoryInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
+            category_entities = session.query(CategoryEntity).filter(
+                CategoryEntity.is_deleted == False,
             )
-            row_list = session.exec(stmt)
+            if category_entities is not None:
+                return [category_entity.convert_to_model() for category_entity in category_entities]
+        return []
 
-            if row_list is not None:
-                for row in row_list:
-                    categories.update(row[0])
-        return list(categories)
+    def enabled_categories_count(self, tenant_id: UUID) -> List[StatsInfo]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
 
-    def categories_count(self, company_id: int) -> List[StatsInfo]:
-        categories: List[str] = self.get_categories(company_id)
-        return [
-            StatsInfo(name="Total", value=len(categories)),
-            StatsInfo(name="Tracked", value=len(categories))
-        ]
+            result_set = session.query(
+                CategoryEntity.is_enabled,
+                func.count(CategoryEntity.is_enabled)
+            ).group_by(
+                CategoryEntity.is_enabled
+            ).filter(
+                CategoryEntity.is_deleted == False,
+            ).all()
+            total = 0
+            tracked = 0
+            for flag, count in result_set:
+                total += int(count)
+                if flag:
+                    tracked = int(count)
 
-    def taxonomy_types_count(self, company_id: int) -> List[StatsInfo]:
-        taxonomy_types_freq: Dict[str, int] = {}
-        with Session(self.engine) as session:
-            stmt = select(distinct(TaxonomyEntity.taxonomy_type)).filter(
-                TaxonomyEntity.is_deleted == False,
-                TaxonomyEntity.company_id == company_id,
-                TaxonomyEntity.taxonomy_type != None
-            )
-            row_list = session.exec(stmt)
+            return [
+                StatsInfo(name="Tracked", value=tracked),
+                StatsInfo(name="Total", value=total)
+            ]
 
-            if row_list is not None:
-                for row in row_list:
-                    for taxonomy_type, val in row[0].items():
-                        taxonomy_types_freq[taxonomy_type] = taxonomy_types_freq.get(taxonomy_type, 0) + 1
+    def get_dashboards(self, tenant_id: UUID) -> List[dict]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
+            query = select(TenantConfig).filter(TenantConfig.config_key == "dashboard_info")
+            return self._execute_query(session, query)[0].config_value or []
 
-        return [
-            StatsInfo(name=key, value=value)
-            for key, value in taxonomy_types_freq.items()
-            if key is not None and key != ""
-        ]
+    def get_panels(self, tenant_id) -> Optional[dict]:
+        with Session(self._get_tenant_engine(tenant_id)) as session:
+            query = select(TenantConfig).filter(TenantConfig.config_key == "panel_info")
+            return self._execute_query(session, query)[0].config_value

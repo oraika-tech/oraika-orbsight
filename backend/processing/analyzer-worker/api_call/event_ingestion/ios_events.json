@@ -1,6 +1,6 @@
 [
   {
-    "company_id": 1,
+    "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
     "observer": {
       "identifier": 819,
       "name": "Skrill - Pay & Transfer Money",
@@ -22,7 +22,7 @@
     }
   },
   {
-    "company_id": 1,
+    "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
     "observer": {
       "identifier": 819,
       "name": "Skrill - Pay & Transfer Money",
@@ -44,7 +44,7 @@
     }
   },
   {
-    "company_id": 1,
+    "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
     "observer": {
       "identifier": 819,
       "name": "Skrill - Pay & Transfer Money",
@@ -66,7 +66,7 @@
     }
   },
   {
-    "company_id": 1,
+    "tenant_id": "f9f91b0b-f976-4bd3-b956-470ffcfcf77f",
     "observer": {
       "identifier": 819,
       "name": "Skrill - Pay & Transfer Money",

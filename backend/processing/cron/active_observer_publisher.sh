@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Todo: fetch enabled tenants from core db and iterate over it
+TENANT_ID=$1
+DB_NAME=$2
+
 echo "Start: $(date)"
 
 source "$HOME/.orbsight/env"
@@ -18,33 +22,31 @@ ANDROID_LIMIT_COUNT=${ANDROID_LIMIT_COUNT:-20}
 IOS_LIMIT_COUNT=${IOS_LIMIT_COUNT:-100}
 LIMIT_COUNT=${LIMIT_COUNT:-20}
 
-MSG_FILE=/tmp/observer_rows.json
+MSG_FILE=/tmp/observer_rows_$TENANT_ID.json
 
 SQL_QUERY="
 SELECT row_to_json(ob) FROM (
-  SELECT o.company_id,
-         o.identifier as observer_identifier, o.name as observer_name, o.observer_type, o.regulated_entity_type,
-         e.identifier as entity_identifier, e.simple_name as entity_simple_name, e.regulated_type,
-         o.data->'url' as app_url, o.data->'official_handle' as twitter_handle,
+  SELECT '$TENANT_ID' as tenant_id,
+         o.identifier as observer_identifier, o.type as observer_type,
+         o.config_data->'url' as app_url, o.config_data->'official_handle' as twitter_handle,
          '$LOOKUP_PERIOD' as lookup_period,
          CASE
-         WHEN o.observer_type = 1 THEN $TWITTER_LIMIT_COUNT
-         WHEN o.observer_type = 2 THEN $ANDROID_LIMIT_COUNT
-         WHEN o.observer_type = 3 THEN $IOS_LIMIT_COUNT
+         WHEN o.type = 1 THEN $TWITTER_LIMIT_COUNT
+         WHEN o.type = 2 THEN $ANDROID_LIMIT_COUNT
+         WHEN o.type = 3 THEN $IOS_LIMIT_COUNT
          ELSE $LIMIT_COUNT
-         END as limit_count,
-         e.country as entity_country, e.city as entity_city
- FROM observer o JOIN entity e on o.entity_id = e.identifier
+         END as limit_count
+ FROM config_observer o JOIN config_entity e on o.entity_id = e.identifier
  WHERE o.is_enabled = true and e.is_enabled = true
 ) as ob LIMIT 200 "
 
-psql -t postgresql://"$DB_USER":"$DB_PASSWORD"@"$DB_HOST"/orbsight_business <<<"$SQL_QUERY" |
+psql -t postgresql://"$DB_USER":"$DB_PASSWORD"@"$DB_HOST"/"$DB_NAME" <<<"$SQL_QUERY" |
   grep -v '^\s*$' | # remove empty lines
   sed 's/"/\\"/g' | # escape quotes inside message
-  sed -E 's/\s*(.*observer_identifier\\":([0-9]+).*)\s*/{"Id":"\2","MessageBody":"\1"}/' \
+  sed -E 's/\s*(.*observer_identifier\\":\\"([0-9a-z-]+).*)\s*/{"Id":"\2","MessageBody":"\1"}/' \
     >$MSG_FILE
 
-MSG_PART_FILE=/tmp/rows_part.json
+MSG_PART_FILE=/tmp/rows_part_$TENANT_ID.json
 
 cd /tmp/ || exit 1
 split -l 10 --additional-suffix msg_part $MSG_FILE
@@ -62,7 +64,7 @@ for part_file in *msg_part*; do
   fi
 
   aws sqs send-message-batch \
-    --queue-url https://sqs.eu-west-1.amazonaws.com/637364613199/prod-observer \
+    --queue-url https://sqs.eu-west-1.amazonaws.com/067668835856/prod-observer \
     --entries file://$MSG_PART_FILE
 
 done

@@ -1,5 +1,5 @@
 import logging
-from typing import List, Any, Dict
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends
 from service.common.deps import get_current_user

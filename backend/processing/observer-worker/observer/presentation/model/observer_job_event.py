@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -11,17 +12,10 @@ class ObserverType(int, Enum):
 
 
 class ObserverJobEvent(BaseModel):
-    company_id: int
-    observer_identifier: int
-    observer_name: str  # - app | twitter
+    tenant_id: UUID
+    observer_identifier: str
     observer_type: ObserverType  # - app | twitter
-    regulated_entity_type: Optional[List[str]]
     app_url: Optional[str]
     twitter_handle: Optional[str]
     lookup_period: Optional[str]
     limit_count: Optional[int]
-    entity_identifier: int
-    entity_simple_name: str
-    regulated_type: Optional[List[str]]
-    entity_country: Optional[str]
-    entity_city: Optional[str]

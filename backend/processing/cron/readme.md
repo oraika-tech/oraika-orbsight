@@ -45,9 +45,9 @@ Example of published message:
 ```json
 {
   "id": 362,
-  "company_id": 1,
+  "tenant_id": "230139f2-d5e4-4ecf-846f-27e741f833bc",
   "observer_type": 3,
-  "entity_id": 111,
+  "entity_id": "c8ed828d-4604-425d-b57f-11ac0f7c3d48",
   "url": "https://apps.apple.com/in/app/paytm-upi-payments-recharge/id473941634"
 }
 ```

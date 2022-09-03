@@ -1,14 +1,14 @@
 import logging
 import os
 from typing import Any, Dict
+from uuid import UUID
 
 from observer.domain.raw_data import RawData
 from observer.integration.obsei_client import ObseiClient, ObseiClientConfig, SourceConfig
 from observer.persistence.postgresql.raw_data_entity_manager import RawDataEntityManager
 from observer.persistence.sqs.sqs_publisher import SqsPublisher, \
-    ObserverMessage, RawDataEvent, TextDataMessage, EntityMessage
+    RawDataEvent
 from observer.presentation.model.observer_job_event import ObserverJobEvent, ObserverType
-from observer.utils.dateutils import datetime_to_iso_format
 
 logger = logging.getLogger(__name__)
 
@@ -40,30 +40,23 @@ class ObserverJobHandler:
 
     def handle_job(self, job: ObserverJobEvent):
         data_list = self.data_fetcher[job.observer_type](job)
-        logger.info(
-            f'{job.observer_identifier}:{job.observer_name}:{job.observer_type.name} fetch count: {len(data_list)}')
+        logger.info(f'{job.observer_identifier} fetch count: {len(data_list)}')
 
         raw_data_list = [
             RawData(
-                company_id=job.company_id,
                 observer_id=job.observer_identifier,
-                observer_name=job.observer_name,
-                observer_type=job.observer_type,
-                entity_id=job.entity_identifier,
-                entity_name=job.entity_simple_name,
-                regulated_entity_type=job.regulated_entity_type,
-                reference_id=data.reference_id,
-                parent_reference_id=data.parent_reference_id,
-                raw_text=data.raw_text,
-                data=data.data or {},
-                event_time=data.event_time
+                reference_id=unstructured_data.reference_id,
+                parent_reference_id=unstructured_data.parent_reference_id,
+                raw_text=unstructured_data.raw_text,
+                unstructured_data=unstructured_data.data or {},
+                event_time=unstructured_data.event_time
             )
-            for data in data_list
+            for unstructured_data in data_list
         ]
 
-        success_raw_data_list = self.rawDataEntityManager.insert_raw_data(raw_data_list)
+        success_raw_data_list = self.rawDataEntityManager.insert_raw_data(job.tenant_id, raw_data_list)
 
-        events = [self.get_raw_data_event(job, raw_data)
+        events = [self.get_raw_data_event(job.tenant_id, raw_data)
                   for raw_data in success_raw_data_list
                   if len(raw_data.raw_text) > self.min_raw_text_length]
 
@@ -97,28 +90,10 @@ class ObserverJobHandler:
         return self.obsei_client.fetch_app_ios_data(job_data.app_url, source_config)
 
     @staticmethod
-    def get_raw_data_event(job_data: ObserverJobEvent, raw_data: RawData):
-
-        entity_message = EntityMessage(
-            identifier=job_data.entity_identifier,
-            simple_name=job_data.entity_simple_name,
-            country=job_data.entity_country,
-            city=job_data.entity_city)
-
-        observer_message = ObserverMessage(
-            identifier=job_data.observer_identifier,
-            name=job_data.observer_name,
-            type=job_data.observer_type.value,
-            regulated_entity_type=job_data.regulated_entity_type)
-
-        text_data_message = TextDataMessage(
-            identifier=raw_data.identifier,
-            raw_text=raw_data.raw_text,
-            event_time=datetime_to_iso_format(raw_data.event_time))
+    def get_raw_data_event(tenant_id: UUID, raw_data: RawData):
 
         return RawDataEvent(
-            company_id=raw_data.company_id,
-            observer=observer_message,
-            entity=entity_message,
-            text_data=text_data_message
+            tenant_id=str(tenant_id),
+            raw_data_id=raw_data.identifier,
+            raw_text=raw_data.raw_text
         )
