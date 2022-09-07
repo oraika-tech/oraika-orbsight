@@ -28,7 +28,6 @@ def get_all_entities(
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    logger.error("user_info:{}".format(user_info))
     return handler.get_all_entities(user_info.tenant_ids[0], enabled)
 
 

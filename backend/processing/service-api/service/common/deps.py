@@ -46,7 +46,6 @@ def get_current_user(token: str = Depends(reusable_oauth2), handler=Depends(get_
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        logger.error("Token payload: {}".format(payload))
         token_data = TokenPayload(**payload)
     except (JWTError, ValidationError) as e:
         logger.error("Token decoding failed: {}".format(e))
