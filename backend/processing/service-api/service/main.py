@@ -10,7 +10,10 @@ from starlette.responses import JSONResponse
 from service import api_router
 from service.common.settings import settings
 
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 PORT = 8080
 
 
