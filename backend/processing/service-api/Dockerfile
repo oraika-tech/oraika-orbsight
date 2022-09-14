@@ -11,6 +11,7 @@ ENV NUM_OF_WORKERS 1
 ENV WORKER_TIMEOUT 180
 ENV SERVER_PORT 8080
 ENV WORKER_TYPE uvicorn.workers.UvicornWorker
+ENV KEEP_ALIVE 10
 
 ENV DB_HOST localhost:5432
 
@@ -37,4 +38,4 @@ USER user
 EXPOSE 8080
 
 # cmd for running the API
-CMD ["sh", "-c", "gunicorn service.main:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT}"]
+CMD ["sh", "-c", "gunicorn service.main:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT} --keep-alive ${KEEP_ALIVE}"]
