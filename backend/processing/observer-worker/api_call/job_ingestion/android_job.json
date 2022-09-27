@@ -16,5 +16,5 @@
   "lookup_period": "5m",
   "limit_count": 5,
   "twitter_handle": null,
-  "app_url": "https://play.google.com/store/apps/details?id=com.boi.mpay"
+  "url": "https://play.google.com/store/apps/details?id=com.boi.mpay"
 }

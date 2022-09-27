@@ -9,10 +9,11 @@ version = "0.0.1"
 description = "Observer tool for fetch text from various sources"
 
 dependencies = [
-    "obsei[twitter-api,google-play-scraper,app-store-scraper] @ git+https://github.com/obsei/obsei@optional-dependencies#egg=obsei",
+    "obsei @ git+https://github.com/obsei/obsei#egg=obsei[source]",
     "sqlmodel",
     "fastapi",
     "uvicorn[standard]",
+    "uvloop ; sys_platform != 'win32' and sys_platform != 'cygwin'",
     "psycopg2-binary",
     "boto3",
 ]

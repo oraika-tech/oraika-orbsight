@@ -27,8 +27,14 @@ MSG_FILE=/tmp/observer_rows_$TENANT_ID.json
 SQL_QUERY="
 SELECT row_to_json(ob) FROM (
   SELECT '$TENANT_ID' as tenant_id,
-         o.identifier as observer_identifier, o.type as observer_type,
-         o.config_data->'url' as app_url, o.config_data->'official_handle' as twitter_handle,
+         o.identifier as observer_identifier,
+         o.type as observer_type,
+         o.config_data->'url' as url,
+         o.config_data->'queries' as query,
+         o.config_data->'language' as language,
+         o.config_data->'country' as country,
+         o.config_data->'page_id' as page_id,
+         o.config_data->'subreddit' as subreddit,
          '$LOOKUP_PERIOD' as lookup_period,
          CASE
          WHEN o.type = 1 THEN $TWITTER_LIMIT_COUNT

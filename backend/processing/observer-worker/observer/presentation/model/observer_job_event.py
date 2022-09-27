@@ -9,13 +9,21 @@ class ObserverType(int, Enum):
     Twitter = 1
     Android = 2
     iOS = 3
+    GoogleMaps = 4
+    Facebook = 5
+    Reddit = 6
+    GoogleNews = 7
 
 
 class ObserverJobEvent(BaseModel):
     tenant_id: UUID
-    observer_identifier: str
+    observer_identifier: UUID
     observer_type: ObserverType  # - app | twitter
-    app_url: Optional[str]
-    twitter_handle: Optional[str]
+    url: Optional[str]
+    query: Optional[str]
+    country: Optional[str]
+    language: Optional[str]
+    page_id: Optional[str]
+    subreddit: Optional[str]
     lookup_period: Optional[str]
     limit_count: Optional[int]
