@@ -46,7 +46,7 @@ class BaseEntityManager(BaseSettings):
             self.tenant_db_engines[tenant_id] = create_engine(connection_string)
         return self.tenant_db_engines[tenant_id]
 
-    @ staticmethod
+    @staticmethod
     def _execute_query(session, query):
         row_list = session.exec(query)
         if row_list is not None:

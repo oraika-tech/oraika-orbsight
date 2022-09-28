@@ -48,6 +48,10 @@ svc-analyzer-run:
 	cd processing/analyzer-worker; \
 	uvicorn analyzer.api.api:app --reload --port=8080
 
+svc-api-compile:
+	cd processing/service-api; \
+	pip-compile -U --output-file=requirements.txt requirements.in
+
 svc-api-dep:
 	cd processing/service-api; \
 	pip install -e .

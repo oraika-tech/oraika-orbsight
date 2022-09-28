@@ -1,0 +1,7 @@
+from service.visualization.domain.domain_handler import VisualizationDomainHandler
+from service.visualization.persistence.cubejs_client import CubejsClient
+from service.visualization.persistence.db_manager import VisualizationDBManager
+
+cubejs_client = CubejsClient()
+visualization_db_manager = VisualizationDBManager()
+domain_handler = VisualizationDomainHandler(persistence_manager=visualization_db_manager, cubejs_client=cubejs_client)

@@ -7,5 +7,6 @@ from pydantic import BaseModel
 class UserInfo(BaseModel):
     identifier: Optional[UUID]
     tenant_ids: List[str]
+    tenant_codes: List[str]
     name: str
     email: str

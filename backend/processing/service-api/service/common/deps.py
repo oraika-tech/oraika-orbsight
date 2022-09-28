@@ -6,11 +6,11 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel, ValidationError
-from service.auth import auth_handler
-from service.common.settings import settings
 from starlette import status
 from starlette.exceptions import HTTPException
 
+from service.auth import auth_handler
+from service.common.settings import settings
 from .model.user import UserInfo
 
 logger = logging.getLogger(__name__)

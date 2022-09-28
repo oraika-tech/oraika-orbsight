@@ -14,3 +14,8 @@ def search_dict(partial: Any, search_key: str):
         elif isinstance(current_item, list):
             for value in current_item:
                 stack.append(value)
+
+
+def to_camel_case(snake_str):
+    components = snake_str.split('_')
+    return components[0] + ''.join(x.title() for x in components[1:])

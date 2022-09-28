@@ -1,4 +1,3 @@
-import secrets
 from typing import List
 
 from pydantic import BaseSettings, Field
@@ -9,6 +8,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "default_key"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1
     ALGORITHM = "HS256"
+
+    CUBEJS_SECRET_KEY: str = "default_key"
+    CUBEJS_API_ENDPOINT: str = "http://localhost:4000/cubejs-api/v1/load"
 
     CACHE_TTL = 300
     CACHE_MAX_SIZE = 32
