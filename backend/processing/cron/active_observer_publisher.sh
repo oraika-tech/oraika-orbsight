@@ -55,8 +55,8 @@ psql -t postgresql://"$DB_USER":"$DB_PASSWORD"@"$DB_HOST"/"$DB_NAME" <<<"$SQL_QU
 MSG_PART_FILE=/tmp/rows_part_$TENANT_ID.json
 
 cd /tmp/ || exit 1
-split -l 10 --additional-suffix msg_part $MSG_FILE
-for part_file in *msg_part*; do
+split -l 10 --additional-suffix msg_${TENANT_ID}_part $MSG_FILE
+for part_file in *msg_${TENANT_ID}_part*; do
 
   echo '[' >"$MSG_PART_FILE"
   sed -e '$ ! s/$/,/' "$part_file" >>"$MSG_PART_FILE"
