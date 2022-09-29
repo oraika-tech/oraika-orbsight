@@ -25,6 +25,11 @@ db-sync-schema:
 	$(eval ws_dir=schema/orb_$(shell if [ "${tenant}" = "core" ]; then echo "core"; else echo "tenant"; fi))
 	bash database_v2/scripts/liquibase.sh $(ws_dir) $(db_name) update
 	
+# make db-pull-data tenant=core
+# make db-pull-data tenant=rbi
+db-pull-data:
+	bash database_v2/scripts/pull_tenant_csv.sh $(tenant)
+
 # make db-sync-data tenant=core
 # make db-sync-data tenant=rbi
 db-sync-data:

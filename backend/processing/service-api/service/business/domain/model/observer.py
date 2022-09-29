@@ -6,7 +6,11 @@ from pydantic import BaseModel
 OBSERVER_TYPE = {
     1: "Twitter",
     2: "Android",
-    3: "iOS"
+    3: "iOS",
+    4: "GoogleMaps",
+    5: "Facebook",
+    6: "Reddit",
+    7: "GoogleNews"
 }
 
 
