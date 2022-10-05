@@ -17,9 +17,9 @@ class RawDataEvent(BaseModel):
 
 class SqsPublisher(BaseSettings):
     region_name: str = Field('eu-west-1', env='AWS_REGION')
-    aws_access_key_id: SecretStr = Field(None, env='AWS_ACCESS_KEY_ID')
-    aws_secret_access_key: SecretStr = Field(None, env='AWS_SECRET_ACCESS_KEY')
-    queue_url: str = Field(None, env='AWS_SQS_ANALYSER_QUEUE')
+    aws_access_key_id: SecretStr = Field("dummy_key_id", env='AWS_ACCESS_KEY_ID')
+    aws_secret_access_key: SecretStr = Field("dummy_access_key", env='AWS_SECRET_ACCESS_KEY')
+    queue_url: str = Field('dummy_queue_url', env='AWS_SQS_ANALYSER_QUEUE')
     sqs: Any
 
     def __init__(self, **values: Any):

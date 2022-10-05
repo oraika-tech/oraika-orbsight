@@ -1,7 +1,8 @@
 import logging
-import os
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from uuid import UUID
+
+from pydantic import Field, BaseSettings
 
 from observer.domain.raw_data import RawData
 from observer.integration.executor import BaseObserverExecutor, TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, \
@@ -14,25 +15,28 @@ from observer.presentation.model.observer_job_event import ObserverJobEvent, Obs
 logger = logging.getLogger(__name__)
 
 
-class ObserverJobHandler:
-    observer_executors: Dict[ObserverType, BaseObserverExecutor]
-    rawDataEntityManager: RawDataEntityManager
-    sqsPublisher: SqsPublisher
-    min_raw_text_length: int
+class ObserverJobHandler(BaseSettings):
+    observer_executors: Optional[Dict[ObserverType, BaseObserverExecutor]]
+    rawDataEntityManager: Optional[RawDataEntityManager]
+    sqsPublisher: Optional[SqsPublisher]
+    min_raw_text_length: int = Field(20, env='MIN_TEXT_LENGTH')
 
-    def __init__(self):
-        self.observer_executors = {
-            ObserverType.Twitter: TwitterExecutor(),
-            ObserverType.Android: PlayStoreExecutor(),
-            ObserverType.iOS: AppleStoreExecutor(),
-            ObserverType.GoogleMaps: GoogleMapsExecutor(),
-            ObserverType.Facebook: FacebookExecutor(),
-            ObserverType.Reddit: RedditExecutor(),
-            ObserverType.GoogleNews: GoogleNewsExecutor(),
-        }
-        self.rawDataEntityManager = RawDataEntityManager()
-        self.sqsPublisher = SqsPublisher()
-        self.min_raw_text_length = int(os.environ.get('MIN_TEXT_LENGTH', 20))
+    def __init__(self, **data: Any):
+        super().__init__(**data)
+        if not self.observer_executors:
+            self.observer_executors = {
+                ObserverType.Twitter: TwitterExecutor(),
+                ObserverType.Android: PlayStoreExecutor(),
+                ObserverType.iOS: AppleStoreExecutor(),
+                ObserverType.GoogleMaps: GoogleMapsExecutor(),
+                ObserverType.Facebook: FacebookExecutor(),
+                ObserverType.Reddit: RedditExecutor(),
+                ObserverType.GoogleNews: GoogleNewsExecutor(),
+            }
+        if not self.rawDataEntityManager:
+            self.rawDataEntityManager = RawDataEntityManager()
+        if not self.sqsPublisher:
+            self.sqsPublisher = SqsPublisher()
 
     def fetch_data(self, event: ObserverJobEvent) -> List[ObseiResponse]:
         source_config: Optional[SourceConfig] = None

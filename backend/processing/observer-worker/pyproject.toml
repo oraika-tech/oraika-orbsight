@@ -11,11 +11,8 @@ description = "Observer tool for fetch text from various sources"
 dependencies = [
     "obsei @ git+https://github.com/obsei/obsei#egg=obsei[source]",
     "sqlmodel",
-    "fastapi",
-    "uvicorn[standard]",
-    "uvloop ; sys_platform != 'win32' and sys_platform != 'cygwin'",
     "psycopg2-binary",
-    "boto3",
+    "boto3"
 ]
 
 [project.optional-dependencies]
@@ -32,6 +29,10 @@ dev = [
     "types-pytz",
     "pytest",
     "pip-tools",
+    "moto",
+    "pytest-mock",
+    "pytest-pgsql",
+    "pgmock",
 ]
 
 [project.urls]
