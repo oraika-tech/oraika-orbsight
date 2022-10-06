@@ -18,6 +18,7 @@ class Component(BaseModel):
     type: str
     width: int
     name: Optional[str]
+    categories: Optional[List[str]]
     dock_align: Optional[str]  # left, right, top, bottom
 
     inputs: Optional[List[FieldValue]] = []

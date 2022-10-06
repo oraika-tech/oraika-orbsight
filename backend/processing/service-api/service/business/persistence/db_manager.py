@@ -224,34 +224,27 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
 
     def enabled_observers_count(self, tenant_id: UUID) -> List[StatsInfo]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
-
             total_count = session.query(
                 func.count(Observer.is_enabled)
             ).filter(
                 Observer.is_deleted == False,
             ).first()
 
-            total = 0
-            for count in total_count:
-                total = count
+            total = total_count[0]
 
             result_set = session.query(
-                Observer.is_enabled,
                 func.count(Observer.is_enabled)
-            ).group_by(
-                Observer.is_enabled
             ).filter(
                 Observer.entity_id == Entity.identifier,
+                Observer.is_enabled == True,
                 Entity.is_enabled == True,
                 Entity.is_deleted == False,
                 Observer.is_deleted == False,
             ).all()
 
             tracked = 0
-            for flag, count in result_set:
-                total += int(count)
-                if flag:
-                    tracked = int(count)
+            for count in result_set:
+                tracked += count[0]
 
             return [
                 StatsInfo(name="Tracked", value=tracked),

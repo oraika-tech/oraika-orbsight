@@ -37,7 +37,7 @@ def echarts_option_translation_update(echarts_option: dict, series_data_list: Li
                     else:
                         current_series = copy.copy(series_original)
                         echarts_option['series'].append(current_series)
-                    if name.strip() and name != 'common':
+                    if name is not None and name.strip() and name != 'common':
                         current_series['name'] = name
                     current_series['data'] = data
                     isFirst = False

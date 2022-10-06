@@ -66,7 +66,7 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
             )
             if frontend_key:
                 query = query.filter(
-                    DashboardEntity.frontend_keys == frontend_key
+                    DashboardEntity.frontend_keys.any(frontend_key)
                 )
             dashboards = query.all()
             return [

@@ -30,18 +30,29 @@ class VisualizationDomainHandler(BaseSettings):
     def hash_key_dashboards(self, tenant_id: UUID, tenant_code: str, frontend_key: str, include_components: bool):
         return tenant_id, frontend_key, include_components
 
-    @cached(cache=TTLCache(maxsize=32, ttl=5), key=hash_key_dashboard)
+    @cached(cache=TTLCache(maxsize=32, ttl=300), key=hash_key_dashboard)
     def get_dashboard(self, tenant_id: UUID, tenant_code: str, dashboard_id: UUID, filter_list: List[FilterDO]):
         dashboard = self.persistence_manager.get_dashboard(tenant_id, dashboard_id)
         return self._get_dashboard_info(tenant_id, tenant_code, dashboard, filter_list, include_components=True)
 
-    @cached(cache=TTLCache(maxsize=32, ttl=5), key=hash_key_dashboards)
+    @cached(cache=TTLCache(maxsize=32, ttl=300), key=hash_key_dashboards)
     def get_dashboards(self, tenant_id: UUID, tenant_code: str, frontend_key: str, include_components: bool):
         dashboards = self.persistence_manager.get_dashboards(tenant_id, frontend_key)
         return [
             self._get_dashboard_info(tenant_id, tenant_code, dashboard, [], include_components)
             for dashboard in dashboards
         ]
+
+    @staticmethod
+    def get_view_field_name(db_field):
+        if db_field == 'categories':
+            return 'Categories.category'
+        elif db_field == 'taxonomyTags':
+            return 'TaxonomyTags.taxonomyTag'
+        elif db_field == 'taxonomyTerms':
+            return 'TaxonomyTerms.taxonomyTerm'
+        else:
+            return 'ProcessedDataViewV1.' + db_field
 
     def _get_dashboard_info(self, tenant_id: UUID, tenant_code: str, dashboard: DashboardDO,
                             filter_list: List[FilterDO], include_components: bool):
@@ -83,13 +94,33 @@ class VisualizationDomainHandler(BaseSettings):
                                     db_field = filter_value.pop('db_field')
                                     filter_field = filter_value.get('id')
                                     if db_field:
-                                        query = {"dimensions": ["ProcessedDataViewV1." + db_field]}
+                                        field_name = self.get_view_field_name(db_field)
+                                        query = {"dimensions": [field_name]}
                                         result = self.cubejs_client.fetch_data(tenant_code, query, [])
-                                        filter_value['options'] = [
-                                            {"label": dp["ProcessedDataViewV1." + db_field]}
-                                            for dp in result]
+                                        result_values = [{"code": dp[field_name]} for dp in result
+                                                         if len(dp[field_name].strip()) > 0]
+                                        filter_value['options'] = [{"code": "all"}]
+                                        filter_value['options'].extend(result_values)
+
                                         if filter_field in filter_map:
-                                            filter_value['selectedValue'] = filter_map[filter_field].values
+                                            filter_value['selectedValue'] = {'code': filter_map[filter_field].values[0]}
+                                        else:
+                                            filter_value['selectedValue'] = filter_value['defaultValue']
+                elif component.name == 'LiveFeedTable':
+                    query_obj = None
+                    for input_obj in component.inputs:
+                        if input_obj.field == "query":
+                            query_obj = input_obj
+                    if query_obj:
+                        query = query_obj.value
+                        component.inputs.remove(query_obj)
+                        result = self.cubejs_client.fetch_data(tenant_code, query, filter_list)
+                        component.inputs.append(FieldValue(
+                            field="live_feeds",
+                            value=[{key.replace('ProcessedDataViewV1.', ''): value
+                                    for key, value in entry.items()}
+                                   for entry in result]
+                        ))
 
         return dashboard
 
@@ -112,7 +143,6 @@ class VisualizationDomainHandler(BaseSettings):
         if data_source_type == DataSourceType.CUBE_JS:
             for data_source in data_source_series:
                 series_data = self.cubejs_client.fetch_data(tenant_code, json.loads(data_source.query), filter_list)
-                result_series.append(series_data)
 
                 series_name = data_source.name if data_source.name else 'common'
                 if series_name not in field_mappings:
@@ -124,6 +154,10 @@ class VisualizationDomainHandler(BaseSettings):
                         mapped_key = field_mappings[series_name].get(key, field_mappings['common'].get(key))
                         if mapped_key:
                             data_point[mapped_key] = data_point.pop(key)
+
+                result_series.append([data_point for data_point in series_data
+                                      if ('name' in data_point and data_point['name'] is not None)
+                                      or ('x_value' in data_point and data_point['x_value'] is not None)])
 
             # Sample result - list of series
             # [

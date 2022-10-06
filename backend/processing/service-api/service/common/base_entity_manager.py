@@ -29,10 +29,10 @@ class BaseEntityManager(BaseSettings):
     def __init__(self, **values: Any):
         super().__init__(**values)
         connection_string = f"{self.db_engine_name}://{self.core_db_user}:{self.core_db_password}@{self.db_host}/{self.core_db_name}"
-        self.core_db_engine = create_engine(connection_string)
+        self.core_db_engine = create_engine(connection_string, pool_size=2, pool_pre_ping=True)
 
     def _get_tenant_engine(self, tenant_id: UUID):
-        if tenant_id not in self.tenant_db_engines:
+        if tenant_id not in self.tenant_db_engines or self.tenant_db_engines[tenant_id]:
             with Session(self.core_db_engine) as session:
                 query = select(TenantGlobalConfig) \
                     .filter(TenantGlobalConfig.tenant_id == tenant_id) \
@@ -43,7 +43,7 @@ class BaseEntityManager(BaseSettings):
                 db_password = config.get('db_password', self.core_db_password)
                 db_name = config['db_name']
                 connection_string = f"{db_engine_name}://{db_user}:{db_password}@{self.db_host}/{db_name}"
-            self.tenant_db_engines[tenant_id] = create_engine(connection_string)
+            self.tenant_db_engines[tenant_id] = create_engine(connection_string, pool_size=2, pool_pre_ping=True)
         return self.tenant_db_engines[tenant_id]
 
     @staticmethod
