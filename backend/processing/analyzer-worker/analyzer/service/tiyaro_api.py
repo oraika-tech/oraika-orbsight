@@ -3,7 +3,7 @@ from typing import Optional, List, Any, Dict
 import requests
 from pydantic import BaseSettings, Field, PrivateAttr
 
-from analyzer.api.tiyaro_exception import TiyaroException
+from analyzer.worker.tiyaro_exception import TiyaroException
 
 TIYARO_API_ENDPOINT = "https://api.tiyaro.ai/v1/ent/huggingface/1/{model}"
 ZERO_SHOT_MODEL = "joeddav/xlm-roberta-large-xnli"

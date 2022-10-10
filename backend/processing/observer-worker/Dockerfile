@@ -37,5 +37,4 @@ RUN pip install .
 
 USER user
 
-# cmd for running the API
 CMD ["sh", "-c", "python observer/presentation/observer_job_controller.py"]

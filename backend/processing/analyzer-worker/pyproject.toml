@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling>=1.8.0"]
+build-backend = "hatchling.build"
+
+[project]
+requires-python = ">=3.9"
+name = "analyzer"
+version = "0.0.1"
+description = "Analyzer worker to process raw data"
+
+dependencies = [
+    "sqlmodel",
+    "psycopg2-binary",
+    "langdetect",
+    "nltk",
+    "pandas",
+    "requests",
+    "cachetools",
+    "boto3",
+]
+
+[project.optional-dependencies]
+
+dev = [
+    "pre-commit",
+    "black",
+    "mypy",
+    "types-requests",
+    "types-python-dateutil",
+    "types-PyYAML",
+    "types-dateparser",
+    "types-protobuf",
+    "types-pytz",
+    "pytest",
+    "pip-tools",
+    "moto",
+    "pytest-mock",
+    "pytest-pgsql",
+    "pgmock",
+]
+
+[project.urls]
+repository = "https://github.com/oraika-tech/obsights"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.sdist]
+include = ["/analyzer"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["analyzer"]
