@@ -13,7 +13,6 @@ from service.visualization.domain.model.chart_models import FilterDO
 from service.visualization.domain.model.dashboard_models import DashboardDO
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def get_handler():
@@ -37,7 +36,7 @@ def get_dashboard(
         raise HTTPException(status_code=400, detail="User not found")
 
     filter_list: List[FilterDO] = request_body.filters
-    logger.info(f"FILTERS:{filter_list}")
+    logger.debug("Request filters: %s", filter_list)
 
     try:
         return handler.get_dashboard(user_info.tenant_ids[0], user_info.tenant_codes[0], dashboard_id, filter_list)

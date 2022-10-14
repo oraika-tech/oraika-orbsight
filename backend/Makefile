@@ -64,3 +64,6 @@ svc-api-dep:
 svc-api-run:
 	cd processing/service-api; \
 	uvicorn service.main:app --reload --port=8080
+
+svc-test:
+	pytest processing/service-api/tests/test_*.py

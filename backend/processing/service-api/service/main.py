@@ -1,4 +1,5 @@
 import logging
+import os
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -7,12 +8,17 @@ from starlette.middleware.gzip import GZipMiddleware
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
+
 from service import api_router
 from service.common.settings import settings
 
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%m/%d/%Y %I:%M:%S %p")
+LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)5s - [%(thread)d:%(threadName)s] - %(name)s:%(lineno)d - %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S %p",
+    level=LOGLEVEL
+)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 PORT = 8080
 

@@ -1,10 +1,13 @@
+import logging
 from typing import List, Optional
 from uuid import UUID
 
+from pydantic import BaseModel
 from sqlalchemy import Column
 from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.sql.expression import false, true
 from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
@@ -13,6 +16,8 @@ from service.visualization.domain.base import BasePersistenceManager
 from service.visualization.domain.model.chart_models import ChartDBO, DataSourceType
 from service.visualization.domain.model.chart_models import DataSourceSeriesDO
 from service.visualization.domain.model.dashboard_models import DashboardDO, ComponentLayoutDO
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardEntity(SQLModel, table=True):
@@ -27,6 +32,16 @@ class DashboardEntity(SQLModel, table=True):
     is_deleted: bool
 
 
+class Pivoting(BaseModel):
+    columns: List[str]
+    field_name: str
+
+
+class DataMapping(BaseModel):
+    mappings: List[dict]
+    pivoting: Pivoting
+
+
 class ChartEntity(SQLModel, table=True):
     __tablename__ = "viz_chart"
 
@@ -35,7 +50,7 @@ class ChartEntity(SQLModel, table=True):
     data_source_series: Optional[List[DataSourceSeriesDO]] = SqlField(default='{}', sa_column=Column(JSONB))
     chart_type: str
     chart_config: Optional[dict] = SqlField(default='{}', sa_column=Column(JSONB))
-    data_field_mapping: Optional[List[dict]] = SqlField(default='{}', sa_column=Column(JSONB))
+    data_transformer_meta: Optional[DataMapping] = SqlField(default='{}', sa_column=Column(JSONB))
 
     is_enabled: bool
     is_deleted: bool
@@ -47,8 +62,8 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
         with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(DashboardEntity).filter(
                 DashboardEntity.identifier == dashboard_id,
-                DashboardEntity.is_enabled == True,
-                DashboardEntity.is_deleted == False
+                DashboardEntity.is_enabled == true(),
+                DashboardEntity.is_deleted == false()
             )
             dashboard = query.first()
             return DashboardDO(
@@ -61,12 +76,12 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
     def get_dashboards(self, tenant_id: UUID, frontend_key: str) -> List[DashboardDO]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(DashboardEntity).filter(
-                DashboardEntity.is_enabled == True,
-                DashboardEntity.is_deleted == False
+                DashboardEntity.is_enabled == true(),
+                DashboardEntity.is_deleted == false()
             )
             if frontend_key:
                 query = query.filter(
-                    DashboardEntity.frontend_keys.any(frontend_key)
+                    DashboardEntity.frontend_keys.any(frontend_key)  # noqa
                 )
             dashboards = query.all()
             return [
@@ -82,9 +97,9 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
     def get_charts_by_ids(self, tenant_id: UUID, chart_ids: List[UUID]) -> dict[UUID, ChartDBO]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(ChartEntity).filter(
-                ChartEntity.identifier.in_(chart_ids),
-                ChartEntity.is_enabled == True,
-                ChartEntity.is_deleted == False
+                ChartEntity.identifier.in_(chart_ids),  # noqa
+                ChartEntity.is_enabled == true(),
+                ChartEntity.is_deleted == false()
             )
             charts = query.all()
             return {
@@ -94,7 +109,7 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
                     chart_config=chart.chart_config,
                     data_source_type=chart.data_source_type,
                     data_source_series=chart.data_source_series,
-                    data_field_mapping=chart.data_field_mapping
+                    data_transformer_meta=chart.data_transformer_meta
                 )
                 for chart in charts
             }

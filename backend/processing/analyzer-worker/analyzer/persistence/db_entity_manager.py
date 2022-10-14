@@ -7,6 +7,7 @@ from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
 from analyzer.model.data_store_request import DBStoreRequest
+from service.common.settings import settings
 from .base_entity_manager import BaseEntityManager
 
 
@@ -79,7 +80,7 @@ class DBEntityManager(BaseEntityManager):
         return "_".join(words)
 
     # Keeping it to less than equal to cron period. Main idea that at least it can handle single burst of events
-    @cached(cache=TTLCache(maxsize=32, ttl=300), key=hash_key)
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_taxonomy_dataframe(self, tenant_id: UUID) -> DataFrame:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             taxonomy_entities = session.query(TaxonomyEntity).filter(
@@ -93,7 +94,7 @@ class DBEntityManager(BaseEntityManager):
 
             return DataFrame()
 
-    @cached(cache=TTLCache(maxsize=32, ttl=300), key=hash_key)
+    @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_categories(self, tenant_id: UUID) -> List[str]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             category_entities = session.query(CategoryEntity).filter(

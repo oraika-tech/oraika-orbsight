@@ -16,7 +16,8 @@ class FieldValue(BaseModel):
 class Component(BaseModel):
     identifier: Optional[UUID]
     type: str
-    width: int
+    width: float
+    height: Optional[str]
     name: Optional[str]
     categories: Optional[List[str]]
     dock_align: Optional[str]  # left, right, top, bottom
