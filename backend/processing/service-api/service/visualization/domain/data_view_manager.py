@@ -1,4 +1,5 @@
 import logging
+from functools import reduce
 from typing import List, Any
 
 from pydantic import BaseSettings, PrivateAttr
@@ -7,6 +8,7 @@ from service.common.utils import dedup_list, list_split_by_condition, to_space_c
 from service.visualization.domain.model.chart_models import DatasetResult, DataTransformerMetaDO, \
     DataSourceType, FieldPivotDO
 from service.visualization.domain.model.chart_models import FilterDO
+from service.visualization.domain.model.common_models import SortOrder, OrderData
 from service.visualization.persistence.cubejs_client import CubejsClient
 
 logger = logging.getLogger(__name__)
@@ -61,7 +63,17 @@ class DataViewManager(BaseSettings):
         return [field_value[db_field] for field_value in result if len(field_value[db_field].strip()) > 0]
 
     @staticmethod
-    def pivot_result(results: List[List], field_pivoting: FieldPivotDO, dimension_fields: List[str]):
+    def int_sum(v1, v2):
+        v2 = v2 if v2 else 0
+        return int(v1) + int(v2)
+
+    @staticmethod
+    def str_concat(v1, v2):
+        v2 = v2 if v2 else ''
+        return v1 + v2
+
+    def pivot_result(self, results: List[List], field_pivoting: FieldPivotDO,
+                     dimension_fields: List[str], sort_order: SortOrder = None):
         """
             If given columns
                 [column1, column2, column3, column4, column5]
@@ -69,7 +81,7 @@ class DataViewManager(BaseSettings):
             assuming pivot columns
                 [column3, column4]
             pivoted columns will be
-                [column1, value1.value2.column4, value1.value2.column5]
+                [column1, value2.value3.column4, value2.value3.column5]
                   value1,                value4,                value5
 
             pc: pivot column
@@ -77,17 +89,16 @@ class DataViewManager(BaseSettings):
             npv: non pivot value
         """
         pivoted_result_map = {}
-        pivoted_dimensions = {dimension_fields[0]: 0}
+        pivoted_dimensions = {}
         df_index = {field: i for i, field in enumerate(dimension_fields)}
         non_pivot_fields = [field for field in dimension_fields[1:] if field not in field_pivoting.columns]
         for record in results:
             x_dimension_value = record[0]
             if x_dimension_value not in pivoted_result_map:
-                pivoted_result_map[x_dimension_value] = [x_dimension_value]  # inserting 1st columns
+                pivoted_result_map[x_dimension_value] = {}
 
             row = pivoted_result_map[x_dimension_value]
             for non_pivot_field in non_pivot_fields:
-                row.append(record[df_index[non_pivot_field]])  # pc1.pc2.npc1 = npv1
                 pivot_values = [record[df_index[pivot_field]]
                                 for pivot_field in field_pivoting.columns
                                 if record[df_index[pivot_field]]]
@@ -96,11 +107,29 @@ class DataViewManager(BaseSettings):
                     pivoted_dimensions[pivot_column] += 1
                 else:
                     pivoted_dimensions[pivot_column] = 0
+                row[pivot_column] = record[df_index[non_pivot_field]]  # pc1.pc2.npc1 = npv1
 
-        return DatasetResult(
-            dimensions=list(pivoted_dimensions.keys()),
-            results=list(pivoted_result_map.values())
-        ).get_dataset()
+        tabular_results = [
+            [x_column_value] + [other_values.get(column_names) for column_names in pivoted_dimensions.keys()]
+            for x_column_value, other_values in pivoted_result_map.items()
+        ]
+        result_columns = [dimension_fields[0]] + list(pivoted_dimensions.keys())
+
+        if sort_order and len(sort_order.order):
+            order_columns_index = [i
+                                   for i, result_column in enumerate(result_columns)
+                                   for order_data in sort_order.order
+                                   if result_column.endswith(order_data.field)]
+
+            reduction_fx = self.int_sum if sort_order.is_all_numbers else self.str_concat
+
+            def key_function(row_value: List):
+                order_values = [row_value[i] for i in order_columns_index]
+                return reduce(reduction_fx, order_values)
+
+            tabular_results.sort(key=key_function, reverse=sort_order.order[0].is_reverse)
+
+        return DatasetResult(dimensions=result_columns, results=tabular_results).get_dataset()
 
     @staticmethod
     def normal_result(results: List[dict], dimension_fields: List[str]):
@@ -186,9 +215,28 @@ class DataViewManager(BaseSettings):
                         field_pivoting = fp
 
         if field_pivoting:
-            return self.pivot_result(domain_results, field_pivoting, dimension_fields)
+            order_dimensions = self.get_sort_order_from_query(query)
+            return self.pivot_result(domain_results, field_pivoting, dimension_fields, order_dimensions)
 
-        return DatasetResult(
-            dimensions=dimension_fields,
-            results=domain_results
-        ).get_dataset()
+        return DatasetResult(dimensions=dimension_fields, results=domain_results).get_dataset()
+
+    def get_sort_order_from_query(self, query: dict):
+        ordering: dict = query.get('order')
+        measures: List = query.get('measures')
+
+        if not ordering:
+            return None
+
+        return SortOrder(
+            order=[OrderData(field=self.get_domain_field(field), is_reverse=(order == 'desc'))
+                   for field, order in ordering.items()],
+            is_all_numbers=all(field in measures for field in ordering) if measures else False
+        )
+
+    def combine_series(self, series_list: List[List[List]], x_columns_index: List[int] = None):
+        if not x_columns_index:
+            x_columns_index = [0 for series in series_list]
+
+        for series_index, series in enumerate(series_list):
+            for row in series:
+                x_value = series[x_columns_index[series_index]]
