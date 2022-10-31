@@ -1,6 +1,6 @@
-from service.visualization.domain.data_view_manager import DataViewManager
 from service.visualization.domain.domain_handler import VisualizationDomainHandler
-from service.visualization.domain.dynamic_dashboard_manager import DynamicDashboardManager
+from service.visualization.domain.dynamic_dashboard.data_view_manager import DataViewManager
+from service.visualization.domain.dynamic_dashboard.dynamic_dashboard_manager import DynamicDashboardManager
 from service.visualization.persistence.cubejs_client import CubejsClient
 from service.visualization.persistence.db_manager import VisualizationDBManager
 

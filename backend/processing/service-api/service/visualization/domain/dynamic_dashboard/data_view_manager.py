@@ -64,16 +64,16 @@ class DataViewManager(BaseSettings):
 
     @staticmethod
     def int_sum(v1, v2):
-        v2 = v2 if v2 else 0
+        v2 = v2 or 0
         return int(v1) + int(v2)
 
     @staticmethod
     def str_concat(v1, v2):
-        v2 = v2 if v2 else ''
+        v2 = v2 or ''
         return v1 + v2
 
     def pivot_result(self, results: List[List], field_pivoting: FieldPivotDO,
-                     dimension_fields: List[str], sort_order: SortOrder = None):
+                     dimension_fields: List[str], sort_order: SortOrder = None, default_value=None):
         """
             If given columns
                 [column1, column2, column3, column4, column5]
@@ -110,7 +110,8 @@ class DataViewManager(BaseSettings):
                 row[pivot_column] = record[df_index[non_pivot_field]]  # pc1.pc2.npc1 = npv1
 
         tabular_results = [
-            [x_column_value] + [other_values.get(column_names) for column_names in pivoted_dimensions.keys()]
+            [x_column_value] +
+            [other_values.get(column_names, default_value) for column_names in pivoted_dimensions.keys()]
             for x_column_value, other_values in pivoted_result_map.items()
         ]
         result_columns = [dimension_fields[0]] + list(pivoted_dimensions.keys())
@@ -151,9 +152,9 @@ class DataViewManager(BaseSettings):
         return result_dimensions
 
     @staticmethod
-    def get_result_for_dimension(results, db_dimensions):
+    def get_result_for_dimension(results, db_dimensions, default_value):
         return [
-            [record.get(db_dimensions) for db_dimensions in db_dimensions]
+            [record.get(db_dimensions, default_value) for db_dimensions in db_dimensions]
             for record in results
         ]
 
@@ -176,8 +177,8 @@ class DataViewManager(BaseSettings):
         return time_dimension
 
     def get_query_result(self, data_source_type: DataSourceType, tenant_code: str, query: dict,
-                         filter_list: List[FilterDO], is_timeseries, series_name: str = None,
-                         data_transformer_meta: DataTransformerMetaDO = None) -> List[List]:
+                         filter_list: List[FilterDO], default_value=None, is_timeseries=False,
+                         series_name: str = None, data_transformer_meta: DataTransformerMetaDO = None) -> List[List]:
 
         time_filters, dimension_filters = list_split_by_condition(
             filter_list, lambda filter_do: filter_do.name in self._time_field_name)
@@ -202,7 +203,7 @@ class DataViewManager(BaseSettings):
         time_dimension = self.get_time_dimensions(query) if is_timeseries else []
         db_dimensions = dedup_list(time_dimension + query.get('dimensions', []) + query.get('measures', []))
         dimension_fields = [self.get_domain_field(field) for field in db_dimensions]
-        domain_results = self.get_result_for_dimension(results, db_dimensions)
+        domain_results = self.get_result_for_dimension(results, db_dimensions, default_value)
 
         field_pivoting = None
         if data_transformer_meta and data_transformer_meta.field_pivoting:
@@ -216,7 +217,7 @@ class DataViewManager(BaseSettings):
 
         if field_pivoting:
             order_dimensions = self.get_sort_order_from_query(query)
-            return self.pivot_result(domain_results, field_pivoting, dimension_fields, order_dimensions)
+            return self.pivot_result(domain_results, field_pivoting, dimension_fields, order_dimensions, default_value)
 
         return DatasetResult(dimensions=dimension_fields, results=domain_results).get_dataset()
 
@@ -233,10 +234,46 @@ class DataViewManager(BaseSettings):
             is_all_numbers=all(field in measures for field in ordering) if measures else False
         )
 
-    def combine_series(self, series_list: List[List[List]], x_columns_index: List[int] = None):
-        if not x_columns_index:
-            x_columns_index = [0 for series in series_list]
+    @staticmethod
+    def combine_series(series_list: List[List[List]],
+                       key_columns_index: List[int] = None,
+                       series_default_values: list = None):
+        """
+        :param series_list:  List of series. Each series table with list of rows. Each row is list of columns
+        :param key_columns_index: Column index of key column in each series
+        :param series_default_values: List of default value of each series
+        :return:
+        """
 
-        for series_index, series in enumerate(series_list):
-            for row in series:
-                x_value = series[x_columns_index[series_index]]
+        if not key_columns_index:  # by default, pick first column as x-axis
+            key_columns_index = [0] * len(series_list)
+
+        series_map_list: List[dict] = [
+            {
+                row.pop(key_columns_index[series_index]): row
+                for row in series
+            }
+            for series_index, series in enumerate(series_list)
+        ]
+
+        x_values = list(dict.fromkeys([x_column for series_map in series_map_list for x_column in series_map.keys()]))
+
+        combined_series_map = {}
+
+        series_col_nos = [len(series_map) for series_map in series_map_list]
+
+        default_values = series_default_values or [None] * len(series_list)
+
+        for x_value in x_values:
+            combined_series_map[x_value] = []
+            for i, series_map in enumerate(series_map_list):
+                if x_value in series_map:
+                    row_values = series_map[x_value]
+                else:
+                    row_values = [default_values[i]] * series_col_nos[i]
+                combined_series_map[x_value].extend(row_values)
+
+        return [
+            [x_value] + other_values
+            for x_value, other_values in combined_series_map.items()
+        ]

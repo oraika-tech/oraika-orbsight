@@ -15,12 +15,14 @@ class FieldValue(BaseModel):
 
 class Component(BaseModel):
     identifier: Optional[UUID]
+    title: Optional[str]
     type: str
     width: float
     height: Optional[str]
     name: Optional[str]
     categories: Optional[List[str]]
     dock_align: Optional[str]  # left, right, top, bottom
+    components: Optional[List['Component']]
 
     inputs: Optional[List[FieldValue]] = []
     outputs: Optional[List[str]] = []

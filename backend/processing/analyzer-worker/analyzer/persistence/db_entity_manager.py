@@ -91,6 +91,7 @@ class DBEntityManager(BaseEntityManager):
                 return DataFrame(
                     [taxonomy_entity.as_dict() for taxonomy_entity in taxonomy_entities]
                 ).convert_dtypes().apply(lambda col: col.str.lower())
+                # todo: Need to apply lower only on keyword column
 
             return DataFrame()
 

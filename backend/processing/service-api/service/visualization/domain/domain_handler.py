@@ -6,8 +6,8 @@ from cachetools import TTLCache, cached
 from pydantic import BaseSettings
 
 from service.common.settings import settings
+from service.visualization.domain.dynamic_dashboard.dynamic_dashboard_manager import DynamicDashboardManager
 from .base import BasePersistenceManager
-from .dynamic_dashboard_manager import DynamicDashboardManager
 from .model.chart_models import FilterDO
 
 logger = logging.getLogger(__name__)
@@ -16,17 +16,13 @@ logger = logging.getLogger(__name__)
 class VisualizationDomainHandler(BaseSettings):
     persistence_manager: BasePersistenceManager
     dynamic_dashboard_manager: DynamicDashboardManager
+    hash_prefix: str = "hash_"
 
     def hash_key_dashboard(self, tenant_id: UUID, tenant_code: str, dashboard_id: UUID, filter_list: List[FilterDO]):
-        return (
-            tenant_id,
-            tenant_code,
-            dashboard_id,
-            tuple(filter_list)
-        )
+        return self.hash_prefix, tenant_id, tenant_code, dashboard_id, tuple(filter_list)
 
     def hash_key_dashboards(self, tenant_id: UUID, tenant_code: str, frontend_key: str, include_components: bool):
-        return tenant_id, tenant_code, frontend_key, include_components
+        return self.hash_prefix, tenant_id, tenant_code, frontend_key, include_components
 
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key_dashboard)
     def get_dashboard(self, tenant_id: UUID, tenant_code: str, dashboard_id: UUID, filter_list: List[FilterDO]):

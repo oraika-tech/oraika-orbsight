@@ -4,14 +4,11 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from service.visualization.domain.model.common_models import DataSourceSeriesDO
+
 
 class DataSourceType(Enum):
     CUBE_JS = 'CUBE_JS'
-
-
-class DataSourceSeriesDO(BaseModel):
-    name: Optional[str]
-    query: str
 
 
 class FilterDO(BaseModel):
@@ -32,7 +29,7 @@ class FieldMappingDO(BaseModel):
 class FieldPivotDO(BaseModel):
     series_name: Optional[str]
     columns: List[str]
-    field_name: str
+    field_name: Optional[str]
 
 
 class DataTransformerMetaDO(BaseModel):
