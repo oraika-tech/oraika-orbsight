@@ -26,7 +26,7 @@ class KeyPhrasesHandler(BaseSettings):
 
         response: List[EmotionKeyPhrases] = []
         for key, value in emotion_text_map.items():
-            text = "".join(value)
+            text = "\n".join(value)
             cleaned_text = self.text_processor.clean_text(text)
             extracted_phrases = self.text_processor.extract_key_phrases(
                 text=cleaned_text,

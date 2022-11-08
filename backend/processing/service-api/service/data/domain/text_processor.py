@@ -1,5 +1,7 @@
 import re
 import sys
+from enum import Enum
+
 import unicodedata
 from pathlib import Path
 from typing import List, Any, Dict, Optional, Set, Union
@@ -10,6 +12,7 @@ from keybert import KeyBERT
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from pydantic import BaseSettings, Field, PrivateAttr
+from rakun2 import RakunKeyphraseDetector
 
 HTTP_REGEX = r'http\S+'
 MENTION_REGEX = "@[A-Za-z0-9_]+"
@@ -35,11 +38,18 @@ LANG_CODE_TO_NAME = {
     "ur": "urdu",
 }
 
+
+class KeywordExtractorType(int, Enum):
+    KeyBert = 1
+    Rakun = 2
+
+
 FILE_PATH = Path(__file__).parent
 
 
 class TextProcessor(BaseSettings):
-    _key_phrase_model: KeyBERT = PrivateAttr()
+    _keybert_model: KeyBERT = PrivateAttr()
+    _rakun_model: RakunKeyphraseDetector = PrivateAttr()
 
     # Text cleaning
     regex_substitute = " "
@@ -59,10 +69,16 @@ class TextProcessor(BaseSettings):
     hinglish_stop_file = "asset/hinglish_stopwords"
 
     # Keyphrases
+    keyword_extractor: KeywordExtractorType = Field(KeywordExtractorType.Rakun, env='KEYWORD_EXTRACTOR')
+    max_keyphrases: int = Field(16, env='MAXIMUM_KEY_PHRASES')
+    # Rakun Param
+    merge_threshold: float = 1.1
+    alpha: float = 0.3
+    token_prune_len: int = 3
+    # KeyBert Param
     key_phrase_model_name: str = Field("paraphrase-multilingual-MiniLM-L12-v2", env='KEY_PHRASE_MODEL')
     min_ngrams: int = Field(1, env='MAXIMUM_NGRAMS')
     max_ngrams: int = Field(3, env='MAXIMUM_NGRAMS')
-    max_keyphrases: int = Field(16, env='MAXIMUM_KEY_PHRASES')
     use_mmr: bool = True  # Maximal Margin Relevance (MMR)
     keyphrase_diversity: float = Field(
         0.25, ge=0.0, le=1.0
@@ -106,7 +122,14 @@ class TextProcessor(BaseSettings):
             # Create regex of above characters
             self.control_char_regex = re.compile('[%s]' % re.escape(control_chars))
 
-        self._key_phrase_model = KeyBERT(self.key_phrase_model_name)
+        self._keybert_model = KeyBERT(self.key_phrase_model_name)
+        hyper_parameters = {
+            "num_keywords": self.max_keyphrases,
+            "merge_threshold": self.merge_threshold,
+            "alpha": self.alpha,
+            "token_prune_len": self.token_prune_len
+        }
+        self._rakun_model = RakunKeyphraseDetector(hyper_parameters)
 
     def clean_text(self, text: str, deep_clean: bool = False, lang_code: str = 'en') -> str:
         cleaned_text = self.http_regex.sub(self.regex_substitute, text)
@@ -158,8 +181,19 @@ class TextProcessor(BaseSettings):
         return tokenized_tokens
 
     def extract_key_phrases(self, text: str, remove_stopwords: bool = False, lang_code: str = 'en') -> Dict[str, float]:
+        if self.keyword_extractor == KeywordExtractorType.KeyBert:
+            return self._keyword_by_keybert(text, remove_stopwords, lang_code)
+        return self._keyword_by_rakun(text)
 
-        key_phrases = self._key_phrase_model.extract_keywords(
+    def _keyword_by_rakun(self, text: str) -> Dict[str, float]:
+        key_phrases = self._rakun_model.find_keywords(text, input_type="string")
+        if key_phrases is None or len(key_phrases) == 0:
+            return {}
+        return {key_phrase: distance for key_phrase, distance in key_phrases}
+
+    def _keyword_by_keybert(self, text: str, remove_stopwords: bool = False, lang_code: str = 'en') -> Dict[str, float]:
+
+        key_phrases = self._keybert_model.extract_keywords(
             text,
             keyphrase_ngram_range=(self.min_ngrams, self.max_ngrams),
             use_mmr=self.use_mmr,

@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.10-slim-buster
 
 RUN useradd --create-home user
 WORKDIR /home/user

@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.10-slim-buster
 
 RUN useradd --create-home user
 WORKDIR /home/user
@@ -24,12 +24,12 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-conf
 RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-COPY requirements.txt setup.py /home/user/
+COPY pyproject.toml requirements.txt /home/user/
 COPY service /home/user/service
 
 # install as a package
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir gunicorn uvloop
+RUN pip install --no-cache-dir gunicorn
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
 

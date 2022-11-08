@@ -50,6 +50,7 @@ class StructuredDataExtractor(BaseSettings):
     # This is orbsight internal, if tenant require data in other language then a translation can be added to their
     # desire language
     supported_lang_codes: List[str] = Field(["en"], env="SUPPORTED_LANG_CODES")
+    enable_translation: bool = Field(False, env='ENABLE_TRANSLATION')
     emotion_labels: List[str] = Field(["positive", "negative", "neutral"], env="EMOTION_LABELS")
 
     def __init__(self, **data: Any):
@@ -189,7 +190,7 @@ class StructuredDataExtractor(BaseSettings):
             # If language is not in SUPPORTED_LANG_CODES then translate it
             # TODO: store processed_text so in future no need for translation and cleaning again
             #  incase if reclassification is required if user add or update categories
-            if text_language not in self.supported_lang_codes:
+            if self.enable_translation and text_language not in self.supported_lang_codes:
                 processed_text = self._translate_text(clean_text)
             else:
                 processed_text = clean_text
