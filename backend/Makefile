@@ -11,6 +11,8 @@ else
 	db_name=orb_tenant_$(tenant)
 endif
 
+port=8080
+
 # For all db-* target export db admin credentials - ADMIN_DB_USER, ADMIN_DB_PASSWORD
 
 # Usage:
@@ -43,7 +45,7 @@ svc-observer-dep:
 
 svc-observer-run:
 	cd processing/observer-worker; \
-	uvicorn observer.presentation.observer_job_controller:app --reload --port=8080
+	uvicorn observer.presentation.observer_job_controller:app --reload --port=$(port)
 
 svc-analyzer-dep:
 	cd processing/analyzer-worker; \
@@ -51,7 +53,7 @@ svc-analyzer-dep:
 
 svc-analyzer-run:
 	cd processing/analyzer-worker; \
-	uvicorn analyzer.api.api:app --reload --port=8080
+	uvicorn analyzer.api.api:app --reload --port=$(port)
 
 svc-api-compile:
 	cd processing/service-api; \
@@ -63,7 +65,7 @@ svc-api-dep:
 
 svc-api-run:
 	cd processing/service-api; \
-	uvicorn service.main:app --reload --port=8080
+	uvicorn service.main:app --reload --port=$(port)
 
 svc-test:
 	pytest processing/service-api/tests/test_*.py
