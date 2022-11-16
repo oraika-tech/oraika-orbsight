@@ -55,7 +55,7 @@ svc-analyzer-run:
 
 svc-api-compile:
 	cd processing/service-api; \
-	pip-compile -U --output-file=requirements.txt requirements.in
+	pip-compile pyproject.toml
 
 svc-api-dep:
 	cd processing/service-api; \

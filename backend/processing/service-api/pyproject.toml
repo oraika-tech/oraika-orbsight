@@ -24,6 +24,8 @@ dependencies = [
     "keybert",
     "rakun2",
     "cachetools",
+    "redis",
+    "nile_api"
 ]
 
 [project.optional-dependencies]

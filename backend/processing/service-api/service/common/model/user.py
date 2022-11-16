@@ -1,12 +1,11 @@
 from typing import List, Optional
-from uuid import UUID
 
 from pydantic import BaseModel
 
 
 class UserInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[str]
     tenant_ids: List[str]
     tenant_codes: List[str]
-    name: str
-    email: str
+    name: Optional[str]
+    email: Optional[str]

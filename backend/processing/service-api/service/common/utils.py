@@ -1,3 +1,4 @@
+import time
 from typing import Any, List
 
 
@@ -63,3 +64,7 @@ def to_space_camel_case(sentence: str):
     words = sentence.split(' ')
     titled_words = [word.title() for word in words]
     return ' '.join(titled_words)
+
+
+def now_epoch():
+    return int(time.time())

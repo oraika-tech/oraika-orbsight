@@ -12,12 +12,18 @@ class Settings(BaseSettings):
     CUBEJS_SECRET_KEY: str = "default_key"
     CUBEJS_API_ENDPOINT: str = "http://localhost:4000/cubejs-api/v1/load"
 
+    SERVICE_PORT = 8080
+
     CACHE_TTL = 300
     CACHE_MAX_SIZE = 32
 
     DEFAULT_QUERY_LIMIT = 500
 
-    CORS_ORIGINS: List[str] = Field(["*"])
+    DEFAULT_SESSION_TTL_SECONDS = 60 * 60 * 24
+    DEFAULT_MAX_CACHE_TTL_SECONDS = 60 * 60 * 24 * 30
+    COOKIE_SECURE: bool = True
+
+    CORS_ORIGINS: List[str] = Field(["https://orb.oraika.com"])
     ALLOWED_HOSTS: List[str] = Field(["*"])
 
     class Config:

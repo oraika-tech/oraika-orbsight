@@ -64,11 +64,13 @@ class DataViewManager(BaseSettings):
 
     @staticmethod
     def int_sum(v1, v2):
+        v1 = v1 or 0
         v2 = v2 or 0
         return int(v1) + int(v2)
 
     @staticmethod
     def str_concat(v1, v2):
+        v1 = v1 or ''
         v2 = v2 or ''
         return v1 + v2
 

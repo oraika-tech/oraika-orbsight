@@ -2,9 +2,9 @@ from typing import List, Set
 
 from cachetools import TTLCache, cached
 from pydantic import BaseSettings
+
 from service.common.settings import settings
 from service.data.domain.model.term import DataTerm
-
 from .base import BasePersistenceManager
 from .key_phrases_handler import KeyPhrasesHandler
 from .model.entity import DataEntity
@@ -74,9 +74,13 @@ class DataDomainHandler(BaseSettings):
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_word_cloud(self, filter_query_params: FilterQueryParams):
         data = self.get_text_analysis_data(filter_query_params)
+        if not data:
+            return []
         return self.word_freq_handler.generate_word_freq(data=data, lang_code=filter_query_params.lang_code)
 
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_key_phrases(self, filter_query_params: FilterQueryParams):
         data = self.get_text_analysis_data(filter_query_params)
+        if not data:
+            return []
         return self.key_phrases_handler.generate_key_phrases(data=data, lang_code=filter_query_params.lang_code)

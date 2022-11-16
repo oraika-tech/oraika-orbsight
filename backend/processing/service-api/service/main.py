@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-PORT = 8080
+PORT = settings.SERVICE_PORT
 
 
 async def http_error_handler(_: Request, exc: HTTPException) -> JSONResponse:
@@ -59,4 +59,4 @@ def app_init():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=PORT)
+    uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
