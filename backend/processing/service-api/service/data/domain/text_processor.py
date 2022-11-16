@@ -4,11 +4,10 @@ from enum import Enum
 
 import unicodedata
 from pathlib import Path
-from typing import List, Any, Dict, Optional, Set, Union
+from typing import List, Any, Dict, Optional, Set, Pattern
 
 import nltk
 import stopwordsiso
-from keybert import KeyBERT
 from nltk import word_tokenize
 from nltk.corpus import stopwords
 from pydantic import BaseSettings, Field, PrivateAttr
@@ -48,25 +47,24 @@ FILE_PATH = Path(__file__).parent
 
 
 class TextProcessor(BaseSettings):
-    _keybert_model: KeyBERT = PrivateAttr()
     _rakun_model: RakunKeyphraseDetector = PrivateAttr()
 
     # Text cleaning
-    regex_substitute = " "
-    http_regex = re.compile(HTTP_REGEX)
-    mention_regex = re.compile(MENTION_REGEX)
-    hashtags_regex = re.compile(HASHTAGS_REGEX)
-    digits_regex = re.compile(DIGITS_REGEX)
+    regex_substitute: str = " "
+    http_regex: Pattern[str] = re.compile(HTTP_REGEX)
+    mention_regex: Pattern[str] = re.compile(MENTION_REGEX)
+    hashtags_regex: Pattern[str] = re.compile(HASHTAGS_REGEX)
+    digits_regex: Pattern[str] = re.compile(DIGITS_REGEX)
     control_char_regex: Optional[Any]
 
     # Text tokenizer
-    tokenizer_name = "punkt"
+    tokenizer_name: str = "punkt"
 
-    punctuations = list('''!()-[]{};:'"\,<>./?@#$%^&*_~''')
+    punctuations: List[str] = list('''!()-[]{};:'"\,<>./?@#$%^&*_~''')
 
     # Token cleaning functions
     stop_words: Dict[str, Set[str]] = {}
-    hinglish_stop_file = "asset/hinglish_stopwords"
+    hinglish_stop_file: str = "asset/hinglish_stopwords"
 
     # Keyphrases
     keyword_extractor: KeywordExtractorType = Field(KeywordExtractorType.Rakun, env='KEYWORD_EXTRACTOR')
@@ -75,14 +73,6 @@ class TextProcessor(BaseSettings):
     merge_threshold: float = 1.1
     alpha: float = 0.3
     token_prune_len: int = 3
-    # KeyBert Param
-    key_phrase_model_name: str = Field("paraphrase-multilingual-MiniLM-L12-v2", env='KEY_PHRASE_MODEL')
-    min_ngrams: int = Field(1, env='MAXIMUM_NGRAMS')
-    max_ngrams: int = Field(3, env='MAXIMUM_NGRAMS')
-    use_mmr: bool = True  # Maximal Margin Relevance (MMR)
-    keyphrase_diversity: float = Field(
-        0.25, ge=0.0, le=1.0
-    )  # Keyphrases diversity only application if user_mmr is True
 
     def __init__(self, **data: Any):
         super().__init__(**data)
@@ -122,7 +112,6 @@ class TextProcessor(BaseSettings):
             # Create regex of above characters
             self.control_char_regex = re.compile('[%s]' % re.escape(control_chars))
 
-        self._keybert_model = KeyBERT(self.key_phrase_model_name)
         hyper_parameters = {
             "num_keywords": self.max_keyphrases,
             "merge_threshold": self.merge_threshold,
@@ -181,8 +170,8 @@ class TextProcessor(BaseSettings):
         return tokenized_tokens
 
     def extract_key_phrases(self, text: str, remove_stopwords: bool = False, lang_code: str = 'en') -> Dict[str, float]:
-        if self.keyword_extractor == KeywordExtractorType.KeyBert:
-            return self._keyword_by_keybert(text, remove_stopwords, lang_code)
+        # if self.keyword_extractor == KeywordExtractorType.KeyBert:
+        #    return self._keyword_by_keybert(text, remove_stopwords, lang_code)
         return self._keyword_by_rakun(text)
 
     def _keyword_by_rakun(self, text: str) -> Dict[str, float]:
@@ -191,20 +180,35 @@ class TextProcessor(BaseSettings):
             return {}
         return {key_phrase: distance for key_phrase, distance in key_phrases}
 
-    def _keyword_by_keybert(self, text: str, remove_stopwords: bool = False, lang_code: str = 'en') -> Dict[str, float]:
-
-        key_phrases = self._keybert_model.extract_keywords(
-            text,
-            keyphrase_ngram_range=(self.min_ngrams, self.max_ngrams),
-            use_mmr=self.use_mmr,
-            stop_words=list(self.get_stop_words(lang_code)) if remove_stopwords else None,
-            top_n=self.max_keyphrases,
-            diversity=self.keyphrase_diversity,
-        )
-
-        if key_phrases is None or len(key_phrases) == 0:
-            return {}
-
-        key_phrases_list = key_phrases[0] if isinstance(key_phrases[0], List) else key_phrases
-
-        return {key_phrase: distance for key_phrase, distance in key_phrases_list}
+    # Keeping old code in case we need it
+    # from keybert import KeyBERT
+    # _keybert_model: KeyBERT = PrivateAttr()
+    #
+    # # KeyBert Param
+    # key_phrase_model_name: str = Field("paraphrase-multilingual-MiniLM-L12-v2", env='KEY_PHRASE_MODEL')
+    # min_ngrams: int = Field(1, env='MAXIMUM_NGRAMS')
+    # max_ngrams: int = Field(3, env='MAXIMUM_NGRAMS')
+    # use_mmr: bool = True  # Maximal Margin Relevance (MMR)
+    # keyphrase_diversity: float = Field(
+    #     0.25, ge=0.0, le=1.0
+    # )  # Keyphrases diversity only application if user_mmr is True
+    #
+    # _keybert_model = KeyBERT(key_phrase_model_name)
+    #
+    # def _keyword_by_keybert(self, text: str, remove_stopwords: bool = False, lang_code: str = 'en') -> Dict[str, float]:
+    #
+    #     key_phrases = self._keybert_model.extract_keywords(
+    #         text,
+    #         keyphrase_ngram_range=(self.min_ngrams, self.max_ngrams),
+    #         use_mmr=self.use_mmr,
+    #         stop_words=list(self.get_stop_words(lang_code)) if remove_stopwords else None,
+    #         top_n=self.max_keyphrases,
+    #         diversity=self.keyphrase_diversity,
+    #     )
+    #
+    #     if key_phrases is None or len(key_phrases) == 0:
+    #         return {}
+    #
+    #     key_phrases_list = key_phrases[0] if isinstance(key_phrases[0], List) else key_phrases
+    #
+    #     return {key_phrase: distance for key_phrase, distance in key_phrases_list}

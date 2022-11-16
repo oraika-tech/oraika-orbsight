@@ -23,7 +23,7 @@ class WordFreqHandler(BaseSettings):
 
         emotion_str_map: Dict[str, str] = {}
         for key, value in emotion_text_map.items():
-            text = "".join(value)
+            text = " ".join(value)
             cleaned_text = self.text_processor.clean_text(text)
 
             emotion_str_map[key] = cleaned_text.lower()

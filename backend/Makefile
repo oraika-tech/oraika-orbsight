@@ -55,7 +55,7 @@ svc-analyzer-run:
 
 svc-api-compile:
 	cd processing/service-api; \
-	pip-compile pyproject.toml
+	pip-compile --resolver=backtracking -U pyproject.toml
 
 svc-api-dep:
 	cd processing/service-api; \

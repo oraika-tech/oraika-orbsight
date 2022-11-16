@@ -32,6 +32,7 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir gunicorn
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
+RUN python -m nltk.downloader punkt && python -m nltk.downloader stopwords
 
 
 USER user
