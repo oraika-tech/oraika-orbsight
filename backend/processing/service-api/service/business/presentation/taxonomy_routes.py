@@ -24,7 +24,7 @@ def get_taxonomy_data(user_info=Depends(get_current_user), handler=Depends(get_h
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_taxonomy_data(user_info.tenant_ids[0])
+    return handler.get_taxonomy_data(user_info.preferred_tenant_id)
 
 
 @routes.get("/stats", response_model=List[StatsInfo])
@@ -32,4 +32,4 @@ def taxonomy_count(user_info=Depends(get_current_user), handler=Depends(get_hand
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.enabled_taxonomy_count(user_info.tenant_ids[0])
+    return handler.enabled_taxonomy_count(user_info.preferred_tenant_id)

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from requests import HTTPError
 from starlette.exceptions import HTTPException
 
+from service.auth.domain.model.domain_models import TenantInfo
 from service.common.deps import get_current_user
 from service.visualization import domain_handler
 from service.visualization.domain.model.chart_models import FilterDO
@@ -26,6 +27,12 @@ class DashboardRequest(BaseModel):
     filters: List[FilterDO]
 
 
+def get_tenant_code(tenants: List[TenantInfo], preferred_tenant_id: str):
+    preferred_tenant_uuid = UUID(preferred_tenant_id)
+    selected_tenants = [tenant.code for tenant in tenants if tenant.identifier == preferred_tenant_uuid]
+    return selected_tenants[0] if len(selected_tenants) > 0 else None
+
+
 @routes.post("/dashboards/{dashboard_id}", response_model=DashboardDO)
 def get_dashboard(
         dashboard_id: UUID,
@@ -39,7 +46,8 @@ def get_dashboard(
     logger.debug("Request filters: %s", filter_list)
 
     try:
-        return handler.get_dashboard(user_info.tenant_ids[0], user_info.tenant_codes[0], dashboard_id, filter_list)
+        tenant_code = get_tenant_code(user_info.tenants, user_info.preferred_tenant_id)
+        return handler.get_dashboard(user_info.preferred_tenant_id, tenant_code, dashboard_id, filter_list)
     except HTTPError as ex:
         raise HTTPException(status_code=ex.response.status_code, detail=ex.response.text)
 
@@ -53,4 +61,5 @@ def search_dashboards(
     if not user_info:
         raise HTTPException(status_code=400, detail="User not found")
 
-    return handler.get_dashboards(user_info.tenant_ids[0], user_info.tenant_codes[0], frontend_key, include_components)
+    tenant_code = get_tenant_code(user_info.tenants, user_info.preferred_tenant_id)
+    return handler.get_dashboards(user_info.preferred_tenant_id, tenant_code, frontend_key, include_components)

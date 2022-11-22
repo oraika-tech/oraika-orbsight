@@ -50,12 +50,13 @@ def create_access_token(subject: Union[str, int, Any], expires_delta: timedelta 
 def get_current_user(response: Response,
                      session_id: str = Cookie(default=None),
                      handler=Depends(get_auth_handler)) -> UserInfo:
-    user_info = None
+    user_info: Optional[UserInfo] = None
     if session_id:
         user_info = handler.get_user_by_session(session_id)
-    if not user_info:
+    if not user_info or not user_info.preferred_tenant_id:
         http_utils.remove_cookie(response, "session_id")
         headers = {str(header[0]): str(header[1]) for header in response.raw_headers}
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized access", headers=headers)
+        status_code = status.HTTP_401_UNAUTHORIZED if not user_info else status.HTTP_403_FORBIDDEN
+        raise HTTPException(status_code=status_code, detail="Unauthorized access", headers=headers)
     else:
         return user_info

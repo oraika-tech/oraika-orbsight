@@ -1,5 +1,5 @@
 import uuid
-from typing import Any, Optional
+from typing import Any, Optional, List
 
 from pydantic import BaseSettings, PrivateAttr
 
@@ -28,64 +28,87 @@ class UserCacheManager(BaseSettings):
     def update_user(self, user_id: str, field: str, value: any):
         self._entity_manager.update_entity(user_id, field, value)
 
+    def set_preferred_tenant(self, user_id: str, preferred_tenant_id: str):
+        self._entity_manager.update_entity(user_id, 'preferred_tenant_id', preferred_tenant_id)
 
-class OrgCacheManager(BaseSettings):
+
+class TenantCacheManager(BaseSettings):
     _entity_manager: EntityRedisManager = PrivateAttr()
     persistence_manager: BasePersistenceManager
 
     def __init__(self, **values: Any):
         super().__init__(**values)
-        self._entity_manager = EntityRedisManager('org')
+        self._entity_manager = EntityRedisManager('tnt')
 
-    def set_org(self, org_id: str, org: TenantCache, ttl: int = settings.DEFAULT_MAX_CACHE_TTL_SECONDS):
-        self._entity_manager.set_entity(org_id, vars(org), ttl=ttl)
+    def set_tenant(self, tenant: TenantCache, ttl: int = settings.DEFAULT_MAX_CACHE_TTL_SECONDS):
+        self._entity_manager.set_entity(tenant.tenant_id, vars(tenant), ttl=ttl)
+        if tenant.org_id:
+            self._entity_manager.set_value(tenant.org_id, tenant.tenant_id, ttl=ttl)
 
-    def get_or_create_org(self, org_id) -> Optional[TenantCache]:
-        tenant_map = self._entity_manager.get_entity(org_id)
+    def get_tenant_by_org(self, org_id) -> Optional[TenantCache]:
+        tenant_id = self._entity_manager.get_value(org_id)
+        if tenant_id:
+            return self.get_tenant_by_id(tenant_id)
+
+        tenant = self.persistence_manager.get_tenant_by_nile_org_id(org_id)
+        return self._save_and_get_cache(tenant)
+
+    def get_tenant_by_id(self, tenant_id) -> Optional[TenantCache]:
+        tenant_map = self._entity_manager.get_entity(tenant_id)
         if tenant_map:
             return TenantCache(entries=tenant_map)
         else:  # tenant entry when not in cache
-            tenant_info: TenantInfo = self.persistence_manager.get_tenant_by_nile_org_id(org_id)
-            if not tenant_info:
+            tenant_info_list: List[TenantInfo] = self.persistence_manager.get_tenant_by_ids([tenant_id])
+            if len(tenant_info_list) > 0:
+                return self._save_and_get_cache(tenant_info_list[0])
+            else:
                 return None
-            tenant_cache = TenantCache(
-                org_id=org_id,
-                tenant_id=str(tenant_info.identifier),
-                tenant_code=tenant_info.code,
-                tenant_name=tenant_info.name
-            )
-            self.set_org(org_id, tenant_cache)
-            return tenant_cache
+
+    def _save_and_get_cache(self, tenant_info: TenantInfo):
+        if not tenant_info:
+            return None
+        tenant_cache = TenantCache(
+            org_id=tenant_info.nile_org_id,
+            tenant_id=str(tenant_info.identifier),
+            tenant_code=tenant_info.code,
+            tenant_name=tenant_info.name
+        )
+        self.set_tenant(tenant_cache)
+        return tenant_cache
 
 
 class SessionHandler(BaseSettings):
     _entity_manager: EntityRedisManager = PrivateAttr()
     user_cache_manager: UserCacheManager
-    org_cache_manager: OrgCacheManager
+    org_cache_manager: TenantCacheManager
 
     def __init__(self, **values: Any):
         super().__init__(**values)
         self._entity_manager = EntityRedisManager('ssn')
 
-    def create_session(self, user_id: str, token: str, nile_user: NileUser, expiry_at: Optional[int]) -> UserSession:
+    def create_session(self, user_id: str, token: str, nile_user: NileUser,
+                       expiry_at: Optional[int]) -> Optional[UserSession]:
         session_id = str(uuid.uuid4())
         user_cache = self.user_cache_manager.get_user(user_id)
-        org_ids = nile_user.org_ids
+        tenants = [self.org_cache_manager.get_tenant_by_org(org_id) for org_id in nile_user.org_ids]
+        tenant_ids = [tenant.tenant_id for tenant in tenants if tenant is not None]
+        if len(tenant_ids) == 0:
+            return None
+
         if not user_cache:
-            # by default take first org as preferred org
-            preferred_org_id = org_ids[0] if len(org_ids) > 0 else None
             user_cache = UserCache(
                 user_id=user_id,
                 user_name=nile_user.name,
                 email=nile_user.email,
-                preferred_org_id=preferred_org_id,
-                org_ids=org_ids
+                # by default take first org as preferred org
+                preferred_tenant_id=tenant_ids[0],
+                tenant_ids=tenant_ids
             )
             self.user_cache_manager.set_user(user_id, user_cache)
-        else:  # update existing attributes
-            if nile_user.org_ids != user_cache.org_ids:  # update cache org if changed at Nile
-                user_cache.org_ids = nile_user.org_ids
-                self.user_cache_manager.update_user(user_id, "org_ids", ','.join(nile_user.org_ids))
+        else:  # update existing attributes from nile to cache
+            if tenant_ids != user_cache.tenant_ids:  # update cache org if changed at Nile
+                user_cache.tenant_ids = tenant_ids
+                self.user_cache_manager.update_user(user_id, "tenant_ids", ','.join(tenant_ids))
             if nile_user.name != user_cache.user_name:
                 user_cache.user_name = nile_user.name
                 self.user_cache_manager.update_user(user_id, "user_name", nile_user.name)
@@ -104,13 +127,13 @@ class SessionHandler(BaseSettings):
 
     def get_user_session_from_cache(self, session_cache: SessionCache, user_cache: UserCache, expiry_at: Optional[int]):
         tenants = []
-        preferred_org = None
-        for org_id in user_cache.org_ids:
-            tenant = self.org_cache_manager.get_or_create_org(org_id)
+        preferred_tenant_id = None
+        for tenant_id in user_cache.tenant_ids:
+            tenant = self.org_cache_manager.get_tenant_by_id(tenant_id)
             if tenant is not None:
                 tenants.append(tenant)
-                if tenant.org_id == user_cache.preferred_org_id:
-                    preferred_org = tenant
+                if tenant.tenant_id == user_cache.preferred_tenant_id:
+                    preferred_tenant_id = tenant.tenant_id
 
         return UserSession(
             session_id=session_cache.session_id,
@@ -118,7 +141,7 @@ class SessionHandler(BaseSettings):
             user_name=user_cache.user_name,
             email=user_cache.email,
             nile_token=session_cache.nile_token,
-            preferred_org=preferred_org,
+            preferred_tenant_id=preferred_tenant_id,
             tenants=tenants,
             expiry_at=expiry_at
         )
@@ -129,6 +152,8 @@ class SessionHandler(BaseSettings):
             return None
         basic_session = SessionCache(entries=session_cache)
         user = self.user_cache_manager.get_user(basic_session.user_id)
+        if not user:
+            return None
         expiry_at = None
         if 'ttl' in session_cache:
             expiry_at = now_epoch() + session_cache['ttl']

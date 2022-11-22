@@ -7,7 +7,7 @@ from starlette.exceptions import HTTPException
 from starlette.responses import Response
 
 from service.common.deps import (get_auth_handler, get_current_user)
-from .model.request import LoginRequest
+from .model.request import LoginRequest, PreferredTenantRequest
 from ..domain.model.cache_models import UserSession
 from ...common import http_utils
 
@@ -19,6 +19,21 @@ routes = APIRouter()
 @routes.get("/session")
 def get_current_session(user_info=Depends(get_current_user)):
     return user_info
+
+
+@routes.post("/preferred-tenant")
+def set_user_preferred_tenant(
+        request: PreferredTenantRequest,
+        response: Response,
+        session_id: str = Cookie(default=None),
+        handler=Depends(get_auth_handler)):
+    try:
+        user_info = get_current_user(response, session_id, handler)
+    except HTTPException as e:  # ignoring for setting preference first
+        if e.status_code != status.HTTP_403_FORBIDDEN:
+            raise e
+    handler.set_preferred_tenant(user_info.identifier, request.preferred_tenant_id)
+    response.status_code = status.HTTP_204_NO_CONTENT
 
 
 @routes.post("/login")
@@ -33,7 +48,7 @@ def login_access_token(
     else:
         logger.info("User logged-in: {}", user_session)
 
-    if not user_session.preferred_org:
+    if not user_session.preferred_tenant_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User without org")
 
     http_utils.set_cookie(response, "session_id", user_session.session_id, user_session.expiry_at)

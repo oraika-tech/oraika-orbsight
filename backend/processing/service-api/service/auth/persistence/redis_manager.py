@@ -23,17 +23,27 @@ class EntityRedisManager(BaseSettings):
     def _get_key(self, entity_id):
         return self._key_prefix + entity_id
 
-    def set_entity(self, entity_id: str, entity: Dict[str, str],
-                   expiry_at: Optional[int] = None, ttl: Optional[int] = None):
-        entity = {key: value for key, value in entity.items() if value is not None}
-        entity_key = self._get_key(entity_id)
-        self._client.hmset(entity_key, entity)
+    def _set_expiry(self, entity_key: str, expiry_at: Optional[int] = None, ttl: Optional[int] = None):
         if ttl:
             self._client.expire(entity_key, ttl)
         elif expiry_at:
             self._client.expireat(entity_key, expiry_at)
         else:
             self._client.expire(entity_key, settings.DEFAULT_MAX_CACHE_TTL_SECONDS)
+
+    def set_value(self, key: str, value: str, expiry_at: Optional[int] = None, ttl: Optional[int] = None):
+        self._client.set(key, value)
+        self._set_expiry(key, expiry_at=expiry_at, ttl=ttl)
+
+    def get_value(self, key: str) -> str:
+        return self._client.get(key)
+
+    def set_entity(self, entity_id: str, entity: Dict[str, str],
+                   expiry_at: Optional[int] = None, ttl: Optional[int] = None):
+        entity = {key: value for key, value in entity.items() if value is not None}
+        entity_key = self._get_key(entity_id)
+        self._client.hmset(entity_key, entity)
+        self._set_expiry(entity_key, expiry_at=expiry_at, ttl=ttl)
 
     def get_entity(self, entity_id: str):
         value = self._client.hgetall(self._get_key(entity_id))

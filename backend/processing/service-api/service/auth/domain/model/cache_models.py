@@ -13,19 +13,19 @@ class UserCache(BaseModel):
     user_id: Optional[str]
     user_name: Optional[str]
     email: Optional[str]
-    preferred_org_id: str
-    org_ids: List[str]
+    preferred_tenant_id: Optional[str]
+    tenant_ids: List[str]
 
     def __init__(self, entries=None, **data: Any):
         if entries:
-            if 'org_ids' in entries:
-                entries['org_ids'] = entries['org_ids'].split(',')
+            if 'tenant_ids' in entries:
+                entries['tenant_ids'] = entries['tenant_ids'].split(',')
             data.update(entries)
         super().__init__(**data)
 
     def to_dict(self) -> Dict[str, str]:
-        obj_dict = vars(self)
-        obj_dict['org_ids'] = ','.join(self.org_ids)
+        obj_dict = {key: value for key, value in vars(self).items()}
+        obj_dict['tenant_ids'] = ','.join(self.tenant_ids)
         return obj_dict
 
 
@@ -58,6 +58,6 @@ class SessionCache(SessionBase):
 class UserSession(SessionCache):
     email: Optional[str]
     user_name: Optional[str]
-    preferred_org: Optional[TenantCache]
+    preferred_tenant_id: Optional[str]
     tenants: List[TenantCache]
     expiry_at: Optional[int]

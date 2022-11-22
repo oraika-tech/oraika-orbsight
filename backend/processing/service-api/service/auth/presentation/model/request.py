@@ -7,3 +7,7 @@ class SessionRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     token: str
+
+
+class PreferredTenantRequest(BaseModel):
+    preferred_tenant_id: str

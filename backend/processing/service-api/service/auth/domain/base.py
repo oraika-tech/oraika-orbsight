@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseSettings
 
@@ -15,6 +15,10 @@ class BasePersistenceManager(BaseSettings):
 
     @abstractmethod
     def get_user(self, identifier: str) -> Optional[UserInfo]:
+        pass
+
+    @abstractmethod
+    def get_tenant_by_ids(self, tenant_ids) -> List[TenantInfo]:
         pass
 
     @abstractmethod

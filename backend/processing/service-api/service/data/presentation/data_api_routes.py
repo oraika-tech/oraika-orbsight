@@ -41,7 +41,7 @@ def get_raw_and_processed(
         raise HTTPException(status_code=400, detail="User not found")
 
     return handler.get_text_analysis_data(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         lang_code=text_lang,
@@ -64,7 +64,7 @@ def get_languages_from_data(
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
     return handler.get_languages(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
@@ -85,7 +85,7 @@ def get_unique_entities_from_data(
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
     return handler.get_data_entities(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         term=term,
@@ -106,7 +106,7 @@ def get_unique_terms_from_data(
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
     return handler.get_data_terms(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
@@ -127,7 +127,7 @@ def get_data_sources_from_data(
         user_info=Depends(get_current_user),
         handler=Depends(get_handler)):
     return handler.get_data_sources_types(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         lang_code=text_lang,
@@ -153,7 +153,7 @@ def get_key_phrases_from_data(
         raise HTTPException(status_code=400, detail="User not found")
 
     return handler.get_key_phrases(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,
@@ -180,7 +180,7 @@ def get_word_cloud_from_data(
         raise HTTPException(status_code=400, detail="User not found")
 
     return handler.get_word_cloud(FilterQueryParams(
-        tenant_id=user_info.tenant_ids[0],
+        tenant_id=user_info.preferred_tenant_id,
         start_date=start_date,
         end_date=end_date,
         entity_name=entity_name,

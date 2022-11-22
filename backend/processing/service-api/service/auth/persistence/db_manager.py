@@ -47,14 +47,13 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 UserTable.email == email
             ).first()
 
-            tenant_codes = self.get_tenant_codes(session, user_entity.tenant_ids)
+            tenants = self.get_tenants(session, user_entity.tenant_ids)
 
             if user_entity is not None:
                 if bcrypt.checkpw(password.encode(), user_entity.hash_password.encode()):
                     return UserInfo(
                         identifier=user_entity.identifier,
-                        tenant_ids=user_entity.tenant_ids,
-                        tenant_codes=tenant_codes,
+                        tenants=tenants,
                         name=user_entity.name,
                         email=user_entity.email
                     )
@@ -67,29 +66,41 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 UserTable.is_deleted == false()
             ).first()
 
-            tenant_codes = self.get_tenant_codes(session, user_entity.tenant_ids)
+            tenants = self.get_tenants(session, user_entity.tenant_ids)
 
             if user_entity is not None:
                 return UserInfo(
                     identifier=user_entity.identifier,
-                    tenant_ids=user_entity.tenant_ids,
-                    tenant_codes=tenant_codes,
+                    tenants=tenants,
                     name=user_entity.name,
                     email=user_entity.email
                 )
 
     @staticmethod
-    def get_tenant_codes(session: Session, tenant_ids: List[UUID]):
+    def get_tenants(session: Session, tenant_ids: List[UUID]) -> List[TenantInfo]:
         if not tenant_ids:
             return []
 
-        tenant_codes = session.query(TenantTable.code).filter(
+        tenants = session.query(TenantTable).filter(
             col(TenantTable.identifier).in_(tenant_ids),
             TenantTable.is_enabled == true(),
             TenantTable.is_deleted == false()
         ).all()
 
-        return [tenant_code[0] for tenant_code in tenant_codes]
+        return [
+            TenantInfo(
+                identifier=tenant.identifier,
+                code=tenant.code,
+                name=tenant.name,
+                nile_org_id=tenant.nile_org_id
+            )
+            for tenant in tenants
+        ]
+
+    def get_tenant_by_ids(self, tenant_ids) -> List[TenantInfo]:
+        with Session(self.core_db_engine) as session:
+            tenant_uuids = [UUID(tenant_id) for tenant_id in tenant_ids]
+            return self.get_tenants(session, tenant_uuids)
 
     def get_tenant_by_nile_org_id(self, nile_org_id) -> Optional[TenantInfo]:
         if not nile_org_id:

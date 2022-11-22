@@ -7,7 +7,8 @@ from pydantic import BaseSettings
 from service.common.model.user import UserInfo
 from .base import BasePersistenceManager
 from .model.cache_models import UserSession
-from .session_handler import UserCacheManager, OrgCacheManager, SessionHandler
+from .model.domain_models import TenantInfo
+from .session_handler import UserCacheManager, TenantCacheManager, SessionHandler
 from ..persistence.nile_client import NileClient
 from ...common.settings import settings
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 class AuthHandler(BaseSettings):
     persistence_manager: BasePersistenceManager
     user_cache_manager: UserCacheManager
-    org_cache_manager: OrgCacheManager
+    org_cache_manager: TenantCacheManager
     session_handler: SessionHandler
     nile_client: NileClient
 
@@ -61,13 +62,26 @@ class AuthHandler(BaseSettings):
 
     def get_user_by_session(self, session_id: str) -> Optional[UserInfo]:
         user_session = self.session_handler.get_session(session_id)
+
+        tenants = [
+            TenantInfo(
+                identifier=tenant_cache.tenant_id,
+                name=tenant_cache.tenant_name,
+                code=tenant_cache.tenant_code,
+                nile_org_id=tenant_cache.org_id
+            )
+            for tenant_cache in user_session.tenants
+        ]
         if user_session:
             return UserInfo(
                 identifier=user_session.user_id,
-                tenant_ids=[tenant.tenant_id for tenant in user_session.tenants],
-                tenant_codes=[tenant.tenant_code for tenant in user_session.tenants],
+                tenants=tenants,
+                preferred_tenant_id=user_session.preferred_tenant_id,
                 name=user_session.user_name,
                 email=user_session.email
             )
         else:
             return None
+
+    def set_preferred_tenant(self, user_id: str, preferred_tenant_id: str):
+        self.user_cache_manager.set_preferred_tenant(user_id, preferred_tenant_id)
