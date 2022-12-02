@@ -32,6 +32,12 @@ def set_user_preferred_tenant(
     except HTTPException as e:  # ignoring for setting preference first
         if e.status_code != status.HTTP_403_FORBIDDEN:
             raise e
+
+    preferred_tenants = [tenant for tenant in user_info.tenants if
+                         str(tenant.identifier) == request.preferred_tenant_id]
+    if len(preferred_tenants) != 1:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Wrong tenant for user")
+
     handler.set_preferred_tenant(user_info.identifier, request.preferred_tenant_id)
     response.status_code = status.HTTP_204_NO_CONTENT
 
