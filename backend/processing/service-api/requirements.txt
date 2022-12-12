@@ -19,7 +19,7 @@ bcrypt==4.0.1
     # via service (pyproject.toml)
 cachetools==5.2.0
     # via service (pyproject.toml)
-certifi==2022.9.24
+certifi==2022.12.7
     # via
     #   httpcore
     #   httpx
