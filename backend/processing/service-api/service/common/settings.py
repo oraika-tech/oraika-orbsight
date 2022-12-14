@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 
 from pydantic import BaseSettings, Field
 
@@ -23,8 +23,15 @@ class Settings(BaseSettings):
     DEFAULT_MAX_CACHE_TTL_SECONDS = 60 * 60 * 24 * 30
     COOKIE_SECURE: bool = True
 
-    CORS_ORIGINS: List[str] = Field(["https://orb.oraika.com"])
+    ORB_URL: str = Field("https://orb.oraika.com")
+    DEMO_URL: str = Field("https://demo.oraika.com")
+    CORS_ORIGINS: List[str] = Field([])
     ALLOWED_HOSTS: List[str] = Field(["*"])
+
+    def __init__(self, **values: Any):
+        super().__init__(**values)
+        self.CORS_ORIGINS.append(self.ORB_URL)
+        self.CORS_ORIGINS.append(self.DEMO_URL)
 
     class Config:
         case_sensitive = True

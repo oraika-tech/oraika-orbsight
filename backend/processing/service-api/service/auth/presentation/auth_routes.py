@@ -1,12 +1,11 @@
 import logging
 
 from fastapi import APIRouter, Depends
-from fastapi import Cookie
 from starlette import status
 from starlette.exceptions import HTTPException
 from starlette.responses import Response
 
-from service.common.deps import (get_auth_handler, get_current_user)
+from service.common.deps import (get_auth_handler, get_current_user, get_session_id, get_cookie_session_key)
 from .model.request import LoginRequest, PreferredTenantRequest
 from ..domain.model.cache_models import UserSession
 from ...common import http_utils
@@ -25,7 +24,7 @@ def get_current_session(user_info=Depends(get_current_user)):
 def set_user_preferred_tenant(
         request: PreferredTenantRequest,
         response: Response,
-        session_id: str = Cookie(default=None),
+        session_id: str = Depends(get_session_id),
         handler=Depends(get_auth_handler)):
     try:
         user_info = get_current_user(response, session_id, handler)
@@ -57,13 +56,17 @@ def login_access_token(
     if not user_session.preferred_tenant_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User without org")
 
-    http_utils.set_cookie(response, "session_id", user_session.session_id, user_session.expiry_at)
+    http_utils.set_cookie(response, "orb_web_session_id", user_session.session_id, user_session.expiry_at)
     response.status_code = status.HTTP_204_NO_CONTENT
 
 
 @routes.post("/logout")
-def logout(response: Response, session_id: str = Cookie(default=None), handler=Depends(get_auth_handler)):
-    http_utils.remove_cookie(response, "session_id")
+def logout(response: Response,
+           session_id: str = Depends(get_session_id),
+           session_key=Depends(get_cookie_session_key),
+           handler=Depends(get_auth_handler)):
+    if session_key:
+        http_utils.remove_cookie(response, session_key)
     if session_id:
         user_info = handler.do_logout(session_id)
         if user_info:

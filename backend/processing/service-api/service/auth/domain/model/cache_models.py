@@ -47,7 +47,7 @@ class SessionBase(BaseModel):
 
 class SessionCache(SessionBase):
     user_id: str
-    nile_token: str
+    nile_token: Optional[str]
 
     def __init__(self, entries=None, **data: Any):
         if entries:

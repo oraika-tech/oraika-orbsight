@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class SessionRequest(BaseModel):
@@ -7,6 +7,10 @@ class SessionRequest(BaseModel):
 
 class LoginRequest(BaseModel):
     token: str
+
+
+class DemoLoginRequest(BaseModel):
+    email: EmailStr
 
 
 class PreferredTenantRequest(BaseModel):

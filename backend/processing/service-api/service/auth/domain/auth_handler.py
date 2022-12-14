@@ -46,10 +46,15 @@ class AuthHandler(BaseSettings):
                 if len(nile_user.org_ids) == 0:
                     logger.error("User without any tenant")
                 else:
-                    return self.session_handler.create_session(user_id, token, nile_user, expiry_at)
+                    return self.session_handler.create_user_session(user_id, token, nile_user, expiry_at)
         else:
             logger.error("User token invalid")
             return None
+
+    def demo_login(self, email: str) -> Optional[UserSession]:
+        demo_tenants = self.persistence_manager.get_demo_tenants()
+        demo_tenant_ids = [str(tenant.identifier) for tenant in demo_tenants]
+        return self.session_handler.create_session(tenant_ids=demo_tenant_ids, user_id=email, email=email)
 
     def do_logout(self, session_id: str):
         return self.session_handler.delete_session(session_id)
@@ -62,17 +67,16 @@ class AuthHandler(BaseSettings):
 
     def get_user_by_session(self, session_id: str) -> Optional[UserInfo]:
         user_session = self.session_handler.get_session(session_id)
-
-        tenants = [
-            TenantInfo(
-                identifier=tenant_cache.tenant_id,
-                name=tenant_cache.tenant_name,
-                code=tenant_cache.tenant_code,
-                nile_org_id=tenant_cache.org_id
-            )
-            for tenant_cache in user_session.tenants
-        ]
         if user_session:
+            tenants = [
+                TenantInfo(
+                    identifier=tenant_cache.tenant_id,
+                    name=tenant_cache.tenant_name,
+                    code=tenant_cache.tenant_code,
+                    nile_org_id=tenant_cache.org_id
+                )
+                for tenant_cache in user_session.tenants
+            ]
             return UserInfo(
                 identifier=user_session.user_id,
                 tenants=tenants,

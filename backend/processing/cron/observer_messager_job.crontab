@@ -1,4 +1,4 @@
-*/5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 230139f2-d5e4-4ecf-846f-27e741f833bc orb_tenant_zolve >> ~/.orbsight/observer_cron_zolve.log
+# */5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 230139f2-d5e4-4ecf-846f-27e741f833bc orb_tenant_zolve >> ~/.orbsight/observer_cron_zolve.log
 */5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 4fb6eb48-3966-4582-89c2-d975ec00c968 orb_tenant_oraika >> ~/.orbsight/observer_cron_oraika.log
 */5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 8f0cbfcd-da2c-42b9-b554-d67e7617e86d orb_tenant_shohoz >> ~/.orbsight/observer_cron_shohoz.log
 */5 * * * * ec2-user bash ~/.orbsight/cron/active_observer_publisher.sh 02ddd60c-2d58-47cc-a445-275d8e621252 orb_tenant_playarena >> ~/.orbsight/observer_cron_playarena.log

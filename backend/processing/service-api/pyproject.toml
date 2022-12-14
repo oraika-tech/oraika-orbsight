@@ -25,7 +25,8 @@ dependencies = [
     "cachetools",
     "redis",
     "nile_api",
-    "requests"
+    "requests",
+    "pydantic[email]"
 ]
 
 [project.optional-dependencies]

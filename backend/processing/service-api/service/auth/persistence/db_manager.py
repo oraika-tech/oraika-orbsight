@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 
@@ -32,9 +33,17 @@ class TenantTable(SQLModel, table=True):
 
     name: str
     code: str
+    type: int
     nile_org_id: str
     is_enabled: bool
     is_deleted: bool
+
+
+class TenantType(int, Enum):
+    DEMO = 0
+    CORPORATE = 1
+    GOV = 2
+    INDIVIDUAL = 3
 
 
 class UserDBManager(BasePersistenceManager, BaseEntityManager):
@@ -120,5 +129,26 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                     code=tenant.code,
                     nile_org_id=tenant.nile_org_id
                 )
+            else:
+                return None
+
+    def get_demo_tenants(self) -> Optional[List[TenantInfo]]:
+        with Session(self.core_db_engine) as session:
+            tenants = session.query(TenantTable).filter(
+                TenantTable.type == TenantType.DEMO,
+                TenantTable.is_enabled == true(),
+                TenantTable.is_deleted == false()
+            )
+
+            if tenants:
+                return [
+                    TenantInfo(
+                        identifier=tenant.identifier,
+                        name=tenant.name,
+                        code=tenant.code,
+                        nile_org_id=tenant.nile_org_id
+                    )
+                    for tenant in tenants
+                ]
             else:
                 return None

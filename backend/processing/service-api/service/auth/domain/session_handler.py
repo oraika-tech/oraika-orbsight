@@ -86,20 +86,29 @@ class SessionHandler(BaseSettings):
         super().__init__(**values)
         self._entity_manager = EntityRedisManager('ssn')
 
-    def create_session(self, user_id: str, token: str, nile_user: NileUser,
-                       expiry_at: Optional[int]) -> Optional[UserSession]:
-        session_id = str(uuid.uuid4())
-        user_cache = self.user_cache_manager.get_user(user_id)
+    def create_user_session(self, user_id: str, token: str, nile_user: NileUser,
+                            expiry_at: Optional[int]) -> Optional[UserSession]:
+
         tenants = [self.org_cache_manager.get_tenant_by_org(org_id) for org_id in nile_user.org_ids]
         tenant_ids = [tenant.tenant_id for tenant in tenants if tenant is not None]
+
+        return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, expiry_at)
+
+    def create_session(self, tenant_ids: List[str],
+                       user_id: str, email: str, name: Optional[str] = None, token: Optional[str] = None,
+                       expiry_at: Optional[int] = None):
+
         if len(tenant_ids) == 0:
             return None
+
+        session_id = str(uuid.uuid4())
+        user_cache = self.user_cache_manager.get_user(user_id)
 
         if not user_cache:
             user_cache = UserCache(
                 user_id=user_id,
-                user_name=nile_user.name,
-                email=nile_user.email,
+                user_name=name,
+                email=email,
                 # by default take first org as preferred org
                 preferred_tenant_id=tenant_ids[0],
                 tenant_ids=tenant_ids
@@ -109,12 +118,12 @@ class SessionHandler(BaseSettings):
             if tenant_ids != user_cache.tenant_ids:  # update cache org if changed at Nile
                 user_cache.tenant_ids = tenant_ids
                 self.user_cache_manager.update_user(user_id, "tenant_ids", ','.join(tenant_ids))
-            if nile_user.name != user_cache.user_name:
-                user_cache.user_name = nile_user.name
-                self.user_cache_manager.update_user(user_id, "user_name", nile_user.name)
-            if nile_user.email != user_cache.email:
-                user_cache.email = nile_user.email
-                self.user_cache_manager.update_user(user_id, "email", nile_user.email)
+            if name != user_cache.user_name:
+                user_cache.user_name = name
+                self.user_cache_manager.update_user(user_id, "user_name", name)
+            if email != user_cache.email:
+                user_cache.email = email
+                self.user_cache_manager.update_user(user_id, "email", email)
 
         session_cache = SessionCache(
             session_id=session_id,
