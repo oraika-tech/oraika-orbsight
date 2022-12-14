@@ -1,0 +1,1 @@
+0 * * * * ec2-user bash ~/.orbsight/cron/demo_event_time_rotator.sh orb_tenant_sportsarena >> ~/.orbsight/event_time_cron_sportsarena.log

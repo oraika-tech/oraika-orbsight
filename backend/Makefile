@@ -69,3 +69,6 @@ svc-api-run:
 
 svc-test:
 	pytest processing/service-api/tests/test_*.py
+
+cron-deploy:
+	bash -x processing/cron/cron_deploy.sh
