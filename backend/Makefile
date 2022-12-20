@@ -35,6 +35,7 @@ db-pull-data:
 # make db-sync-data tenant=core
 # make db-sync-data tenant=rbi
 db-sync-data:
+	python database_v2/scripts/fill_data_with_field.py
 	bash database_v2/scripts/liquibase.sh data/$(tenant) $(db_name) update
 
 # service commands
