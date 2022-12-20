@@ -25,9 +25,10 @@ def set_user_preferred_tenant(
         request: PreferredTenantRequest,
         response: Response,
         session_id: str = Depends(get_session_id),
+        session_key=Depends(get_cookie_session_key),
         handler=Depends(get_auth_handler)):
     try:
-        user_info = get_current_user(response, session_id, handler)
+        user_info = get_current_user(response, session_id, session_key, handler)
     except HTTPException as e:  # ignoring for setting preference first
         if e.status_code != status.HTTP_403_FORBIDDEN:
             raise e

@@ -66,26 +66,30 @@ class AuthHandler(BaseSettings):
         return self.persistence_manager.get_user(identifier)
 
     def get_user_by_session(self, session_id: str) -> Optional[UserInfo]:
-        user_session = self.session_handler.get_session(session_id)
-        if user_session:
-            tenants = [
-                TenantInfo(
-                    identifier=tenant_cache.tenant_id,
-                    name=tenant_cache.tenant_name,
-                    code=tenant_cache.tenant_code,
-                    nile_org_id=tenant_cache.org_id
-                )
-                for tenant_cache in user_session.tenants
-            ]
-            return UserInfo(
-                identifier=user_session.user_id,
-                tenants=tenants,
-                preferred_tenant_id=user_session.preferred_tenant_id,
-                name=user_session.user_name,
-                email=user_session.email
-            )
-        else:
+        if not session_id:
             return None
+
+        user_session = self.session_handler.get_session(session_id)
+        if not user_session:
+            return None
+
+        tenants = [
+            TenantInfo(
+                identifier=tenant_cache.tenant_id,
+                name=tenant_cache.tenant_name,
+                code=tenant_cache.tenant_code,
+                nile_org_id=tenant_cache.org_id
+            )
+            for tenant_cache in user_session.tenants
+        ]
+
+        return UserInfo(
+            identifier=user_session.user_id,
+            tenants=tenants,
+            preferred_tenant_id=user_session.preferred_tenant_id,
+            name=user_session.user_name,
+            email=user_session.email
+        )
 
     def set_preferred_tenant(self, user_id: str, preferred_tenant_id: str):
         self.user_cache_manager.set_preferred_tenant(user_id, preferred_tenant_id)
