@@ -1,6 +1,6 @@
 import logging
 from functools import reduce
-from typing import List, Any
+from typing import Optional, List, Any, Dict
 
 from pydantic import BaseSettings, PrivateAttr
 
@@ -75,7 +75,7 @@ class DataViewManager(BaseSettings):
         return v1 + v2
 
     def pivot_result(self, results: List[List], field_pivoting: FieldPivotDO,
-                     dimension_fields: List[str], sort_order: SortOrder = None, default_value=None):
+                     dimension_fields: List[str], sort_order: Optional[SortOrder] = None, default_value=None):
         """
             If given columns
                 [column1, column2, column3, column4, column5]
@@ -90,8 +90,8 @@ class DataViewManager(BaseSettings):
             npc: non pivot column
             npv: non pivot value
         """
-        pivoted_result_map = {}
-        pivoted_dimensions = {}
+        pivoted_result_map: Dict[str, Dict[str, str]] = {}
+        pivoted_dimensions: Dict[str, int] = {}
         df_index = {field: i for i, field in enumerate(dimension_fields)}
         non_pivot_fields = [field for field in dimension_fields[1:] if field not in field_pivoting.columns]
         for record in results:
@@ -148,7 +148,7 @@ class DataViewManager(BaseSettings):
     def get_time_dimensions(query: dict) -> List[str]:
         result_dimensions = []
         if 'timeDimensions' in query:
-            for time_dimension in query.get('timeDimensions'):
+            for time_dimension in query.get('timeDimensions', []):
                 if time_dimension and 'dimension' in time_dimension:
                     result_dimensions.append(time_dimension['dimension'])
         return result_dimensions
@@ -170,17 +170,19 @@ class DataViewManager(BaseSettings):
             "dateRange": "Last 7 days"
         }
         for time_filter in time_filters:
-            if time_filter.name == "period":
-                time_dimension["dateRange"] = self.get_code_to_daterange(time_filter.values[0])
-            elif is_timeseries and time_filter.name == "interval":
-                time_dimension["granularity"] = time_filter.values[0]
+            if time_filter.values is not None:
+                if time_filter.name == "period":
+                    time_dimension["dateRange"] = self.get_code_to_daterange(time_filter.values[0])
+                elif is_timeseries and time_filter.name == "interval":
+                    time_dimension["granularity"] = time_filter.values[0]
         if is_timeseries and "granularity" not in time_dimension:
             time_dimension["granularity"] = "day"
         return time_dimension
 
     def get_query_result(self, data_source_type: DataSourceType, tenant_code: str, query: dict,
                          filter_list: List[FilterDO], default_value=None, is_timeseries=False,
-                         series_name: str = None, data_transformer_meta: DataTransformerMetaDO = None) -> List[List]:
+                         series_name: Optional[str] = None,
+                         data_transformer_meta: Optional[DataTransformerMetaDO] = None) -> List[List]:
 
         time_filters, dimension_filters = list_split_by_condition(
             filter_list, lambda filter_do: filter_do.name in self._time_field_name)
@@ -224,8 +226,8 @@ class DataViewManager(BaseSettings):
         return DatasetResult(dimensions=dimension_fields, results=domain_results).get_dataset()
 
     def get_sort_order_from_query(self, query: dict):
-        ordering: dict = query.get('order')
-        measures: List = query.get('measures')
+        ordering: Optional[dict] = query.get('order')
+        measures: List = query.get('measures', [])
 
         if not ordering:
             return None
@@ -238,8 +240,8 @@ class DataViewManager(BaseSettings):
 
     @staticmethod
     def combine_series(series_list: List[List[List]],
-                       key_columns_index: List[int] = None,
-                       series_default_values: list = None):
+                       key_columns_index: Optional[List[int]] = None,
+                       series_default_values: Optional[list] = None):
         """
         :param series_list:  List of series. Each series table with list of rows. Each row is list of columns
         :param key_columns_index: Column index of key column in each series
@@ -260,7 +262,7 @@ class DataViewManager(BaseSettings):
 
         x_values = list(dict.fromkeys([x_column for series_map in series_map_list for x_column in series_map.keys()]))
 
-        combined_series_map = {}
+        combined_series_map: Dict[str, List[str]] = {}
 
         series_col_nos = [len(series_map) for series_map in series_map_list]
 

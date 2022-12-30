@@ -1,4 +1,5 @@
 import logging
+from http import HTTPStatus
 from typing import List, Optional
 from uuid import UUID
 
@@ -47,7 +48,11 @@ def get_dashboard(
 
     try:
         tenant_code = get_tenant_code(user_info.tenants, user_info.preferred_tenant_id)
-        return handler.get_dashboard(user_info.preferred_tenant_id, tenant_code, dashboard_id, filter_list)
+        dashboard = handler.get_dashboard(user_info.preferred_tenant_id, tenant_code, dashboard_id, filter_list)
+        if dashboard:
+            return dashboard
+        else:
+            raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Dashboard not found")
     except HTTPError as ex:
         raise HTTPException(status_code=ex.response.status_code, detail=ex.response.text)
 

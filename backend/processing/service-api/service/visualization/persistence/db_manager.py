@@ -8,7 +8,7 @@ from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.expression import false, true
-from sqlmodel import Field as SqlField
+from sqlmodel import Field as SqlField, col
 from sqlmodel import Session, SQLModel
 
 from service.common.base_entity_manager import BaseEntityManager
@@ -58,7 +58,7 @@ class ChartEntity(SQLModel, table=True):
 
 class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
 
-    def get_dashboard(self, tenant_id: UUID, dashboard_id: UUID) -> DashboardDO:
+    def get_dashboard(self, tenant_id: UUID, dashboard_id: UUID) -> Optional[DashboardDO]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(DashboardEntity).filter(
                 DashboardEntity.identifier == dashboard_id,
@@ -66,6 +66,10 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
                 DashboardEntity.is_deleted == false()
             )
             dashboard = query.first()
+
+            if dashboard is None:
+                return None
+
             return DashboardDO(
                 identifier=dashboard.identifier,
                 title=dashboard.title,
@@ -81,7 +85,7 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
             )
             if frontend_key:
                 query = query.filter(
-                    DashboardEntity.frontend_keys.any(frontend_key)  # noqa
+                    col(DashboardEntity.frontend_keys).any(frontend_key)
                 )
             dashboards = query.all()
             return [
@@ -97,7 +101,7 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
     def get_charts_by_ids(self, tenant_id: UUID, chart_ids: List[UUID]) -> dict[UUID, ChartDBO]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             query = session.query(ChartEntity).filter(
-                ChartEntity.identifier.in_(chart_ids),  # noqa
+                col(ChartEntity.identifier).in_(chart_ids),
                 ChartEntity.is_enabled == true(),
                 ChartEntity.is_deleted == false()
             )

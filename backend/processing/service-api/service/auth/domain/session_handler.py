@@ -21,11 +21,11 @@ class UserCacheManager(BaseSettings):
     def set_user(self, user_id: str, user: UserCache, ttl: int = settings.DEFAULT_MAX_CACHE_TTL_SECONDS):
         self._entity_manager.set_entity(user_id, user.to_dict(), ttl=ttl)
 
-    def get_user(self, user_id: str) -> UserCache:
+    def get_user(self, user_id: str) -> Optional[UserCache]:
         user_cache = self._entity_manager.get_entity(user_id)
         return UserCache(entries=user_cache) if user_cache else None
 
-    def update_user(self, user_id: str, field: str, value: any):
+    def update_user(self, user_id: str, field: str, value: Any):
         self._entity_manager.update_entity(user_id, field, value)
 
     def set_preferred_tenant(self, user_id: str, preferred_tenant_id: str):
@@ -55,7 +55,7 @@ class TenantCacheManager(BaseSettings):
 
     def get_tenant_by_id(self, tenant_id) -> Optional[TenantCache]:
         tenant_map = self._entity_manager.get_entity(tenant_id)
-        if tenant_map:
+        if tenant_map is not None:
             return TenantCache(entries=tenant_map)
         else:  # tenant entry when not in cache
             tenant_info_list: List[TenantInfo] = self.persistence_manager.get_tenant_by_ids([tenant_id])
@@ -64,7 +64,7 @@ class TenantCacheManager(BaseSettings):
             else:
                 return None
 
-    def _save_and_get_cache(self, tenant_info: TenantInfo):
+    def _save_and_get_cache(self, tenant_info: Optional[TenantInfo]):
         if not tenant_info:
             return None
         tenant_cache = TenantCache(
@@ -92,7 +92,7 @@ class SessionHandler(BaseSettings):
         tenants = [self.org_cache_manager.get_tenant_by_org(org_id) for org_id in nile_user.org_ids]
         tenant_ids = [tenant.tenant_id for tenant in tenants if tenant is not None]
 
-        return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, expiry_at)
+        return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, token, expiry_at)
 
     def create_session(self, tenant_ids: List[str],
                        user_id: str, email: str, name: Optional[str] = None, token: Optional[str] = None,
@@ -168,7 +168,7 @@ class SessionHandler(BaseSettings):
             expiry_at = now_epoch() + session_cache['ttl']
         return self.get_user_session_from_cache(basic_session, user, expiry_at)
 
-    def delete_session(self, session_id) -> UserSession:
+    def delete_session(self, session_id) -> Optional[UserSession]:
         user_session = self.get_session(session_id)
         self._entity_manager.delete_entity(session_id)
         return user_session

@@ -1,4 +1,4 @@
-from typing import Optional, List, Any, Dict
+from typing import List, Any, Dict
 
 import requests
 from pydantic import BaseSettings, Field, PrivateAttr
@@ -9,7 +9,7 @@ GRAFANA_API_ENDPOINT = "https://grafana.oraika.com/api/alertmanager/grafana/api/
 
 class GrafanaClient(BaseSettings):
     _headers: Dict[str, Any] = PrivateAttr()
-    endpoint: Optional[str] = GRAFANA_API_ENDPOINT
+    endpoint: str = GRAFANA_API_ENDPOINT
     api_key: str = Field('eyJrIjoiSXpzVzFXdjdQWElYcFNGYmlyVVdhYmZGNGppRldvUFoiLCJuIjoidmlld2VyX2FjY2VzcyIsImlkIjoxfQ==',
                          env="GRAFANA_API_KEY")
 

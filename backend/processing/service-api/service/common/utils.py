@@ -1,5 +1,5 @@
 import time
-from typing import Any, List
+from typing import Any, List, Tuple
 
 
 def search_dict(partial: Any, search_key: str):
@@ -34,7 +34,7 @@ def dict_replace_keys(obj, key_map: dict[str, str]):
 
 
 def dict_group_by(dict_objects: List[dict], field_name: str) -> dict[str, List[dict]]:
-    result_dict = {}
+    result_dict: dict[str, list[Any]] = {}
     for dict_obj in dict_objects:
         if field_name not in dict_obj:
             continue
@@ -49,7 +49,7 @@ def dedup_list(string_list: List[str]):
     return list(dict.fromkeys(string_list))
 
 
-def list_split_by_condition(given_list: List, condition_fx) -> ([], []):
+def list_split_by_condition(given_list: List, condition_fx) -> Tuple[list, list]:
     true_list = []
     false_list = []
     for element in given_list:

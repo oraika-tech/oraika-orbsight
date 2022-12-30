@@ -166,13 +166,15 @@ class GoogleMapsExecutor(BaseObserverExecutor):
             number_of_reviews=config.limit_count,
             api_key=self.get_secret_config(event),
             country=event.country,
-            language=event.language or 'en', # TODO fix this in Obsei
+            language=event.language or 'en',  # TODO fix this in Obsei
         )
 
     def convert_date_column(self, date_value: Any):
         return datetime.utcfromtimestamp(int(date_value))
 
     def get_secret_config(self, event: ObserverJobEvent):
+        if self.api_key is None:
+            return None
         return self.api_key.get_secret_value()
 
 

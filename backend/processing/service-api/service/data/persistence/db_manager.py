@@ -3,6 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import Column, Text, distinct, func, select
 from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.sql.operators import is_
 from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
@@ -91,11 +92,11 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
 
         return query
 
-    def get_text_analysis_data(self, params: FilterQueryParams) -> Optional[List[TextAnalysisData]]:
+    def get_text_analysis_data(self, params: FilterQueryParams) -> List[TextAnalysisData]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = session.query(ProcessedDataView)
             query = self._get_updated_query_with_params(ProcessedDataView, query, params)
-            query = query.order_by(ProcessedDataView.event_time.desc())
+            query = query.order_by(ProcessedDataView.event_time.desc())  # type: ignore
             if params.limit:
                 query = query.limit(params.limit)
             result_set = query.all()
@@ -104,7 +105,7 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
             else:
                 return []
 
-    def get_distinct_terms(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_terms(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(func.unnest(ProcessedDataView.taxonomy_terms).label('taxonomy_value')) \
                 .distinct() \
@@ -113,30 +114,30 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
             query = self._get_updated_query_with_params(ProcessedDataView, query, params)
             return self._execute_query(session, query)
 
-    def get_distinct_languages(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_languages(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.text_lang)).filter(
-                ProcessedDataView.text_lang != None
+                is_(ProcessedDataView.text_lang, None)
             ).order_by(
                 ProcessedDataView.text_lang
             )
             query = self._get_updated_query_with_params(ProcessedDataView, query, params)
             return self._execute_query(session, query)
 
-    def get_distinct_entity_names(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_entity_names(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.entity_name)).filter(
-                ProcessedDataView.entity_name != None
+                is_(ProcessedDataView.entity_name, None)
             ).order_by(
                 ProcessedDataView.entity_name
             )
             query = self._get_updated_query_with_params(ProcessedDataView, query, params)
             return self._execute_query(session, query)
 
-    def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_observer_types(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.observer_type)).filter(
-                ProcessedDataView.observer_type != None
+                is_(ProcessedDataView.observer_type, None)
             ).order_by(
                 ProcessedDataView.observer_type
             )

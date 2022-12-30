@@ -27,6 +27,8 @@ class VisualizationDomainHandler(BaseSettings):
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key_dashboard)
     def get_dashboard(self, tenant_id: UUID, tenant_code: str, dashboard_id: UUID, filter_list: List[FilterDO]):
         dashboard = self.persistence_manager.get_dashboard(tenant_id, dashboard_id)
+        if dashboard is None:
+            return None
         return self.dynamic_dashboard_manager.get_updated_dashboard_info(tenant_id, tenant_code,
                                                                          dashboard, filter_list,
                                                                          include_components=True)

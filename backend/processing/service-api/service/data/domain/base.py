@@ -1,6 +1,5 @@
-import json
 from abc import abstractmethod
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseSettings
 
@@ -11,21 +10,21 @@ from .model.text_analysis_data import TextAnalysisData
 class BasePersistenceManager(BaseSettings):
 
     @abstractmethod
-    def get_text_analysis_data(self, params: FilterQueryParams) -> Optional[List[TextAnalysisData]]:
+    def get_text_analysis_data(self, params: FilterQueryParams) -> List[TextAnalysisData]:
         pass
 
     @abstractmethod
-    def get_distinct_entity_names(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_entity_names(self, params: FilterQueryParams) -> List[str]:
         pass
 
     @abstractmethod
-    def get_distinct_terms(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_terms(self, params: FilterQueryParams) -> List[str]:
         pass
 
     @abstractmethod
-    def get_distinct_observer_types(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_observer_types(self, params: FilterQueryParams) -> List[str]:
         pass
 
     @abstractmethod
-    def get_distinct_languages(self, params: FilterQueryParams) -> Optional[List[str]]:
+    def get_distinct_languages(self, params: FilterQueryParams) -> List[str]:
         pass

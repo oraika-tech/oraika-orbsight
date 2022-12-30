@@ -17,26 +17,28 @@ class WordFreqHandler(BaseSettings):
 
         emotion_text_map: Dict[str, List[str]] = {}
         for text_analysis_data in data:
+            if text_analysis_data.emotion is None:
+                continue
             if text_analysis_data.emotion not in emotion_text_map:
                 emotion_text_map[text_analysis_data.emotion] = []
             emotion_text_map[text_analysis_data.emotion].append(text_analysis_data.raw_text)
 
         emotion_str_map: Dict[str, str] = {}
-        for key, value in emotion_text_map.items():
-            text = " ".join(value)
+        for emotion, text_list in emotion_text_map.items():
+            text = " ".join(text_list)
             cleaned_text = self.text_processor.clean_text(text)
 
-            emotion_str_map[key] = cleaned_text.lower()
+            emotion_str_map[emotion] = cleaned_text.lower()
 
         # Create and generate a word cloud image:
         response: List[EmotionWordFrequency] = []
-        for key, value in emotion_str_map.items():
+        for emotion, cleaned_text in emotion_str_map.items():
             response.append(
                 EmotionWordFrequency(
-                    name=key,
+                    name=emotion,
                     word_cloud=[
                                    TextWordWeight(term=word, weight=frequency)
-                                   for word, frequency in self.generate_freq_map(lang_code=lang_code, text=value)
+                                   for word, frequency in self.generate_freq_map(lang_code=lang_code, text=cleaned_text)
                                ][:self.max_word_count]
                 )
             )

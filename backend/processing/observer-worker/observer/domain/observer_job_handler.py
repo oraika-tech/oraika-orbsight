@@ -5,8 +5,9 @@ from uuid import UUID
 from pydantic import Field, BaseSettings
 
 from observer.domain.raw_data import RawData
-from observer.integration.executor import BaseObserverExecutor, TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, \
-    GoogleMapsExecutor, FacebookExecutor, RedditExecutor, GoogleNewsExecutor, ObseiResponse, SourceConfig
+from observer.integration.executor import BaseObserverExecutor, \
+    TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, GoogleMapsExecutor, FacebookExecutor, RedditExecutor, \
+    GoogleNewsExecutor, ObseiResponse, SourceConfig
 from observer.persistence.postgresql.raw_data_entity_manager import RawDataEntityManager
 from observer.persistence.sqs.sqs_publisher import SqsPublisher, \
     RawDataEvent
@@ -16,9 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class ObserverJobHandler(BaseSettings):
-    observer_executors: Optional[Dict[ObserverType, BaseObserverExecutor]]
-    rawDataEntityManager: Optional[RawDataEntityManager]
-    sqsPublisher: Optional[SqsPublisher]
+    observer_executors: Dict[ObserverType, BaseObserverExecutor]
+    rawDataEntityManager: RawDataEntityManager
+    sqsPublisher: SqsPublisher
     min_raw_text_length: int = Field(20, env='MIN_TEXT_LENGTH')
 
     def __init__(self, **data: Any):

@@ -3,6 +3,7 @@ from uuid import UUID
 
 from cachetools import TTLCache, cached
 from pandas import DataFrame
+from sqlalchemy import true, false
 from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
@@ -84,8 +85,8 @@ class DBEntityManager(BaseEntityManager):
     def get_taxonomy_dataframe(self, tenant_id: UUID) -> DataFrame:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             taxonomy_entities = session.query(TaxonomyEntity).filter(
-                TaxonomyEntity.is_deleted == False,
-                TaxonomyEntity.is_enabled == True,
+                TaxonomyEntity.is_deleted == false(),
+                TaxonomyEntity.is_enabled == true(),
             )
             if taxonomy_entities is not None:
                 return DataFrame(
@@ -99,8 +100,8 @@ class DBEntityManager(BaseEntityManager):
     def get_categories(self, tenant_id: UUID) -> List[str]:
         with Session(self._get_tenant_engine(tenant_id)) as session:
             category_entities = session.query(CategoryEntity).filter(
-                CategoryEntity.is_deleted == False,
-                CategoryEntity.is_enabled == True,
+                CategoryEntity.is_deleted == false(),
+                CategoryEntity.is_enabled == true(),
             )
             if category_entities is not None:
                 return [category_entity.name for category_entity in category_entities]

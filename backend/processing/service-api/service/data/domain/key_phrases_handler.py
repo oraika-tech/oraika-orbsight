@@ -2,8 +2,8 @@ from typing import List, Dict
 
 from pydantic import BaseSettings
 
-from .model.text_analysis_data import TextAnalysisData
 from .model.key_phrase import KeyPhraseWeight, EmotionKeyPhrases
+from .model.text_analysis_data import TextAnalysisData
 from .text_processor import TextProcessor
 
 
@@ -20,6 +20,8 @@ class KeyPhrasesHandler(BaseSettings):
 
         emotion_text_map: Dict[str, List[str]] = {}
         for text_analysis_data in data:
+            if text_analysis_data.emotion is None:
+                continue
             if text_analysis_data.emotion not in emotion_text_map:
                 emotion_text_map[text_analysis_data.emotion] = []
             emotion_text_map[text_analysis_data.emotion].append(text_analysis_data.raw_text)

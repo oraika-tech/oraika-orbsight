@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Mapping, Union
 
 from pydantic import BaseSettings, PrivateAttr
 from pydantic import Field
@@ -36,13 +36,17 @@ class EntityRedisManager(BaseSettings):
         self._set_expiry(key, expiry_at=expiry_at, ttl=ttl)
 
     def get_value(self, key: str) -> str:
-        return self._client.get(key)
+        return str(self._client.get(key))
 
     def set_entity(self, entity_id: str, entity: Dict[str, str],
                    expiry_at: Optional[int] = None, ttl: Optional[int] = None):
-        entity = {key: value for key, value in entity.items() if value is not None}
+        entity_map: Mapping[Union[str, bytes], Union[str, bytes]] = {
+            key: value
+            for key, value in entity.items()
+            if value is not None
+        }
         entity_key = self._get_key(entity_id)
-        self._client.hmset(entity_key, entity)
+        self._client.hset(entity_key, mapping=entity_map)
         self._set_expiry(entity_key, expiry_at=expiry_at, ttl=ttl)
 
     def get_entity(self, entity_id: str):
@@ -51,7 +55,7 @@ class EntityRedisManager(BaseSettings):
             value['ttl'] = self._client.ttl(entity_id)
         return value
 
-    def update_entity(self, entity_id: str, field: str, value: any):
+    def update_entity(self, entity_id: str, field: str, value: Any):
         self._client.hset(self._get_key(entity_id), field, value)
 
     def delete_entity(self, entity_id: str):

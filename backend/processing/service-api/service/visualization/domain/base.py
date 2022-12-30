@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseSettings
@@ -11,7 +11,7 @@ from service.visualization.domain.model.dashboard_models import DashboardDO
 class BasePersistenceManager(BaseSettings):
 
     @abstractmethod
-    def get_dashboard(self, tenant_id: UUID, dashboard_id: UUID) -> DashboardDO:
+    def get_dashboard(self, tenant_id: UUID, dashboard_id: UUID) -> Optional[DashboardDO]:
         pass
 
     @abstractmethod

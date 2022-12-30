@@ -56,13 +56,15 @@ class RawDataEntityManager(BaseEntityManager):
         return success_raw_data_list
 
     def convert_to_entity(self, raw_data: RawData):
+        unstructured_data = self.recursive_serialize(raw_data.unstructured_data) \
+            if raw_data.unstructured_data is not None else None
         return RawDataEntity(
             observer_id=raw_data.observer_id,
             reference_id=raw_data.reference_id,
             parent_reference_id=raw_data.parent_reference_id,
             raw_text=raw_data.raw_text,
             # data=json.dumps(raw_data.data, default=datetime_handler),
-            unstructured_data=self.recursive_serialize(raw_data.unstructured_data),
+            unstructured_data=unstructured_data,
             event_time=raw_data.event_time
         )
 

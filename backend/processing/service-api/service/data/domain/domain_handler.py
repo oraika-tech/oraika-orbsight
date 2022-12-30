@@ -76,11 +76,11 @@ class DataDomainHandler(BaseSettings):
         data = self.get_text_analysis_data(filter_query_params)
         if not data:
             return []
-        return self.word_freq_handler.generate_word_freq(data=data, lang_code=filter_query_params.lang_code)
+        return self.word_freq_handler.generate_word_freq(data=data, lang_code=filter_query_params.lang_code or 'en')
 
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key)
     def get_key_phrases(self, filter_query_params: FilterQueryParams):
         data = self.get_text_analysis_data(filter_query_params)
         if not data:
             return []
-        return self.key_phrases_handler.generate_key_phrases(data=data, lang_code=filter_query_params.lang_code)
+        return self.key_phrases_handler.generate_key_phrases(data=data, lang_code=filter_query_params.lang_code or 'en')

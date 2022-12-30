@@ -27,8 +27,8 @@ routes = APIRouter()
 
 @routes.get("/text", response_model=List[TextAnalysisData])
 def get_raw_and_processed(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         limit: Optional[int] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
@@ -55,8 +55,8 @@ def get_raw_and_processed(
 
 @routes.get("/languages", response_model=List[str], response_model_exclude_none=True)
 def get_languages_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         entity_name: Optional[str] = 'All',
         term: Optional[str] = 'All',
         observer_type: Optional[str] = 'All',
@@ -76,8 +76,8 @@ def get_languages_from_data(
 
 @routes.get("/entities", response_model=List[DataEntity], response_model_exclude_none=True)
 def get_unique_entities_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         text_lang: Optional[str] = 'en',
         term: Optional[str] = 'All',
         observer_type: Optional[str] = None,
@@ -97,8 +97,8 @@ def get_unique_entities_from_data(
 
 @routes.get("/terms", response_model=List[DataTerm], response_model_exclude_none=True)
 def get_unique_terms_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
         observer_type: Optional[str] = None,
@@ -118,8 +118,8 @@ def get_unique_terms_from_data(
 
 @routes.get("/source-types", response_model=List[DataSourceType], response_model_exclude_none=True)
 def get_data_sources_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
         term: Optional[str] = 'All',
@@ -139,8 +139,8 @@ def get_data_sources_from_data(
 
 @routes.get("/key-phrases", response_model=List[EmotionKeyPhrases], response_model_exclude_none=True)
 def get_key_phrases_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
         term: Optional[str] = 'All',
@@ -167,8 +167,8 @@ def get_key_phrases_from_data(
 
 @routes.get("/word-cloud", response_model=List[EmotionWordFrequency])
 def get_word_cloud_from_data(
-        start_date: Union[datetime, date] = None,
-        end_date: Union[datetime, date] = None,
+        start_date: Optional[Union[datetime, date]] = None,
+        end_date: Optional[Union[datetime, date]] = None,
         text_lang: Optional[str] = 'en',
         entity_name: Optional[str] = 'All',
         term: Optional[str] = 'All',

@@ -7,8 +7,8 @@ from pydantic import BaseModel, validator
 
 class FilterQueryParams(BaseModel):
     tenant_id: UUID
-    start_date: Union[datetime, date] = None
-    end_date: Union[datetime, date] = None
+    start_date: Union[datetime, date, None] = None
+    end_date: Union[datetime, date, None] = None
     entity_name: Optional[str] = None
     observer_name: Optional[str] = None
     term: Optional[str] = None

@@ -49,10 +49,13 @@ class AuthHandler(BaseSettings):
                     return self.session_handler.create_user_session(user_id, token, nile_user, expiry_at)
         else:
             logger.error("User token invalid")
-            return None
+
+        return None
 
     def demo_login(self, email: str) -> Optional[UserSession]:
         demo_tenants = self.persistence_manager.get_demo_tenants()
+        if demo_tenants is None:
+            return None
         demo_tenant_ids = [str(tenant.identifier) for tenant in demo_tenants]
         return self.session_handler.create_session(tenant_ids=demo_tenant_ids, user_id=email, email=email)
 
@@ -70,7 +73,7 @@ class AuthHandler(BaseSettings):
             return None
 
         user_session = self.session_handler.get_session(session_id)
-        if not user_session:
+        if user_session is None:
             return None
 
         tenants = [

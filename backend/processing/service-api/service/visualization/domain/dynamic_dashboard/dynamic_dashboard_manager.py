@@ -56,6 +56,9 @@ class DynamicDashboardManager(BaseSettings):
             dashboard.component_layout = None
             return dashboard
 
+        if dashboard.component_layout is None or len(dashboard.component_layout.components) == 0:
+            return dashboard
+
         dashboard.component_layout.components = [component
                                                  for component in dashboard.component_layout.components
                                                  if not component.disabled]
@@ -85,8 +88,12 @@ class DynamicDashboardManager(BaseSettings):
         if component.inputs is None:
             component.inputs = []
         if component.type == 'chart':
-            handle_chart(self.data_view_manager, component.inputs,
-                         filter_list, tenant_code, charts[component.identifier])
+            if component.identifier is not None:
+                handle_chart(self.data_view_manager,
+                             component.inputs,
+                             filter_list,
+                             tenant_code,
+                             charts[component.identifier])
         elif component.type == 'react-component':
             if component.name == 'FilterPanel':
                 handle_filter_panel(self.data_view_manager, component.inputs, filter_list, tenant_code)

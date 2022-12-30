@@ -1,5 +1,5 @@
 import logging
-from typing import Optional, List, Any, Dict
+from typing import List, Any, Dict
 
 import requests
 from jose import jwt
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class CubejsClient(BaseSettings):
     _headers: Dict[str, Any] = PrivateAttr()
     _cubejs_operators = PrivateAttr()
-    endpoint: Optional[str] = settings.CUBEJS_API_ENDPOINT
+    endpoint: str = settings.CUBEJS_API_ENDPOINT
     tenant_tokens: Dict[str, str] = {}
 
     def __init__(self, **data: Any):
@@ -70,3 +70,5 @@ class CubejsClient(BaseSettings):
             raise e
         except Exception as ex:
             raise RuntimeError(f"Cubejs API Exception: {ex}")
+
+        return []

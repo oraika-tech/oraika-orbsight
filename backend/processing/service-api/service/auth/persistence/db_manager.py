@@ -56,9 +56,8 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 UserTable.email == email
             ).first()
 
-            tenants = self.get_tenants(session, user_entity.tenant_ids)
-
             if user_entity is not None:
+                tenants = self.get_tenants(session, user_entity.tenant_ids)
                 if bcrypt.checkpw(password.encode(), user_entity.hash_password.encode()):
                     return UserInfo(
                         identifier=user_entity.identifier,
@@ -66,6 +65,8 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                         name=user_entity.name,
                         email=user_entity.email
                     )
+
+        return None
 
     def get_user(self, user_id: str) -> Optional[UserInfo]:
         with Session(self.core_db_engine) as session:
@@ -75,19 +76,19 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 UserTable.is_deleted == false()
             ).first()
 
-            tenants = self.get_tenants(session, user_entity.tenant_ids)
-
             if user_entity is not None:
+                tenants = self.get_tenants(session, user_entity.tenant_ids)
                 return UserInfo(
                     identifier=user_entity.identifier,
                     tenants=tenants,
                     name=user_entity.name,
                     email=user_entity.email
                 )
+        return None
 
     @staticmethod
-    def get_tenants(session: Session, tenant_ids: List[UUID]) -> List[TenantInfo]:
-        if not tenant_ids:
+    def get_tenants(session: Session, tenant_ids: Optional[List[UUID]]) -> List[TenantInfo]:
+        if tenant_ids is None or len(tenant_ids) == 0:
             return []
 
         tenants = session.query(TenantTable).filter(

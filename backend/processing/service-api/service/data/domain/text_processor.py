@@ -1,8 +1,7 @@
 import re
 import sys
-from enum import Enum
-
 import unicodedata
+from enum import Enum
 from pathlib import Path
 from typing import List, Any, Dict, Optional, Set, Pattern
 
@@ -128,7 +127,8 @@ class TextProcessor(BaseSettings):
 
         cleaned_text = cleaned_text.strip()
         if deep_clean:
-            cleaned_text = self.control_char_regex.sub(self.regex_substitute, cleaned_text)
+            if self.control_char_regex:
+                cleaned_text = self.control_char_regex.sub(self.regex_substitute, cleaned_text)
             if cleaned_text in self.punctuations or cleaned_text in self.get_stop_words(lang_code):
                 return ""
 

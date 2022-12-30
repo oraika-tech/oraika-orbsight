@@ -12,7 +12,7 @@ TRANSLATION_MODEL = "Helsinki-NLP/opus-mt-mul-en"
 
 class TiyaroClient(BaseSettings):
     _headers: Dict[str, Any] = PrivateAttr()
-    endpoint_format: Optional[str] = TIYARO_API_ENDPOINT
+    endpoint_format: str = TIYARO_API_ENDPOINT
     api_key: str = Field(env="TIYARO_API_KEY")
 
     def __init__(self, **data: Any):

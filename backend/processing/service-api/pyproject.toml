@@ -41,6 +41,8 @@ dev = [
     "types-dateparser",
     "types-protobuf",
     "types-pytz",
+    "types-python-jose",
+    "types-redis",
     "pytest",
     "pip-tools",
     "moto",
