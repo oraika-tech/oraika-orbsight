@@ -1,10 +1,9 @@
 import logging
-from typing import List
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseSettings
 
-from service.common.utils import dict_group_by
 from service.visualization.domain.base import BasePersistenceManager
 from service.visualization.domain.dynamic_dashboard.data_view_manager import DataViewManager
 from service.visualization.domain.dynamic_dashboard.handler.chart_handler import handle_chart
@@ -33,6 +32,24 @@ class DynamicDashboardManager(BaseSettings):
         element = self.get_field_element(component_inputs, field_name)
         return element.value if element else None
 
+    def get_all_components_type(self,
+                                components: Optional[List[Component]],
+                                components_by_type: Optional[dict[str, list[Component]]] = None):
+
+        if components is None or len(components) == 0:
+            return []
+
+        if components_by_type is None:
+            components_by_type = {}
+
+        for component in components:
+            if component.type not in components_by_type:
+                components_by_type[component.type] = []
+            components_by_type[component.type].append(component)
+            self.get_all_components_type(component.components, components_by_type)
+
+        return components_by_type
+
     def get_updated_dashboard_info(self, tenant_id: UUID, tenant_code: str, dashboard: DashboardDO,
                                    filter_list: List[FilterDO], include_components: bool):
         if not include_components:
@@ -45,14 +62,12 @@ class DynamicDashboardManager(BaseSettings):
 
         # section for batch processing by type
         charts = {}
-        components_by_type = dict_group_by(
-            [component.dict() for component in dashboard.component_layout.components if component.disabled is not True],
-            'type')
-        for component_type, component_list in components_by_type.items():
+        components_type_wise = self.get_all_components_type(dashboard.component_layout.components)
+        for component_type, component_list in components_type_wise.items():
             if component_type == 'chart':
-                chart_ids = [component['identifier']
+                chart_ids = [component.identifier
                              for component in component_list
-                             if component['identifier'] is not None]
+                             if component.identifier is not None]
                 charts = self.persistence_manager.get_charts_by_ids(tenant_id, chart_ids)
 
         # section for single processing by type
@@ -70,8 +85,8 @@ class DynamicDashboardManager(BaseSettings):
         if component.inputs is None:
             component.inputs = []
         if component.type == 'chart':
-            handle_chart(self.data_view_manager, component.inputs, filter_list, tenant_code,
-                         charts[component.identifier])
+            handle_chart(self.data_view_manager, component.inputs,
+                         filter_list, tenant_code, charts[component.identifier])
         elif component.type == 'react-component':
             if component.name == 'FilterPanel':
                 handle_filter_panel(self.data_view_manager, component.inputs, filter_list, tenant_code)
