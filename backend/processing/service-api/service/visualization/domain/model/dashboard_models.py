@@ -17,7 +17,11 @@ class Component(BaseModel):
     identifier: Optional[UUID]
     title: Optional[str]
     type: str
-    width: float
+    xs: Optional[float]
+    sm: Optional[float]
+    md: Optional[float]
+    lg: Optional[float]
+    xl: Optional[float]
     height: Optional[str]
     name: Optional[str]
     categories: Optional[List[str]]
