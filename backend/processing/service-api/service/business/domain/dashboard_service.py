@@ -28,7 +28,7 @@ class DashboardService(BaseSettings):
     @cached(cache=TTLCache(maxsize=settings.CACHE_MAX_SIZE, ttl=settings.CACHE_TTL), key=hash_key_for_panel)
     def get_dashboard_panel_data(self, tenant_id: UUID, panel_name: str) -> dict:
         panel_info = self.persistence_manager.get_panels(tenant_id)
-        if panel_info is not None:
+        if panel_info:
             return panel_info[panel_name]
         else:
             return {}

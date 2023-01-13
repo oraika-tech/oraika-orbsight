@@ -20,7 +20,7 @@ class KeyPhrasesHandler(BaseSettings):
 
         emotion_text_map: Dict[str, List[str]] = {}
         for text_analysis_data in data:
-            if text_analysis_data.emotion is None:
+            if not text_analysis_data.emotion:
                 continue
             if text_analysis_data.emotion not in emotion_text_map:
                 emotion_text_map[text_analysis_data.emotion] = []

@@ -176,7 +176,7 @@ class TextProcessor(BaseSettings):
 
     def _keyword_by_rakun(self, text: str) -> Dict[str, float]:
         key_phrases = self._rakun_model.find_keywords(text, input_type="string")
-        if key_phrases is None or len(key_phrases) == 0:
+        if not key_phrases:
             return {}
         return {key_phrase: distance for key_phrase, distance in key_phrases}
 
@@ -206,7 +206,7 @@ class TextProcessor(BaseSettings):
     #         diversity=self.keyphrase_diversity,
     #     )
     #
-    #     if key_phrases is None or len(key_phrases) == 0:
+    #     if not key_phrases:
     #         return {}
     #
     #     key_phrases_list = key_phrases[0] if isinstance(key_phrases[0], List) else key_phrases

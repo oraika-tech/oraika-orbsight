@@ -36,10 +36,10 @@ class DynamicDashboardManager(BaseSettings):
                                 components: Optional[List[Component]],
                                 components_by_type: Optional[dict[str, list[Component]]] = None):
 
-        if components is None or len(components) == 0:
+        if not components:
             return []
 
-        if components_by_type is None:
+        if not components_by_type:
             components_by_type = {}
 
         for component in components:
@@ -56,7 +56,7 @@ class DynamicDashboardManager(BaseSettings):
             dashboard.component_layout = None
             return dashboard
 
-        if dashboard.component_layout is None or len(dashboard.component_layout.components) == 0:
+        if not dashboard.component_layout or len(dashboard.component_layout.components) == 0:
             return dashboard
 
         dashboard.component_layout.components = [component
@@ -70,7 +70,7 @@ class DynamicDashboardManager(BaseSettings):
             if component_type == 'chart':
                 chart_ids = [component.identifier
                              for component in component_list
-                             if component.identifier is not None]
+                             if component.identifier]
                 charts = self.persistence_manager.get_charts_by_ids(tenant_id, chart_ids)
 
         # section for single processing by type
@@ -85,10 +85,10 @@ class DynamicDashboardManager(BaseSettings):
 
     def handle_components(self, component: Component, charts: dict[UUID, ChartDBO],
                           tenant_code: str, filter_list: List[FilterDO]):
-        if component.inputs is None:
+        if not component.inputs:
             component.inputs = []
         if component.type == 'chart':
-            if component.identifier is not None:
+            if component.identifier:
                 handle_chart(self.data_view_manager,
                              component.inputs,
                              filter_list,

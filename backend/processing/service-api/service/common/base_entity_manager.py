@@ -49,7 +49,7 @@ class BaseEntityManager(BaseSettings):
     @staticmethod
     def _execute_query(session, query):
         row_list = session.exec(query)
-        if row_list is not None:
+        if row_list:
             return [row[0] for row in row_list]
         else:
             return []

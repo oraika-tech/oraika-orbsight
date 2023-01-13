@@ -55,7 +55,7 @@ class TenantCacheManager(BaseSettings):
 
     def get_tenant_by_id(self, tenant_id) -> Optional[TenantCache]:
         tenant_map = self._entity_manager.get_entity(tenant_id)
-        if tenant_map is not None:
+        if tenant_map:
             return TenantCache(entries=tenant_map)
         else:  # tenant entry when not in cache
             tenant_info_list: List[TenantInfo] = self.persistence_manager.get_tenant_by_ids([tenant_id])
@@ -90,7 +90,7 @@ class SessionHandler(BaseSettings):
                             expiry_at: Optional[int]) -> Optional[UserSession]:
 
         tenants = [self.org_cache_manager.get_tenant_by_org(org_id) for org_id in nile_user.org_ids]
-        tenant_ids = [tenant.tenant_id for tenant in tenants if tenant is not None]
+        tenant_ids = [tenant.tenant_id for tenant in tenants if tenant]
 
         return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, token, expiry_at)
 
@@ -139,7 +139,7 @@ class SessionHandler(BaseSettings):
         preferred_tenant_id = None
         for tenant_id in user_cache.tenant_ids:
             tenant = self.org_cache_manager.get_tenant_by_id(tenant_id)
-            if tenant is not None:
+            if tenant:
                 tenants.append(tenant)
                 if tenant.tenant_id == user_cache.preferred_tenant_id:
                     preferred_tenant_id = tenant.tenant_id

@@ -105,7 +105,7 @@ class Observer(SQLModel, table=True):
             identifier=self.identifier,
             name=self.name,
             entity_id=self.entity_id,
-            entity_name=entity.name if entity is not None else '',
+            entity_name=entity.name if entity else '',
             is_enabled=self.is_enabled,
             type=observer_type_str,
             config_data=ObserverData(
@@ -132,7 +132,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
 
             entities = query.all()
 
-            if entities is not None:
+            if entities:
                 return [entity.convert_to_model() for entity in entities]
             return []
 
@@ -142,7 +142,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
                 Entity.identifier == entity_id,
                 Entity.is_deleted == false(),
             ).first()
-            if entity is not None:
+            if entity:
                 return entity.convert_to_model()
             return None
 
@@ -195,7 +195,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
                 )
 
             observers = query.all()
-            if observers is not None:
+            if observers:
                 return [
                     observer.convert_to_model(
                         self.get_entity(
@@ -213,7 +213,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
                 Observer.identifier == observer_id,
                 Observer.is_deleted == false(),
             ).first()
-            if observer is not None:
+            if observer:
                 return observer.convert_to_model(
                     self.get_entity(
                         tenant_id=tenant_id,
@@ -267,7 +267,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
             taxonomy_entities = session.query(TaxonomyEntity).filter(
                 TaxonomyEntity.is_deleted == false(),
             )
-            if taxonomy_entities is not None:
+            if taxonomy_entities:
                 return [taxonomy_entity.convert_to_model() for taxonomy_entity in taxonomy_entities]
         return []
 
@@ -299,7 +299,7 @@ class BusinessDBManager(BasePersistenceManager, BaseEntityManager):
             category_entities = session.query(CategoryEntity).filter(
                 CategoryEntity.is_deleted == false(),
             )
-            if category_entities is not None:
+            if category_entities:
                 return [category_entity.convert_to_model() for category_entity in category_entities]
         return []
 

@@ -22,5 +22,5 @@ def handle_filter_panel(data_view_manager, component_inputs: List[FieldValue], f
         filter_value['selectedValue'] = filter_value['defaultValue']
         if filter_field in filter_map:
             filter_values = filter_map[filter_field].values
-            if filter_values is not None:
+            if filter_values:
                 filter_value['selectedValue'] = {'code': filter_values[0]}

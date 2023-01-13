@@ -173,7 +173,7 @@ class GoogleMapsExecutor(BaseObserverExecutor):
         return datetime.utcfromtimestamp(int(date_value))
 
     def get_secret_config(self, event: ObserverJobEvent):
-        if self.api_key is None:
+        if not self.api_key:
             return None
         return self.api_key.get_secret_value()
 
@@ -247,7 +247,7 @@ class GoogleNewsExecutor(BaseObserverExecutor):
 
     def convert_date_column(self, date_value: Any):
         # TODO how to fix if published date is null
-        return datetime.now() if date_value is None or str(date_value) == "" else dateparser.parse(date_value)
+        return datetime.now() if not date_value or str(date_value) == "" else dateparser.parse(date_value)
 
     def convert_id_column(self, id_column: Any):
         return "{:02x}".format(mmh3.hash(id_column, signed=False))

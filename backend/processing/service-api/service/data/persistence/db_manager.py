@@ -100,7 +100,7 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
             if params.limit:
                 query = query.limit(params.limit)
             result_set = query.all()
-            if result_set is not None:
+            if result_set:
                 return [text_analysis_data.convert_to_model() for text_analysis_data in result_set]
             else:
                 return []

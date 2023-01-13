@@ -46,7 +46,7 @@ class NileClient(BaseSettings):
             id=user_id
         )
 
-        if user is None:
+        if not user:
             return None
 
         name = user.metadata.additional_properties.get('name') if not isinstance(user.metadata, Unset) else None

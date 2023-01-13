@@ -43,7 +43,7 @@ class EntityRedisManager(BaseSettings):
         entity_map: Mapping[Union[str, bytes], Union[str, bytes]] = {
             key: value
             for key, value in entity.items()
-            if value is not None
+            if value
         }
         entity_key = self._get_key(entity_id)
         self._client.hset(entity_key, mapping=entity_map)

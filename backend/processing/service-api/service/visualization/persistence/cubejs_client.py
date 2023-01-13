@@ -41,7 +41,7 @@ class CubejsClient(BaseSettings):
         member = filter_obj.get('name', filter_obj['member'])
         values = filter_obj.get('values')
         operator = self._cubejs_operators.get(filter_obj.get('operator') or '=', filter_obj.get('operator'))
-        if filter_obj.get('values') is None:
+        if not filter_obj.get('values'):
             return {"member": member, "operator": operator}
         else:
             return {"member": member, "values": values, "operator": operator}

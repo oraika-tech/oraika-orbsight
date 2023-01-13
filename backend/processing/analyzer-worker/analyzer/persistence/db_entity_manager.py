@@ -88,7 +88,7 @@ class DBEntityManager(BaseEntityManager):
                 TaxonomyEntity.is_deleted == false(),
                 TaxonomyEntity.is_enabled == true(),
             )
-            if taxonomy_entities is not None:
+            if taxonomy_entities:
                 return DataFrame(
                     [taxonomy_entity.as_dict() for taxonomy_entity in taxonomy_entities]
                 ).convert_dtypes().apply(lambda col: col.str.lower())
@@ -103,7 +103,7 @@ class DBEntityManager(BaseEntityManager):
                 CategoryEntity.is_deleted == false(),
                 CategoryEntity.is_enabled == true(),
             )
-            if category_entities is not None:
+            if category_entities:
                 return [category_entity.name for category_entity in category_entities]
             return []
 

@@ -67,7 +67,7 @@ class VisualizationDBManager(BasePersistenceManager, BaseEntityManager):
             )
             dashboard = query.first()
 
-            if dashboard is None:
+            if not dashboard:
                 return None
 
             return DashboardDO(

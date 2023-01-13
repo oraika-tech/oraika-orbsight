@@ -170,7 +170,7 @@ class DataViewManager(BaseSettings):
             "dateRange": "Last 7 days"
         }
         for time_filter in time_filters:
-            if time_filter.values is not None:
+            if time_filter.values:
                 if time_filter.name == "period":
                     time_dimension["dateRange"] = self.get_code_to_daterange(time_filter.values[0])
                 elif is_timeseries and time_filter.name == "interval":

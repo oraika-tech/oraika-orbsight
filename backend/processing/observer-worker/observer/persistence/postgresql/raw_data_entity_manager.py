@@ -57,7 +57,7 @@ class RawDataEntityManager(BaseEntityManager):
 
     def convert_to_entity(self, raw_data: RawData):
         unstructured_data = self.recursive_serialize(raw_data.unstructured_data) \
-            if raw_data.unstructured_data is not None else None
+            if raw_data.unstructured_data else None
         return RawDataEntity(
             observer_id=raw_data.observer_id,
             reference_id=raw_data.reference_id,

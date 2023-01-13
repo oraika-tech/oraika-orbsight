@@ -54,7 +54,7 @@ class AuthHandler(BaseSettings):
 
     def demo_login(self, email: str) -> Optional[UserSession]:
         demo_tenants = self.persistence_manager.get_demo_tenants()
-        if demo_tenants is None:
+        if not demo_tenants:
             return None
         demo_tenant_ids = [str(tenant.identifier) for tenant in demo_tenants]
         return self.session_handler.create_session(tenant_ids=demo_tenant_ids, user_id=email, email=email)
@@ -73,7 +73,7 @@ class AuthHandler(BaseSettings):
             return None
 
         user_session = self.session_handler.get_session(session_id)
-        if user_session is None:
+        if not user_session:
             return None
 
         tenants = [

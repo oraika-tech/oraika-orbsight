@@ -129,11 +129,11 @@ class StructuredDataExtractor(BaseSettings):
             tags: Set[str] = set()
 
             for terms_string in set(keywords_present_df['term'].to_list()):
-                if terms_string is not None and terms_string != "":
+                if terms_string:
                     terms.add(terms_string)
 
             for tags_string in set(keywords_present_df['tags'].to_list()):
-                if tags_string is not None and tags_string != "":
+                if tags_string:
                     tags.update(tags_string.split(","))
 
             return TaxonomyData(
