@@ -36,7 +36,8 @@ class EntityRedisManager(BaseSettings):
         self._set_expiry(key, expiry_at=expiry_at, ttl=ttl)
 
     def get_value(self, key: str) -> str:
-        return str(self._client.get(key))
+        value = self._client.get(key)
+        return str(value) if value else None
 
     def set_entity(self, entity_id: str, entity: Dict[str, str],
                    expiry_at: Optional[int] = None, ttl: Optional[int] = None):
