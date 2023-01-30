@@ -148,6 +148,16 @@ models*
 .vscode/*
 
 .terraform*
+*.tfstate*
 
 *.zip
 *.bak
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Intellij project folder
+.idea
