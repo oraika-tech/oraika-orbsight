@@ -1,0 +1,9 @@
+{
+  "name": "mantine-components",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@mantine/core": "5.10.4",
+    "@tabler/icons": "^1.119.0"
+  }
+}

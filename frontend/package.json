@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/**/*"
+  ],
+  "scripts": {
+    "dev": "yarn --cwd apps/home dev",
+    "build": "yarn --cwd apps/home build",
+    "start": "yarn --cwd apps/home start"
+  }
+}
