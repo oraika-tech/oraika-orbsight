@@ -18,6 +18,7 @@ module.exports = {
   rules: {
     'react/jsx-indent-props': ['error', 4],
     'react/react-in-jsx-scope': 'off',
-    'comma-dangle': ['error', 'never']
-  },
+    'comma-dangle': ['error', 'never'],
+    'max-len': ['error', 120]
+  }
 };
