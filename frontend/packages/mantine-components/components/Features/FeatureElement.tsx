@@ -9,9 +9,6 @@ const useStyles = createStyles((theme) => ({
     title: {
         color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 2 : 4],
     },
-    description: {
-        color: theme.colorScheme === 'dark' ? theme.white : theme.black
-    },
     card: {
         borderWidth: '0px 0px 0px 4px',
         borderTopColor: 'transparent',
@@ -21,6 +18,13 @@ const useStyles = createStyles((theme) => ({
         [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
             borderTopColor: theme.colors.gray[4],
             borderLeftColor: 'transparent'
+        }
+    },
+    banner: {
+        justifyContent: 'flex-end',
+        paddingRight: '20px',
+        [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+            justifyContent: 'center'
         }
     }
 }));
@@ -35,16 +39,14 @@ export function FeatureElement({ imageSrc, title, description }: FeatureElementP
                 { maxWidth: 'xs', cols: 1 }
             ]}
         >
-            <Flex justify="center">
+            <Flex className={classes.banner}>
                 <Image width={300} src={imageSrc.src} />
             </Flex>
 
             <Center>
                 <Paper className={classes.card} withBorder>
                     <Title order={5} className={classes.title}>{title}</Title>
-                    <Text size="md" className={classes.description}>
-                        {description}
-                    </Text>
+                    <Text size="md"> {description} </Text>
                 </Paper>
             </Center>
         </SimpleGrid>

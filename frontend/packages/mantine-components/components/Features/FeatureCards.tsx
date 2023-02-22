@@ -5,7 +5,7 @@ import { StaticImageData } from 'next/image';
 const useStyles = createStyles((theme) => ({
     title: {
         color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 2 : 4],
-        paddingBottom: 50
+        paddingBottom: 10
     },
     // heading3: {
     //     bold
@@ -71,7 +71,7 @@ export default function FeatureCards({ title, sections }: FeatureLineProps) {
 
     const getImage = (section: FeatureSection, imgWidth?: number) => (
         <Center>
-            <Image src={section.image.src} width={imgWidth || 200} className={classes.image} />
+            <Image src={section.image.src} width={imgWidth || 170} className={classes.image} />
         </Center>
     );
 
