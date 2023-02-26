@@ -1,4 +1,5 @@
 import { Center, createStyles, Flex, Image, Paper, SimpleGrid, Text, Title } from '@mantine/core';
+import { getSecondaryFontShade } from '../../../../apps/home/business-logic/theme/theme';
 
 interface FeatureElementProps {
     imageSrc: any;
@@ -7,10 +8,10 @@ interface FeatureElementProps {
 }
 const useStyles = createStyles((theme) => ({
     title: {
-        color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 2 : 4],
+        color: getSecondaryFontShade(theme)
     },
     card: {
-        borderWidth: '0px 0px 0px 4px',
+        borderWidth: '0px 0px 0px 0px',
         borderTopColor: 'transparent',
         // borderLeftColor: theme.colors.gray[4],
         padding: '5px 0px 5px 30px',
@@ -33,21 +34,23 @@ export function FeatureElement({ imageSrc, title, description }: FeatureElementP
     const { classes } = useStyles();
     return (
         <SimpleGrid
-            cols={2}
+            cols={1}
             verticalSpacing={0}
             breakpoints={[
-                { maxWidth: 'xs', cols: 1 }
+                { maxWidth: 'sm', cols: 1 }
             ]}
         >
-            <Flex className={classes.banner}>
-                <Image width={300} src={imageSrc.src} />
-            </Flex>
-
             <Center>
                 <Paper className={classes.card} withBorder>
-                    <Title order={5} className={classes.title}>{title}</Title>
-                    <Text size="md"> {description} </Text>
+                    <Title order={4} align="center" className={classes.title}>{title}</Title>
+                    <Text align="center" size="sm"> {description} </Text>
                 </Paper>
+            </Center>
+
+            <Center>
+                <Flex className={classes.banner}>
+                    <Image width={200} src={imageSrc.src} />
+                </Flex>
             </Center>
         </SimpleGrid>
     );

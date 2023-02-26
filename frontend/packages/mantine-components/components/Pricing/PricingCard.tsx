@@ -54,7 +54,7 @@ export default function PricingCard({ icon, bgColor, title, subtitle, priceTitle
     return (
         <div className={classes.cardWrapper}>
             <Card className={classes.card} shadow="xl" radius="lg" withBorder bg={bgColor}>
-                <Stack spacing={10}>
+                <Stack spacing={8}>
                     <Center>
                         <Image width={90} src={icon.src} alt="" />
                     </Center>
