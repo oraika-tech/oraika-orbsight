@@ -1,5 +1,5 @@
 import { createStyles, SimpleGrid } from '@mantine/core';
-import IconTextVertical, { IconTextVerticalProps } from '../IconText/IconTextVertical';
+import IconTextVertical, { IconTextVerticalProps } from './IconTextVertical';
 
 const useStyles = createStyles((theme) => ({
     simplegrid: {
@@ -13,7 +13,7 @@ interface IconGridProps {
 
 export default function IconGridDefault({ items }: IconGridProps) {
     const { classes } = useStyles();
-    const gridItems = items.map(item => <IconTextVertical key={item.label} icon={item.icon} label={item.label} />)
+    const gridItems = items.map(item => <IconTextVertical key={item.label} icon={item.icon} label={item.label} />);
 
     return (
         <SimpleGrid
