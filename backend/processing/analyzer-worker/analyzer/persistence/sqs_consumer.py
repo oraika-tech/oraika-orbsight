@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 class SqsConsumer(BaseSettings):
     region_name: str = Field('eu-west-1', env='AWS_REGION')
-    aws_access_key_id: SecretStr = Field('dummy_key_id', env='AWS_ACCESS_KEY_ID')
-    aws_secret_access_key: SecretStr = Field('dummy_access_key', env='AWS_SECRET_ACCESS_KEY')
+    aws_access_key_id: SecretStr = Field(SecretStr('dummy_key_id'), env='AWS_ACCESS_KEY_ID')
+    aws_secret_access_key: SecretStr = Field(SecretStr('dummy_access_key'), env='AWS_SECRET_ACCESS_KEY')
     queue_url: str = Field('dummy_queue_url', env='AWS_SQS_ANALYZER_QUEUE')
     max_messages: int = Field(5, env='MAX_POLL_MESSAGES')
     wait_time: int = Field(5, env='MAX_WAIT_TIME_IN_SEC')

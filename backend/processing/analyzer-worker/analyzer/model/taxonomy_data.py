@@ -4,5 +4,5 @@ from pydantic import BaseModel, Field
 
 
 class TaxonomyData(BaseModel):
-    tags: Set[str] = Field([])
-    terms: Set[str] = Field([])
+    tags: Set[str] = Field(set())
+    terms: Set[str] = Field(set())

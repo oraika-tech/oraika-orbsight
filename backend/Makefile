@@ -9,13 +9,15 @@ cron-deploy:
 # $(*_dir) variable are required by respective Makefile to resolve parent directory
 
 svc_api_dir=processing/service-api
-include processing/service-api/Makefile
+include $(svc_api_dir)/Makefile
 
 svc_analyzer_dir=processing/analyzer-worker
-include processing/analyzer-worker/Makefile
+include $(svc_analyzer_dir)/Makefile
 
 svc_observer_dir=processing/observer-worker
-include processing/observer-worker/Makefile
+include $(svc_observer_dir)/Makefile
 
 db_dir=database_v2
-include database_v2/Makefile
+include $(db_dir)/Makefile
+
+tenant_onboarding_dir=lambda/tenant_onboarding
