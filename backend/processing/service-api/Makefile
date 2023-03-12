@@ -12,7 +12,7 @@ svc-api-compile:
 
 svc-api-dep:
 	cd $(svc_api_dir); \
-	pip install -e .
+	pip install -r requirements.txt
 
 svc-api-dev:
 	cd $(svc_api_dir); \
