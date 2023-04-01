@@ -24,10 +24,12 @@ def handle_chart(data_view_manager, component_inputs: List[FieldValue], filter_l
     result_series = []
     for data_source in chart.data_source_series:
         logger.debug("Chart DB Query:%s", data_source.query)
+        data_query = json.loads(data_source.query)
+        data_query['timezone'] = 'Asia/Kolkata'
         dataset_result = data_view_manager.get_query_result(
             data_source_type=chart.data_source_type,
             tenant_code=tenant_code,
-            query=json.loads(data_source.query),
+            query=data_query,
             filter_list=filter_list,
             default_value=None,
             is_timeseries=is_timeseries,
