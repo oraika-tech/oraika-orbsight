@@ -1,0 +1,16 @@
+{
+  "name": "blog-utils",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@emotion/core": "^10.0.35",
+    "@emotion/styled": "^10.0.27",
+    "@mantine/core": "5.10.5",
+    "@mantine/hooks": "5.10.5",
+    "dayjs": "^1.11.7",
+    "gray-matter": "^4.0.3",
+    "next": "13.2.1",
+    "reading-time": "^1.5.0",
+    "remark-toc": "^8.0.1"
+  }
+}
