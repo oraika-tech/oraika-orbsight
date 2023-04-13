@@ -20,6 +20,10 @@ const useStyles = createStyles((theme) => ({
   card: {
     minWidth: 250,
     maxWidth: 350,
+  },
+  badge: {
+    color: theme.colors.gray[theme.colorScheme === 'dark' ? 9 : 0],
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.teal[7] : theme.colors.violet[4]
   }
 }));
 
@@ -72,7 +76,15 @@ export default function ArticleItem({ article }: Props) {
 
             <Group spacing={5}>
               {article.tags.map((tag) => (
-                <Badge key={tag} variant="filled" radius="lg" color="teal"> {tag} </Badge>
+                <Badge
+                  key={tag}
+                  size="sm"
+                  variant="filled"
+                  radius="lg"
+                  className={classes.badge}
+                >
+                  {tag}
+                </Badge>
               ))}
             </Group>
 

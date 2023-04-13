@@ -84,7 +84,7 @@ export default function BlogPage({ loading, components, post, classes }: BlogPag
                                         size="sm"
                                         variant="filled"
                                         radius="lg"
-                                        color="teal"
+                                        className={classes.badge}
                                     >
                                         {tag}
                                     </Badge>

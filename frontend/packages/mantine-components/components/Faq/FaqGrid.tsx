@@ -73,7 +73,7 @@ export function FaqGrid({ title, description, questions }: FeaturesGridProps) {
             <SimpleGrid
                 mt={20}
                 cols={3}
-                spacing={theme.spacing.md * 2}
+                spacing={`calc(${theme.spacing.md} * 2)`}
                 breakpoints={[
                     { maxWidth: 980, cols: 2, spacing: 'xl' },
                     { maxWidth: 755, cols: 1, spacing: 'xl' }

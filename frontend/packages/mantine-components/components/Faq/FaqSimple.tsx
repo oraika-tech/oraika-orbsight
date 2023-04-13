@@ -9,13 +9,13 @@ const useStyles = createStyles((theme) => ({
     },
 
     title: {
-        marginBottom: theme.spacing.xl * 1.5
+        marginBottom: `calc(${theme.spacing.xl} * 1.5)`
     },
 
     description: {
         textAlign: 'center',
 
-        '@media (max-width: 520px)': {
+        [`@media (max-width: ${theme.breakpoints.xs})`]: {
             textAlign: 'left',
             fontSize: theme.fontSizes.md
         }

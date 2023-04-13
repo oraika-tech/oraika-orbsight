@@ -7,7 +7,7 @@ export interface IconComponentProps {
     alt: string
 }
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles(() => ({
     imageDiv: {
         width: '100%',
         display: 'flex',

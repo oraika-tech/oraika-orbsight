@@ -15,11 +15,11 @@ const useStyles = createStyles((theme) => ({
         width: '90%'
     },
     image: {
-        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+        [`@media (max-width: ${theme.breakpoints.sm})`]: {
             maxWidth: '90%'
         },
 
-        [`@media (min-width: ${theme.breakpoints.sm}px)`]: {
+        [`@media (min-width: ${theme.breakpoints.sm})`]: {
             maxWidth: 700
         }
     },

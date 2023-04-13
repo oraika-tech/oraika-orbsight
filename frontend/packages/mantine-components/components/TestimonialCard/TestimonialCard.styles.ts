@@ -9,7 +9,7 @@ export default createStyles((theme) => ({
         background: 'linear-gradient(to right, red, purple);'
     },
     highlight: {
-        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+        [`@media (max-width: ${theme.breakpoints.sm})`]: {
             textAlign: 'left'
         },
     }

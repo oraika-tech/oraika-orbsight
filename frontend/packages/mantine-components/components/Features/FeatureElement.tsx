@@ -16,7 +16,7 @@ const useStyles = createStyles((theme) => ({
         // borderLeftColor: theme.colors.gray[4],
         padding: '5px 0px 5px 30px',
 
-        [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+        [`@media (max-width: ${theme.breakpoints.xs})`]: {
             borderTopColor: theme.colors.gray[4],
             borderLeftColor: 'transparent'
         }
@@ -24,7 +24,7 @@ const useStyles = createStyles((theme) => ({
     banner: {
         justifyContent: 'flex-end',
         paddingRight: '20px',
-        [`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+        [`@media (max-width: ${theme.breakpoints.xs})`]: {
             justifyContent: 'center'
         }
     }
@@ -41,7 +41,7 @@ export function FeatureElement({ imageSrc, title, description }: FeatureElementP
             ]}
         >
             <Center>
-                <Paper className={classes.card} withBorder>
+                <Paper className={classes.card}>
                     <Title order={4} align="center" className={classes.title}>{title}</Title>
                     <Text align="center" size="sm"> {description} </Text>
                 </Paper>

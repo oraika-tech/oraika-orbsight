@@ -18,11 +18,11 @@ const useStyles = createStyles((theme) => ({
         width: '90%'
     },
     image: {
-        [`@media (max-width: ${theme.breakpoints.sm}px)`]: {
+        [`@media (max-width: ${theme.breakpoints.sm})`]: {
             maxWidth: '90%'
         },
 
-        [`@media (min-width: ${theme.breakpoints.sm}px)`]: {
+        [`@media (min-width: ${theme.breakpoints.sm})`]: {
             maxWidth: 700
         }
     },
@@ -116,13 +116,14 @@ export default function FeatureCards({ title, sections }: FeatureLineProps) {
         </Grid>
     );
 
-    const sectionItems = width > theme.breakpoints.xs
+    const emToPx = (em: string) => parseInt(em, 10) * 16;
+
+    const sectionItems = width > emToPx(theme.breakpoints.xs)
         ? sections.map(section => (
             <Card key={section.heading} shadow="lg" radius={16} withBorder>
                 {section.imageAlign === 'left'
                     ? getImageAndTextHorizontal(section)
                     : getTextAndImageHorizontal(section)
-                    // : getImageAndTextHorizontal(section)
                 }
             </Card>
         ))
