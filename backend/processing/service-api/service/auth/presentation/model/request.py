@@ -6,7 +6,8 @@ class SessionRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    token: str
+    username: EmailStr
+    password: str
 
 
 class DemoLoginRequest(BaseModel):

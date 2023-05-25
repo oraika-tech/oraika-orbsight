@@ -60,7 +60,7 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 tenants = self.get_tenants(session, user_entity.tenant_ids)
                 if bcrypt.checkpw(password.encode(), user_entity.hash_password.encode()):
                     return UserInfo(
-                        identifier=user_entity.identifier,
+                        identifier=str(user_entity.identifier),
                         tenants=tenants,
                         name=user_entity.name,
                         email=user_entity.email

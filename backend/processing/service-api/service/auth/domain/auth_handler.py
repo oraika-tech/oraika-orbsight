@@ -52,6 +52,13 @@ class AuthHandler(BaseSettings):
 
         return None
 
+    def do_login_with_credentials(self, email: str, password: str) -> Optional[UserSession]:
+        user_info = self.persistence_manager.verify_user(email, password)
+        if user_info:
+            return self.session_handler.create_session_for_user(user_info)
+        else:
+            return None
+
     def demo_login(self, email: str) -> Optional[UserSession]:
         demo_tenants = self.persistence_manager.get_demo_tenants()
         if not demo_tenants:

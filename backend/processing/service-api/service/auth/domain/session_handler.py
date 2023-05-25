@@ -8,6 +8,7 @@ from service.auth.persistence.redis_manager import EntityRedisManager
 from service.common.settings import settings
 from .base import BasePersistenceManager
 from .model.domain_models import TenantInfo
+from ...common.model.user import UserInfo
 from ...common.utils import now_epoch
 
 
@@ -86,6 +87,10 @@ class SessionHandler(BaseSettings):
         super().__init__(**values)
         self._entity_manager = EntityRedisManager('ssn')
 
+    def create_session_for_user(self, user_info: UserInfo) -> Optional[UserSession]:
+        tenant_ids = [str(tenant.identifier) for tenant in user_info.tenants if tenant]
+        return self.create_session(tenant_ids, user_info.identifier, user_info.email, user_info.name)
+
     def create_user_session(self, user_id: str, token: str, nile_user: NileUser,
                             expiry_at: Optional[int]) -> Optional[UserSession]:
 
@@ -95,8 +100,8 @@ class SessionHandler(BaseSettings):
         return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, token, expiry_at)
 
     def create_session(self, tenant_ids: List[str],
-                       user_id: str, email: str, name: Optional[str] = None, token: Optional[str] = None,
-                       expiry_at: Optional[int] = None):
+                       user_id: str, email: str, name: Optional[str] = None,
+                       token: Optional[str] = None, expiry_at: Optional[int] = None):
 
         if len(tenant_ids) == 0:
             return None

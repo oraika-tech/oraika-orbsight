@@ -46,8 +46,8 @@ def set_user_preferred_tenant(
 def login_access_token(
         login_request: LoginRequest,
         response: Response,
-        handler=Depends(get_auth_handler)):
-    user_session: UserSession = handler.do_login(login_request.token)
+        handler=Depends(get_auth_handler)) -> dict:
+    user_session: UserSession = handler.do_login_with_credentials(login_request.username, login_request.password)
 
     if not user_session:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect credential")
@@ -57,8 +57,9 @@ def login_access_token(
     if not user_session.preferred_tenant_id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User without org")
 
-    http_utils.set_cookie(response, "orb_web_session_id", user_session.session_id, user_session.expiry_at)
-    response.status_code = status.HTTP_204_NO_CONTENT
+    http_utils.set_cookie(response, "web_session_id", user_session.session_id, user_session.expiry_at)
+    response.status_code = status.HTTP_200_OK
+    return {"status": "success"}
 
 
 @routes.post("/logout")
