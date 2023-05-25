@@ -63,7 +63,7 @@ def get_session_id(origin: str = Header(),
         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         raise HTTPException(status_code=status_code, detail="Empty origin")
 
-    if origin == settings.ORB_URL:
+    if origin == settings.ORB_URL or origin == settings.HOME_URL or origin == settings.WWW_URL:
         session_id = web_session_id
     elif origin == settings.DEMO_URL:
         session_id = orb_demo_session_id

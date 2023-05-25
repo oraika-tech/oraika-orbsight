@@ -60,13 +60,9 @@ def handle_simple_table(data_view_manager, component_inputs: List[FieldValue],
 
     column_definition = [
         {
-            'field': column_name.lower().replace(' ', '_'),
-            'headerName': column_name,
-            'description': column_name,
-            'flex': 1,
-            'minWidth': max(map(lambda e: len(str(e[i])), table_data)) * 10,  # calculate min width based on data
-            'headerClassName': 'table-header',
-            'editable': False
+            'accessorKey': column_name.lower().replace(' ', '_'),
+            'header': column_name,
+            'minSize': max(map(lambda e: len(str(e[i])), table_data)) * 10  # calculate min width based on data
         }
         for i, column_name in enumerate(table_data[0])
     ]

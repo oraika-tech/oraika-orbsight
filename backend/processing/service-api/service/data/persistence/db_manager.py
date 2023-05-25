@@ -3,7 +3,7 @@ from typing import List, Optional
 
 from sqlalchemy import Column, Text, distinct, func, select
 from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.sql.operators import is_
+from sqlalchemy.sql.operators import is_not
 from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
@@ -117,7 +117,7 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
     def get_distinct_languages(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.text_lang)).filter(
-                is_(ProcessedDataView.text_lang, None)
+                is_not(ProcessedDataView.text_lang, None)
             ).order_by(
                 ProcessedDataView.text_lang
             )
@@ -127,7 +127,7 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
     def get_distinct_entity_names(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.entity_name)).filter(
-                is_(ProcessedDataView.entity_name, None)
+                is_not(ProcessedDataView.entity_name, None)
             ).order_by(
                 ProcessedDataView.entity_name
             )
@@ -137,7 +137,7 @@ class DataDBManager(BasePersistenceManager, BaseEntityManager):
     def get_distinct_observer_types(self, params: FilterQueryParams) -> List[str]:
         with Session(self._get_tenant_engine(params.tenant_id)) as session:
             query = select(distinct(ProcessedDataView.observer_type)).filter(
-                is_(ProcessedDataView.observer_type, None)
+                is_not(ProcessedDataView.observer_type, None)
             ).order_by(
                 ProcessedDataView.observer_type
             )
