@@ -12,7 +12,7 @@ const useStyles = createStyles(() => ({
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'center'
         // border: '1px solid'
     },
     image: {

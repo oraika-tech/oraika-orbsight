@@ -1,0 +1,17 @@
+.borderless {
+    outline: none !important;
+}
+
+/* .MuiDataGrid-row:nth-child(odd) {
+    background-color: #17c1e8;
+} */
+
+.MuiDataGrid-row:nth-child(even) {
+    background-color: #ffffff;
+}
+
+.table-header {
+    /* color: white; */
+    background-color: lightgray;
+    /* #4eceeb; */
+}
