@@ -48,7 +48,7 @@ export default function KeyPhrasesAnalysis() {
                     }
                     if (keyPhrase.name === 'positive') {
                         setPositiveKeyPhrases(keyPhrase.key_phrases.map((el: KeyPhraseWeight) => el.phrase));
-                    } else {
+                    } else if (keyPhrase.name === 'negative') {
                         setNegativeKeyPhrases(keyPhrase.key_phrases.map((el: KeyPhraseWeight) => el.phrase));
                     }
                 }
@@ -72,7 +72,7 @@ export default function KeyPhrasesAnalysis() {
         {
             title: 'Positive',
             keyPhrases: positiveKeyPhrases,
-            chipColor: 'orange'
+            chipColor: 'green'
         },
         {
             title: 'Negative',

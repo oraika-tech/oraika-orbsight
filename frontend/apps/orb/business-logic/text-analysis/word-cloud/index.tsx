@@ -43,7 +43,7 @@ export default function WordCloudAnalysis() {
                 for (const keyPhrase of response) {
                     if (keyPhrase.name === 'positive') {
                         setPositiveWords(keyPhrase.word_cloud);
-                    } else {
+                    } else if (keyPhrase.name === 'negative') {
                         setNegativeWords(keyPhrase.word_cloud);
                     }
                 }

@@ -20,6 +20,7 @@ export default function SimpleReactWordcloud({ data }: Props) {
         rotationAngles: [-30, -30],
         transitionDuration: 0,
         fontSizes: [24, 96],
+        fontFamily: 'Tahoma',
         enableTooltip: false,
         padding: 2
     };
