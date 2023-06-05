@@ -9,5 +9,5 @@ class UserInfo(BaseModel):
     identifier: str
     preferred_tenant_id: Optional[str]
     tenants: List[TenantInfo]
-    name: str
+    name: Optional[str]
     email: str

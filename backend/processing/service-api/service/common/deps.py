@@ -47,8 +47,12 @@ def create_access_token(subject: Union[str, int, Any], expires_delta: Optional[t
     return encoded_jwt
 
 
+def is_prod_url(origin: str) -> bool:
+    return origin == settings.ORB_URL or origin == settings.HOME_URL or origin == settings.WWW_URL
+
+
 def get_cookie_session_key(origin: str = Header()):
-    if origin == settings.ORB_URL:
+    if is_prod_url(origin):
         return "web_session_id"
     elif origin == settings.DEMO_URL:
         return "orb_demo_session_id"
@@ -63,7 +67,7 @@ def get_session_id(origin: str = Header(),
         status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
         raise HTTPException(status_code=status_code, detail="Empty origin")
 
-    if origin == settings.ORB_URL or origin == settings.HOME_URL or origin == settings.WWW_URL:
+    if is_prod_url(origin):
         session_id = web_session_id
     elif origin == settings.DEMO_URL:
         session_id = orb_demo_session_id
