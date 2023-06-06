@@ -16,12 +16,13 @@ export interface FeedData {
 }
 
 interface LiveFeedProps {
-    height?: string
+    isTitle?: boolean
+    height?: string | number
     feeds: FeedData[]
     displayCount: number
 }
 
-export default function LiveFeed({ height, feeds, displayCount }: LiveFeedProps) {
+export default function LiveFeed({ isTitle, height, feeds, displayCount }: LiveFeedProps) {
     const totalFeedSize = 30; // not able to take it from feeds.length
     const containerRef = useRef(null);
     const [feedIndex, setFeedIndex] = useState(0);
@@ -47,11 +48,13 @@ export default function LiveFeed({ height, feeds, displayCount }: LiveFeedProps)
     const style = height ? { height } : {};
 
     return (
-        <Card padding='lg' sx={{ ...style, overflow: 'scroll' }} ref={containerRef}>
+        <Card padding="md" sx={{ ...style, overflow: 'scroll' }} ref={containerRef}>
             <Grid sx={{ justifyContent: 'stretch' }}>
-                <Grid.Col xs={12}>
-                    <Title order={4} sx={{ height: '3rem', padding: '1rem' }}>Recent Review</Title>
-                </Grid.Col>
+                {isTitle && (
+                    <Grid.Col xs={12}>
+                        <Title order={4} sx={{ height: '3rem', padding: '1rem' }}>Recent Review</Title>
+                    </Grid.Col>
+                )}
                 {cycleSelectArray(feeds, displayCount, feedIndex).map(feed => (
                     <Grid.Col key={feed.rawDataId} sx={{ padding: '0.5rem' }}>
                         <FeedCard {...feed} />
@@ -63,5 +66,6 @@ export default function LiveFeed({ height, feeds, displayCount }: LiveFeedProps)
 }
 
 LiveFeed.defaultProps = {
+    isTitle: true,
     height: null
 };

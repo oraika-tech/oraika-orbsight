@@ -37,7 +37,7 @@ export function TenantSwitcher({ tenants, preferredTenantId, setPreferredTenantI
         }
     }
 
-    const dropdownTextWidth = 16 * maxTextSize + 20;
+    const dropdownTextWidth = 10 * maxTextSize + 20; // actual width on local and prod are different
 
     if (preferredTenantId && tenants.length > 0) {
         return (

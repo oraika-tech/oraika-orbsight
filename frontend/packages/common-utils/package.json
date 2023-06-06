@@ -2,9 +2,18 @@
     "name": "common-utils",
     "version": "0.0.1",
     "private": true,
+    "scripts": {
+        "test": "jest"
+    },
     "dependencies": {
-        "mixpanel-browser": "2.47.0",
         "@sentry/react": "7.53.0",
-        "@sentry/tracing": "7.53.0"
+        "@sentry/tracing": "7.53.0",
+        "mixpanel-browser": "2.47.0"
+    },
+    "devDependencies": {
+        "@types/jest": "^29.5.2",
+        "@types/mixpanel-browser": "^2.38.1",
+        "ts-jest": "^29.1.0",
+        "ts-node": "^10.9.1"
     }
 }

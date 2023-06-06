@@ -80,7 +80,8 @@ export default function Home() {
 
     useEffect(() => {
         const syncFeeds = () => getTextAnalysisData()
-            .then(response => setFeeds(response.map(convertFeedData)));
+            .then(response => setFeeds(response.map(convertFeedData)))
+            .catch(() => { }); // eat 401
 
         const syncStats = (url, setMethod) => getStats(url)
             .then((response: StatsResponseElement[]) => setMethod(convertStats(response)))
@@ -113,7 +114,7 @@ export default function Home() {
                                 title={{ text: 'Entities' }}
                                 count={getConsistentValue(entityStats.active)}
                                 countColor="success"
-                                percentage={{ color: 'dark', text: `/ ${getConsistentValue(entityStats.total)}` }}
+                                percentage={{ color: ['dark'], text: `/ ${getConsistentValue(entityStats.total)}` }}
                                 icon={IconBuildingBank}
                             />
                         </Link>
@@ -124,7 +125,7 @@ export default function Home() {
                                 title={{ text: 'Data Sources' }}
                                 count={getConsistentValue(observerStats.active)}
                                 countColor="success"
-                                percentage={{ color: 'dark', text: `/ ${getConsistentValue(observerStats.total)}` }}
+                                percentage={{ color: ['dark'], text: `/ ${getConsistentValue(observerStats.total)}` }}
                                 icon={IconMessage}
                             />
                         </Link>
@@ -135,7 +136,7 @@ export default function Home() {
                                 title={{ text: 'Taxonomies' }}
                                 count={getConsistentValue(taxonomyStats.active)}
                                 countColor="success"
-                                percentage={{ color: 'dark', text: `/ ${getConsistentValue(taxonomyStats.total)}` }}
+                                percentage={{ color: ['dark'], text: `/ ${getConsistentValue(taxonomyStats.total)}` }}
                                 icon={IconCircleDot}
                             />
                         </Link>
@@ -146,10 +147,7 @@ export default function Home() {
                                 title={{ text: 'Categories' }}
                                 count={getConsistentValue(categoriesStats.active)}
                                 countColor="success"
-                                percentage={{
-                                    color: 'dark',
-                                    text: `/ ${getConsistentValue(categoriesStats.total)}`
-                                }}
+                                percentage={{ color: ['dark'], text: `/ ${getConsistentValue(categoriesStats.total)}` }}
                                 icon={IconCategory}
                             />
                         </Link>

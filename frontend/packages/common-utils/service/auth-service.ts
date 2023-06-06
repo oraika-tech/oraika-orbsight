@@ -77,7 +77,7 @@ export async function doLogin(userName: string, password: string) {
 }
 
 export async function doDemoLogin(email: string) {
-    const response = await fetch(`${getUrlRoot()} / demo / auth / demo - login`, {
+    const response = await fetch(`${getUrlRoot()}/demo/auth/demo-login`, {
         headers: {
             'Content-Type': 'application/json'
         },

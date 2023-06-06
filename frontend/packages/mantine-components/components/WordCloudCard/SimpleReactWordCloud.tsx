@@ -22,7 +22,7 @@ export default function SimpleReactWordcloud({ data }: Props) {
         fontSizes: [24, 96],
         fontFamily: 'Tahoma',
         enableTooltip: false,
-        padding: 2
+        padding: 4
     };
 
     return (

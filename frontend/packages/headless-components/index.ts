@@ -1,1 +1,1 @@
-module.exports = 'headless-components'
+module.exports = 'headless-components';

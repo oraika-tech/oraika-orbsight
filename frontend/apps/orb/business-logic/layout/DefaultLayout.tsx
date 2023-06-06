@@ -15,6 +15,7 @@ import {
     IconTopologyStar2
 } from '@tabler/icons-react';
 import { doLogout } from 'common-utils/service/auth-service';
+import { UserContext } from 'mantine-components/components/Auth/AuthProvider';
 import UrlBreadcrumbs from 'mantine-components/components/Breadcrumbs/UrlBreadcrumbs';
 import CollapseToggleButton from 'mantine-components/components/Buttons/CollapseToggleButton';
 import NavbarNested, { LinkData } from 'mantine-components/components/Navbars/NestedNavbar';
@@ -22,7 +23,6 @@ import { useRouter } from 'next/router';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { getDashboards } from '../../lib/service/dashboard-service';
 import { LandingPageHeader } from '../LandingPage/Header/Header';
-import { UserContext } from '../user-info/UserInfoProvider';
 import { RefreshContext } from '../utils/RefreshProvider';
 import { TenantSwitcher } from './TenantSwitcher';
 
@@ -53,17 +53,30 @@ const useStyles = createStyles((theme) => ({
     }
 }));
 
+function routeExist(path: string, data: LinkData[]): boolean {
+    for (const link of data) {
+        if (link.link === path) {
+            return true;
+        }
+
+        if (link.links) {
+            for (const subLink of link.links) {
+                if (subLink.link === path) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
 export default function DefaultLayout({ children }: DefaultLayoutProps) {
     const router = useRouter();
     const { classes } = useStyles();
     const [opened, setOpened] = useState(true);
     const [dashboardLinks, setDashboardLinks] = useState([]);
-    const [key, setKey] = useState(Math.random());
-    const { userInfo, setPreferredTenantId } = useContext(UserContext);
-
-    const refreshPage = () => {
-        setKey(Math.random()); // change key state to re-render page
-    };
+    const { userInfo, refreshPage, clearUserInfo, setPreferredTenantId } = useContext(UserContext);
 
     const linkData: LinkData[] = [
         { label: 'Home', icon: IconHome, link: '/' },
@@ -77,8 +90,11 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                 { label: 'Key Phrases', icon: IconTextCaption, link: '/text-analysis/key-phrases' },
                 { label: 'Word Cloud', icon: IconCloud, link: '/text-analysis/word-cloud' }
             ]
-        },
-        {
+        }
+    ];
+
+    if (process.env.NEXT_PUBLIC_DEMO_MODE !== 'true') {
+        linkData.push({
             label: 'Manage',
             icon: IconAdjustments,
             initiallyOpened: true,
@@ -87,8 +103,14 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                 { label: 'Data Source', icon: IconArrowsJoin, link: '/manage/data-source' },
                 { label: 'Taxonomy', icon: IconAlignBoxLeftMiddle, link: '/manage/taxonomy' }
             ]
-        }
-    ];
+        });
+    }
+
+    const path = router.asPath;
+    if (path !== '/' && !path.startsWith('/dashboards') && !routeExist(path, linkData)) {
+        router.replace('/');
+        return <></>;
+    }
 
     useEffect(() => {
         getDashboards('dashboard-list')
@@ -99,17 +121,20 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                     link: `/dashboards/${dashboard.identifier}`
                 }));
                 setDashboardLinks(dashboardData);
+            })
+            .catch(() => {
+
             });
     }, []);
 
     const logout = () => {
-        doLogout().finally(() => {
-            router.push(process.env.NEXT_PUBLIC_LOGIN_URL);
-        });
+        doLogout()
+            .then(() => { clearUserInfo(); })
+            .finally(() => { refreshPage(); });
     };
 
     return (
-        <Stack key={key} className={classes.container} spacing={5}>
+        <Stack className={classes.container} spacing={5}>
             <LandingPageHeader />
             <Space h={50} />
             <Group spacing={4} align="flex-start" m={5} noWrap>

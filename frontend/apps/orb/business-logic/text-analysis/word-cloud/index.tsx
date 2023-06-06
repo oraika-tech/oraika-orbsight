@@ -20,7 +20,7 @@ export default function WordCloudAnalysis() {
         term: 'all',
         startDate: getCurrentMinusNDays(7),
         endDate: getCurrentDate()
-    }
+    };
 
     const [isLoading, setLoading] = useState(false);
     const [negativeWords, setNegativeWords] = useState<TextWordWeight[]>();
@@ -99,7 +99,7 @@ export default function WordCloudAnalysis() {
                                     </Title>
                                 )
                                 : card.words.length
-                                    ? <WordCloudCard data={card.words} />
+                                    ? <WordCloudCard height="40vh" bgColor="lightcyan" data={card.words} />
                                     : <EmptyData />
                         }
                     </Card>

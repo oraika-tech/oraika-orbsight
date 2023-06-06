@@ -38,9 +38,9 @@ export default function UrlBreadcrumbs({ dashboardLinks }: UrlBreadcrumbsProps) 
     });
 
     if (items.length === 0) {
-        items.unshift(<Text>Home</Text>);
+        items.unshift(<Text key="home_text">Home</Text>);
     }
-    items.unshift(<Link key="home" href="/"><IconHome style={{ marginTop: '3px' }} size={16} /></Link>);
+    items.unshift(<Link key="home_icon" href="/"><IconHome style={{ marginTop: '3px' }} size={16} /></Link>);
 
     return <Breadcrumbs>{items}</Breadcrumbs>;
 }

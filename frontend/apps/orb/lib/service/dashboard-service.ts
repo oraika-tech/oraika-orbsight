@@ -9,12 +9,7 @@ export function getDashboards(frontendKey: string) {
         url += `?frontend_key=${frontendKey}`;
     }
     console.log('url', url);
-    return restApi(url, {
-        method: 'GET',
-        headers: {
-            origin: 'http://orb.oraika.local:3002'
-        }
-    });
+    return restApi(url, { method: 'GET' });
 }
 
 export function getDashboard(dashboard_id: string, filters: object[]) {
@@ -22,9 +17,6 @@ export function getDashboard(dashboard_id: string, filters: object[]) {
         `${urlBase}/dashboards/${dashboard_id}`,
         {
             method: 'POST',
-            body: JSON.stringify({ filters }),
-            headers: {
-                origin: 'http://orb.oraika.local:3002'
-            }
+            body: JSON.stringify({ filters })
         });
 }

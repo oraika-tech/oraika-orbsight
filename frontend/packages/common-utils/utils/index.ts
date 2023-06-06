@@ -1,4 +1,5 @@
 import Router from 'next/router';
+import { getLoginUrl } from '../../../apps/orb/business-logic/login/loginUtility';
 
 export function sleep(ms: number) {
     return new Promise(resolve => {
@@ -42,7 +43,8 @@ export async function restApi(url: string, request?: RequestInit) {
     return fetch(url, requestObj)
         .then(response => {
             if (response.status === 401 || response.status === 403) {
-                Router.push(process.env.NEXT_PUBLIC_LOGIN_URL || '/login');
+                Router.push(getLoginUrl() || '/login');
+                throw new Error('Unauthorized');
             } else if (!response.ok) {
                 response.json()
                     .then((rj: any) => {

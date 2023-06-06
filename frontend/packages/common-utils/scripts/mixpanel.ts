@@ -1,5 +1,5 @@
 import mixpanel from 'mixpanel-browser';
-import { getLocalUserEmail } from 'orb/lib/local-storage/user-info';
+import { getLocalUserEmail } from '../service/user-info';
 
 const enabled = process.env.NEXT_PUBLIC_MIX_PANEL_ENABLED === 'true';
 

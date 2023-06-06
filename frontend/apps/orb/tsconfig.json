@@ -22,7 +22,8 @@
         "next-env.d.ts",
         "**/*.ts",
         "**/*.tsx",
-        "../../packages/common-utils/service/auth-service.ts"
+        "../../packages/common-utils/service/auth-service.ts",
+        "../../packages/common-utils/service/user-info.ts"
     ],
     "exclude": [
         "node_modules"

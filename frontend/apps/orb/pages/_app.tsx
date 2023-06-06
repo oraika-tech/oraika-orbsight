@@ -7,13 +7,13 @@ import { clarityScript } from 'common-utils/scripts/ms-clarity';
 import { sentrySetup } from 'common-utils/scripts/sentry';
 import { getCookie, setCookie } from 'cookies-next';
 import { TawkMessenger } from 'headless-components/comm/TawkMessenger';
+import AuthProvider from 'mantine-components/components/Auth/AuthProvider';
 import NextApp, { AppContext, AppProps } from 'next/app';
 import Head from 'next/head';
 import Script from 'next/script';
 import { useState } from 'react';
+import { getLoginUrl } from '../business-logic/login/loginUtility';
 import { globalTheme } from '../business-logic/theme/theme';
-import UserInfoProvider from '../business-logic/user-info/UserInfoProvider';
-
 
 const useStyles = createStyles((theme) => ({
     heading1: {
@@ -99,11 +99,11 @@ export default function App(props: AppProps & { colorScheme: ColorScheme }) {
                     withGlobalStyles
                     withNormalizeCSS
                 >
-                    <UserInfoProvider>
-                        <MDXProvider components={components}>
+                    <MDXProvider components={components}>
+                        <AuthProvider loginUrl={getLoginUrl()}>
                             <Component {...pageProps} />
-                        </MDXProvider>
-                    </UserInfoProvider>
+                        </AuthProvider>
+                    </MDXProvider>
                 </MantineProvider>
             </ColorSchemeProvider>
 

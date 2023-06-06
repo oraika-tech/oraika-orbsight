@@ -357,7 +357,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     xl={component.xl}
 
                                 >
-                                    <LiveFeedWrapper height={component.height} />
+                                    <LiveFeedWrapper isTitle={false} height={component.height} />
                                 </Grid.Col>
                             );
                             break;
@@ -387,7 +387,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     <MiniStatisticsCard
                                         title={statsTitle}
                                         count={count}
-                                        percentage={{ color: 'success', text: `${percentage}%` }}
+                                        percentage={{ color: ['green', 'red'], text: percentage }}
                                         icon={icon}
                                         countColor={iconColor}
                                     />

@@ -1,6 +1,6 @@
-import { Card, Grid, Loader, Title } from '@mantine/core';
+import { Card, Grid, Loader, MantineColor, Space, Title } from '@mantine/core';
 import EmptyData from 'mantine-components/components/AlertMessage/EmptyData';
-import ChipColumn from 'mantine-components/components/Text/ChipColumn';
+import ChipArray from 'mantine-components/components/Chip/ChipArray';
 import WordCloudCard from 'mantine-components/components/WordCloudCard';
 
 export default function WordCloudAnalysis({ height }) {
@@ -78,58 +78,63 @@ export default function WordCloudAnalysis({ height }) {
         'Slightly expensive'
     ];
 
+    const getTitle = (titleText: string) => (
+        <Title
+            order={1}
+            sx={{ fontSize: '1.3rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}
+        >
+            {titleText}
+        </Title>
+    );
+
+    const keyPhrasesComponent = (title: string, phrases: string[], color: MantineColor) => (
+        <Card p={20}>
+            {getTitle(title)}
+            <Space h={8} />
+            <ChipArray
+                sx={{
+                    fontWeight: 700,
+                    fontSize: '0.8rem',
+                    flexWrap: 'wrap',
+                    minWidth: '12rem',
+                    height: '1.4rem'
+                }}
+                chipList={phrases}
+                direction="column"
+                spacing="xs"
+                size="sm"
+                bgColor={color}
+            />
+        </Card>
+
+    );
+
     return (
-        <Grid gutter={1} sx={{ minHeight: height }}>
+        <Grid gutter="sm" sx={{ minHeight: height }}>
             <Grid.Col xs={12}>
                 <Card>
                     <Grid gutter={0}>
                         <Grid.Col xs={12}>
-                            <Title
-                                order={1}
-                                sx={{ fontSize: '1.3rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}
-                            >
-                                Key Entities
-                            </Title>
+                            {getTitle('Key Entities')}
                         </Grid.Col>
                         <Grid.Col xs={12}>
-                            <Card
-                                shadow="md"
-                                withBorder
-                                sx={{
-                                    padding: '0.5rem',
-                                    margin: '0.1rem 0.5rem 0.5rem 0.5rem',
-                                    borderRadius: '1rem',
-                                    backgroundColor: 'Lavender'
-                                }}
-                            >
-                                {isLoading
-                                    ? <Loader />
-                                    : words || words.length > 0
-                                        ? <WordCloudCard data={words} />
-                                        : <EmptyData />
-                                }
-                            </Card>
+                            {isLoading
+                                ? <Loader />
+                                : words || words.length > 0
+                                    ? <WordCloudCard height={150} data={words} />
+                                    : <EmptyData />
+                            }
                         </Grid.Col>
                     </Grid>
                 </Card>
             </Grid.Col>
 
             <Grid.Col xs={12} sm={6} md={12} xl={6}>
-                <ChipColumn
-                    title="Positive Keyphrases"
-                    words={positiveKeywords}
-                    isLoading={isLoading}
-                    bgColor="success"
-                />
+                {keyPhrasesComponent('Positive Keyphrases', positiveKeywords, 'green')}
             </Grid.Col>
 
             <Grid.Col xs={12} sm={6} md={12} xl={6}>
-                <ChipColumn
-                    title="Negative Keyphrases"
-                    words={negativeKeywords}
-                    isLoading={isLoading}
-                    bgColor="error"
-                />
+                {keyPhrasesComponent('Negative Keyphrases', negativeKeywords, 'red')}
             </Grid.Col>
 
         </Grid>

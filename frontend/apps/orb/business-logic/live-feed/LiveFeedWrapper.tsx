@@ -28,7 +28,12 @@ const convertFeedData = (textAnalysisData: TextAnalysisData) => ({
     taxonomies: textAnalysisData.taxonomies
 });
 
-export default function LiveFeedWrapper({ height }) {
+interface LiveFeedWrapperProps {
+    isTitle?: boolean
+    height: number | string
+}
+
+export default function LiveFeedWrapper({ isTitle, height }: LiveFeedWrapperProps) {
     const [feeds, setFeeds] = useState<FeedData[]>([]);
 
     useEffect(() => {
@@ -45,5 +50,9 @@ export default function LiveFeedWrapper({ height }) {
         };
     }, []);
 
-    return <LiveFeed height={height} displayCount={1} feeds={feeds} />;
+    return <LiveFeed isTitle={isTitle} height={height} displayCount={1} feeds={feeds} />;
+}
+
+LiveFeedWrapper.defaultProps = {
+    isTitle: true
 }

@@ -89,7 +89,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 header: 'Comment',
                 size: 500,
                 Cell: ({ cell }) =>
-                    process.env.NEXT_PUBLIC_DEMO === 'true'
+                    process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
                         ? (
                             <TypographyWrap length={cell.getValue<TextLinkType>().text.length}>
                                 {cell.getValue<TextLinkType>().text}

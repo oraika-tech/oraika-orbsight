@@ -17,3 +17,9 @@ export function getLogoFromObserverType(observerType: string) {
     const iconFile = observerTypeIcons[observerType];
     return iconFile ? logoPath + iconFile : placeholderPath;
 }
+
+export function getLastPartOfUrl(rawUrl: string): string {
+    const url = rawUrl.endsWith('/') ? rawUrl.slice(0, -1) : rawUrl;
+    const parts = url.split('/');
+    return parts[parts.length - 1];
+}
