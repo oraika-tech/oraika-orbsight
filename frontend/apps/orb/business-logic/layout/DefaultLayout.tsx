@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Paper, Space, Stack, createStyles } from '@mantine/core';
+import { Box, Group, Space, Stack, createStyles } from '@mantine/core';
 import {
     IconAdjustments,
     IconAlignBoxLeftMiddle,
@@ -7,24 +7,18 @@ import {
     IconDeviceDesktopAnalytics,
     IconGauge,
     IconHome,
-    IconLogout,
     IconPresentationAnalytics,
-    IconReload,
     IconRocket,
     IconTextCaption,
     IconTopologyStar2
 } from '@tabler/icons-react';
-import { doLogout } from 'common-utils/service/auth-service';
 import { UserContext } from 'mantine-components/components/Auth/AuthProvider';
-import UrlBreadcrumbs from 'mantine-components/components/Breadcrumbs/UrlBreadcrumbs';
-import CollapseToggleButton from 'mantine-components/components/Buttons/CollapseToggleButton';
 import NavbarNested, { LinkData } from 'mantine-components/components/Navbars/NestedNavbar';
 import { useRouter } from 'next/router';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import { getDashboards } from '../../lib/service/dashboard-service';
 import { LandingPageHeader } from '../LandingPage/Header/Header';
-import { RefreshContext } from '../utils/RefreshProvider';
-import { TenantSwitcher } from './TenantSwitcher';
+import LayoutPanel from './LayoutPanel';
 
 interface DefaultLayoutProps {
     children: ReactNode
@@ -76,7 +70,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
     const { classes } = useStyles();
     const [opened, setOpened] = useState(true);
     const [dashboardLinks, setDashboardLinks] = useState([]);
-    const { userInfo, refreshPage, clearUserInfo, setPreferredTenantId } = useContext(UserContext);
+    const { userInfo } = useContext(UserContext);
 
     const linkData: LinkData[] = [
         { label: 'Home', icon: IconHome, link: '/' },
@@ -127,15 +121,9 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
             });
     }, []);
 
-    const logout = () => {
-        doLogout()
-            .then(() => { clearUserInfo(); })
-            .finally(() => { refreshPage(); });
-    };
-
     return (
         <Stack className={classes.container} spacing={5}>
-            <LandingPageHeader />
+            <LandingPageHeader opened={opened} setOpened={setOpened} dashboardLinks={dashboardLinks} />
             <Space h={50} />
             <Group spacing={4} align="flex-start" m={5} noWrap>
                 {opened
@@ -152,32 +140,13 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                     : <></>
                 }
                 <Stack align="stretch" w="100%" m={5} spacing={10}>
-                    <Paper className={classes.breadcrumbsCard}>
-                        <Group position="apart">
-                            <Group noWrap>
-                                <CollapseToggleButton
-                                    opened={opened}
-                                    toggle={() => setOpened((o) => !o)}
-                                />
-                                <UrlBreadcrumbs dashboardLinks={dashboardLinks} />
-                            </Group>
-                            <Group>
-                                <ActionIcon size="sm" onClick={refreshPage}>
-                                    <IconReload />
-                                </ActionIcon>
-                                <RefreshContext.Provider value={{ refreshPage }}>
-                                    <TenantSwitcher
-                                        tenants={userInfo.tenants}
-                                        preferredTenantId={userInfo.preferredTenantId}
-                                        setPreferredTenantId={setPreferredTenantId}
-                                    />
-                                </RefreshContext.Provider>
-                                <ActionIcon onClick={logout}>
-                                    <IconLogout size={20} />
-                                </ActionIcon>
-                            </Group>
-                        </Group>
-                    </Paper>
+                    <LayoutPanel
+                        breakpoint={992}
+                        condition="lte"
+                        opened={opened}
+                        setOpened={setOpened}
+                        dashboardLinks={dashboardLinks}
+                    />
                     {children}
                 </Stack>
             </Group>

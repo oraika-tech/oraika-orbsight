@@ -22,7 +22,7 @@ interface DashboardLink {
     link: string
 }
 
-interface UrlBreadcrumbsProps {
+export interface UrlBreadcrumbsProps {
     dashboardLinks: DashboardLink[]
 }
 

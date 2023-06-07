@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { UserButton } from '../Buttons/UserButton';
 import { LinksGroup } from './NavbarLinksGroup';
 
-interface SubLinkData {
+export interface SubLinkData {
     label: string;
     icon?: any;
     link: string;

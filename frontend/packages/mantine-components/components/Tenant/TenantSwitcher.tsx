@@ -1,8 +1,5 @@
-// import Select, { SelectChangeEvent } from '@mui/material/Select'
 import { Select } from '@mantine/core';
 import { setPreferredTenant } from 'common-utils/service/auth-service';
-import { useContext } from 'react';
-import { RefreshContext } from '../utils/RefreshProvider';
 
 interface TenantInfo {
     identifier: string
@@ -11,13 +8,12 @@ interface TenantInfo {
 
 interface TenantSwitcherProps {
     tenants: TenantInfo[]
+    refreshPage: () => void
     preferredTenantId: string
     setPreferredTenantId: (tenantId: string) => void
 }
 
-export function TenantSwitcher({ tenants, preferredTenantId, setPreferredTenantId }: TenantSwitcherProps) {
-    const { refreshPage } = useContext(RefreshContext);
-
+export function TenantSwitcher({ tenants, refreshPage, preferredTenantId, setPreferredTenantId }: TenantSwitcherProps) {
     const handleChange = (value: string) => {
         const selectedPreferredTenantId = value;
 

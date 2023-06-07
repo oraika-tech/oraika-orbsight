@@ -10,6 +10,7 @@ import {
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import ConditionalLink from '../Link/ConditionalLink';
 
 const useStyles = createStyles((theme) => ({
     control: {
@@ -96,32 +97,28 @@ export function LinksGroup({ icon: Icon, label, initiallyOpened, link, links }: 
     return (
         <>
             <UnstyledButton onClick={() => setOpened((o) => !o)} className={classes.control}>
-                <Group position="apart" spacing={0}>
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <ThemeIcon variant="light" size={30}>
-                            <Icon size="1.1rem" />
-                        </ThemeIcon>
-                        <Box ml="md">
-                            {link ? (
-                                <Link className={classes.sideLink} href={link}>
-                                    {label}
-                                </Link>
-                            ) : (
-                                label
-                            )}
+                <ConditionalLink className={classes.sideLink} link={link}>
+                    <Group position="apart" spacing={0}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <ThemeIcon variant="light" size={30}>
+                                <Icon size="1.1rem" />
+                            </ThemeIcon>
+                            <Box ml="md">
+                                {label}
+                            </Box>
                         </Box>
-                    </Box>
-                    {hasLinks && (
-                        <ChevronIcon
-                            className={classes.chevron}
-                            size="1rem"
-                            stroke={1.5}
-                            style={{
-                                transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none'
-                            }}
-                        />
-                    )}
-                </Group>
+                        {hasLinks && (
+                            <ChevronIcon
+                                className={classes.chevron}
+                                size="1rem"
+                                stroke={1.5}
+                                style={{
+                                    transform: opened ? `rotate(${theme.dir === 'rtl' ? -90 : 90}deg)` : 'none'
+                                }}
+                            />
+                        )}
+                    </Group>
+                </ConditionalLink>
             </UnstyledButton>
             {hasLinks ? <Collapse in={opened}>{items}</Collapse> : null}
         </>

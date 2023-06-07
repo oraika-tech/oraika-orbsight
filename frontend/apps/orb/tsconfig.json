@@ -23,7 +23,8 @@
         "**/*.ts",
         "**/*.tsx",
         "../../packages/common-utils/service/auth-service.ts",
-        "../../packages/common-utils/service/user-info.ts"
+        "../../packages/common-utils/service/user-info.ts",
+        "../../packages/mantine-components/components/Tenant/TenantSwitcher.tsx"
     ],
     "exclude": [
         "node_modules"

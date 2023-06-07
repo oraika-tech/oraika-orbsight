@@ -1,23 +1,20 @@
 import {
     Box,
-    Burger, Center,
+    Center,
     createStyles,
-    Divider,
-    Drawer,
     Group,
     Header,
     Image,
-    Menu,
-    ScrollArea,
-    Stack
+    Menu
 } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons-react';
 import LOGO from 'assets/images/oraika-logo.png';
 import { ColorSchemeToggle } from 'mantine-components/components/ColorSchemeToggle';
+import { SubLinkData } from 'mantine-components/components/Navbars/NestedNavbar';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import LayoutPanel from '../../layout/LayoutPanel';
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -116,14 +113,15 @@ export interface HeaderLink {
 
 interface HeaderSearchProps {
     links: HeaderLink[];
+    opened: boolean;
+    setOpened: (opened: (o: boolean) => boolean) => void
+    dashboardLinks: SubLinkData[];
 }
 
-export function HeaderMegaMenu({ links }: HeaderSearchProps) {
+export function HeaderMegaMenu({ links, opened, setOpened, dashboardLinks }: HeaderSearchProps) {
     const { asPath } = useRouter();
-    const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-    // const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
     const [active, setActive] = useState(asPath);
-    const { classes, theme, cx } = useStyles();
+    const { classes, cx } = useStyles();
 
     const items = links.map((link) => {
         const menuItems = link.links?.map((item) => (
@@ -178,62 +176,31 @@ export function HeaderMegaMenu({ links }: HeaderSearchProps) {
     return (
         <Box>
             <Header className={classes.header} height={60} px="md">
-                <Group position="apart" sx={{ height: '100%' }}>
-                    <Group spacing={0}>
-                        <Link href={process.env.NEXT_PUBLIC_HOME_URL} target="_blank">
-                            <Image height={40} src={LOGO.src} alt="oraika" />
-                        </Link>
-                    </Group>
+                <Group position="apart" noWrap sx={{ height: '100%' }}>
 
-                    <Group sx={{ height: '100%' }} spacing={10} className={classes.hiddenTablet}>
-                        {items}
-                    </Group>
+                    <Link href={process.env.NEXT_PUBLIC_HOME_URL} target="_blank">
+                        <Image height={40} src={LOGO.src} alt="Oraika" />
+                    </Link>
 
-                    <Group position="right" noWrap>
-                        {/* <Group className={classes.hiddenMobile}> */}
-                        {/* <LoginButton /> */}
-                        {/* <SignUpButton /> */}
-                        {/* </Group> */}
-                        <ColorSchemeToggle />
-                        <Burger
-                            opened={drawerOpened}
-                            onClick={toggleDrawer}
-                            className={classes.hiddenDesktop}
+                    {items.length > 0 && (
+                        <Group sx={{ height: '100%' }} spacing={10} className={classes.hiddenTablet}>
+                            {items}
+                        </Group>
+                    )}
+
+                    <Box style={{ flex: 1 }}>
+                        <LayoutPanel
+                            breakpoint={992}
+                            condition="gt"
+                            opened={opened}
+                            setOpened={setOpened}
+                            dashboardLinks={dashboardLinks}
                         />
-                    </Group>
+                    </Box>
+
+                    <ColorSchemeToggle />
                 </Group>
             </Header>
-
-            <Drawer
-                opened={drawerOpened}
-                onClose={closeDrawer}
-                size="100%"
-                padding="md"
-                title="Navigation"
-                className={classes.hiddenDesktop}
-                zIndex={1000000}
-            >
-                <ScrollArea sx={{ height: 'calc(100vh - 60px)' }} mx="-md">
-                    <Divider
-                        my="sm"
-                        color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
-                    />
-
-                    <Stack spacing={5}>
-                        {items}
-                    </Stack>
-
-                    {/* <Divider
-                        my="sm"
-                        color={theme.colorScheme === 'dark' ? 'dark.5' : 'gray.1'}
-                    /> */}
-
-                    {/* <Group position="center" grow pb="xl" px="md">
-                        <LoginButton />
-                        <SignUpButton />
-                    </Group> */}
-                </ScrollArea>
-            </Drawer>
         </Box>
     );
 }
