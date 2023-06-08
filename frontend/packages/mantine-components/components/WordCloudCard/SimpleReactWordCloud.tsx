@@ -1,6 +1,6 @@
 import ReactWordcloud, { Optional, Options } from 'react-wordcloud';
 
-interface WordCloudTag {
+export interface WordCloudTag {
     term: string
     weight: number
 }
@@ -19,6 +19,7 @@ export default function SimpleReactWordcloud({ data }: Props) {
         rotations: 0, // 0 - off, > 0 - division of angle range
         rotationAngles: [-30, -30],
         transitionDuration: 0,
+        // deterministic: true,
         fontSizes: [24, 96],
         fontFamily: 'Tahoma',
         enableTooltip: false,

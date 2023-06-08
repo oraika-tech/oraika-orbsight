@@ -1,4 +1,4 @@
-import { Button, Grid, Select } from '@mantine/core';
+import { Button, Grid, Select, SimpleGrid } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconFilter } from '@tabler/icons-react';
 import { getDateFromString, getTitleSentance } from 'common-utils/utils';
@@ -103,17 +103,13 @@ function handleDateField(
 
     const dateSelectedValue = getDateFromString(String(filter.selectedValue));
     return (
-        <Grid.Col key={filter.id} xs={filter.width} sx={{ minWidth: '11.5rem' }}>
-            {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
-            <DateInput
-                label={filter.label}
-                value={dateSelectedValue}
-                minDate={filter.validations && filter.validations.minDate}
-                maxDate={filter.validations && filter.validations.maxDate}
-                onChange={filterDateChangeHandler}
-            />
-            {/* </LocalizationProvider> */}
-        </Grid.Col>
+        <DateInput
+            label={filter.label}
+            value={dateSelectedValue}
+            minDate={filter.validations && filter.validations.minDate}
+            maxDate={filter.validations && filter.validations.maxDate}
+            onChange={filterDateChangeHandler}
+        />
     );
 }
 
@@ -182,17 +178,17 @@ function handleAutoCompleteField(
     // }
 
     return (
-        <Grid.Col key={filter.id} md={filter.width} lg={filter.width} sx={{ minWidth: '6rem' }}>
-            <Select
-                id={filter.id}
-                key={filter.id}
-                label={filter.label}
-                data={options}
-                value={selectedValue}
-                maxDropdownHeight={350}
-                onChange={(value: string) => filterChangeHandler(value, defaultValueString, filterId)}
-            />
-        </Grid.Col>
+        // <Grid.Col key={filter.id} md={filter.width} lg={filter.width} sx={{ minWidth: '6rem' }}>
+        <Select
+            id={filter.id}
+            key={filter.id}
+            label={filter.label}
+            data={options}
+            value={selectedValue}
+            maxDropdownHeight={350}
+            onChange={(value: string) => filterChangeHandler(value, defaultValueString, filterId)}
+        />
+        // </Grid.Col>
     );
 }
 
@@ -204,9 +200,6 @@ export default function GenericFilterPanel({ filtersData, filterHandler, showFil
     const filterButtonClickHandler = () => {
         const filterChangeEvent: FilterChangeEvent = {};
         filterHandler(filterChangeEvent);
-        // if (cancelEvent) {
-        // event.preventDefault();
-        // }
     };
 
     updateOptionsLabel(filtersData);
@@ -230,9 +223,18 @@ export default function GenericFilterPanel({ filtersData, filterHandler, showFil
         }
     }
 
-    return (
-        <Grid sx={{ flexWrap: 'wrap', maxHeight: 300, paddingLeft: '0.5rem' }} align="center">
+    const filterCount = filterComponents.length + (showFilterButton ? 1 : 0);
 
+    return (
+        <SimpleGrid
+            cols={2}
+            spacing="md"
+            verticalSpacing="xs"
+            breakpoints={[
+                { minWidth: 'lg', cols: filterCount, spacing: 'md' },
+                { minWidth: 'xs', cols: filterCount / 2, spacing: 'sm' }
+            ]}
+        >
             {filterComponents}
 
             {showFilterButton &&
@@ -242,8 +244,7 @@ export default function GenericFilterPanel({ filtersData, filterHandler, showFil
                     </Button>
                 </Grid.Col>
             }
-
-        </Grid>
+        </SimpleGrid>
     );
 }
 

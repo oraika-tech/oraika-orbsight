@@ -21,7 +21,7 @@ function WordCloudCard(props: WordCloudCardProps) {
         style.backgroundColor = props.bgColor;
     }
     return (
-        <Card withBorder sx={{ ...style }}>
+        <Card m={10} sx={{ ...style }}>
             <SimpleReactWordcloud data={props.data} />
         </Card>
     );

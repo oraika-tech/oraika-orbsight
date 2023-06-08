@@ -5,10 +5,12 @@ import { arrayEquals } from 'common-utils/utils';
 import ReactEcharts from 'echarts-for-react';
 import DataGridCard from 'mantine-components/components/DataGridCard';
 import GenericFilterPanel, { FilterChangeEvent } from 'mantine-components/components/GenericFilterPanel';
+import KeyPhrasesPanel from 'mantine-components/components/KeyPhrases/KeyPhrasesPanel';
 import LiveFeedTable from 'mantine-components/components/LiveFeedTable';
 import { Heading } from 'mantine-components/components/Simple/Heading';
 import { StatsCard } from 'mantine-components/components/StatsCard';
 import { MiniStatisticsCard, StatsCardTitleProps } from 'mantine-components/components/StatsCard/MiniStatisticsCard';
+import WordCloudPanel from 'mantine-components/components/WordCloudCard/WordCloudPanel';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import LiveFeedWrapper from '../../business-logic/live-feed/LiveFeedWrapper';
@@ -214,7 +216,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     lg={component.lg}
                                     xl={component.xl}
                                 >
-                                    <Paper>
+                                    <Paper pb={15}>
                                         <GenericFilterPanel
                                             filtersData={filtersData}
                                             filterHandler={handleFilterChange}
@@ -390,6 +392,46 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                         percentage={{ color: ['green', 'red'], text: percentage }}
                                         icon={icon}
                                         countColor={iconColor}
+                                    />
+                                </Grid.Col>
+                            );
+                            break;
+                        case 'KeyPhrasesPanel':
+                            const keyPhrases = getValue(component.inputs, 'key_phrases').map((el) => el.phrase);
+                            const phrasesTitle = getValue(component.inputs, 'title');
+                            const color = getValue(component.inputs, 'color');
+                            localGridComponents.push(
+                                <Grid.Col
+                                    xs={component.xs}
+                                    sm={component.sm}
+                                    md={component.md}
+                                    lg={component.lg}
+                                    xl={component.xl}
+                                >
+                                    <KeyPhrasesPanel
+                                        title={phrasesTitle}
+                                        keyPhrases={keyPhrases}
+                                        chipColor={color}
+                                        isLoading={loading}
+                                    />
+                                </Grid.Col>
+                            );
+                            break;
+                        case 'WordCloudPanel':
+                            const words = getValue(component.inputs, 'word_cloud');
+                            const wordsTitle = getValue(component.inputs, 'title');
+                            localGridComponents.push(
+                                <Grid.Col
+                                    xs={component.xs}
+                                    sm={component.sm}
+                                    md={component.md}
+                                    lg={component.lg}
+                                    xl={component.xl}
+                                >
+                                    <WordCloudPanel
+                                        title={wordsTitle}
+                                        words={words}
+                                        isLoading={loading}
                                     />
                                 </Grid.Col>
                             );
