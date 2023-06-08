@@ -8,9 +8,11 @@ from service.visualization.domain.base import BasePersistenceManager
 from service.visualization.domain.dynamic_dashboard.data_view_manager import DataViewManager
 from service.visualization.domain.dynamic_dashboard.handler.chart_handler import handle_chart
 from service.visualization.domain.dynamic_dashboard.handler.filter_panel_handler import handle_filter_panel
+from service.visualization.domain.dynamic_dashboard.handler.key_phrases_handler import handle_key_phrases
 from service.visualization.domain.dynamic_dashboard.handler.live_feed_handler import handle_live_feed
 from service.visualization.domain.dynamic_dashboard.handler.number_card_handler import handle_number_card
 from service.visualization.domain.dynamic_dashboard.handler.simple_table_handler import handle_simple_table
+from service.visualization.domain.dynamic_dashboard.handler.word_cloud_handler import handle_word_cloud
 from service.visualization.domain.model.chart_models import FilterDO, ChartDBO
 from service.visualization.domain.model.dashboard_models import DashboardDO, FieldValue, Component
 
@@ -99,6 +101,10 @@ class DynamicDashboardManager(BaseSettings):
                 handle_filter_panel(self.data_view_manager, component.inputs, filter_list, tenant_code)
             elif component.name == 'LiveFeedTable':
                 handle_live_feed(self.data_view_manager, component.inputs, filter_list, tenant_code)
+            elif component.name == 'KeyPhrasesPanel':
+                handle_key_phrases(self.data_view_manager, component.inputs, filter_list, tenant_code)
+            elif component.name == 'WordCloudPanel':
+                handle_word_cloud(self.data_view_manager, component.inputs, filter_list, tenant_code)
             elif component.name == 'SimpleTable':
                 handle_simple_table(self.data_view_manager, component.inputs, filter_list, tenant_code)
             elif component.name == 'StatsCard':

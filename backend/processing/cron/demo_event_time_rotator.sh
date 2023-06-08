@@ -14,7 +14,7 @@ fi
 DB_USER=${DB_USER_RW:-orbsight}
 DB_PASSWORD=${DB_PASSWORD_RW:-orbsight}
 DB_HOST=${DB_HOST:-localhost:5432}
-PERIOD_DAYS=29
+PERIOD_DAYS=30
 
 
 SQL_QUERY="
