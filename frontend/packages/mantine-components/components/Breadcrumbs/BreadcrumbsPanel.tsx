@@ -1,6 +1,7 @@
-import { ActionIcon, Group, Paper, createStyles } from '@mantine/core';
+import { ActionIcon, Group, Loader, Paper, Tooltip, createStyles } from '@mantine/core';
 import { useViewportSize } from '@mantine/hooks';
 import {
+    IconDownload,
     IconLogout,
     IconReload
 } from '@tabler/icons-react';
@@ -33,11 +34,13 @@ interface BreadcrumbsPanelProps {
     userInfo: UserInfo;
     setPreferredTenantId: (tenantId: string) => void;
     refreshPage: () => void;
+    downloadPdf: () => void;
+    downloading: boolean;
 }
 
 export default function BreadcrumbsPanel({
     breakpoint, condition, opened, setOpened, dashboardLinks, logout,
-    userInfo, setPreferredTenantId, refreshPage }: BreadcrumbsPanelProps) {
+    userInfo, setPreferredTenantId, refreshPage, downloadPdf, downloading }: BreadcrumbsPanelProps) {
     const { classes } = useStyles();
     const { width } = useViewportSize();
 
@@ -51,9 +54,24 @@ export default function BreadcrumbsPanel({
                 <UrlBreadcrumbs dashboardLinks={dashboardLinks} />
             </Group>
             <Group>
-                <ActionIcon size="sm" onClick={refreshPage}>
-                    <IconReload />
-                </ActionIcon>
+                {process.env.NEXT_PUBLIC_DEMO_MODE !== 'true' && (
+                    downloading ? (
+                        <Tooltip openDelay={2000} label="Downloading..." position="left">
+                            <Loader size="sm" />
+                        </Tooltip>
+                    ) : (
+                        <Tooltip openDelay={2000} label="Download PDF" position="left">
+                            <ActionIcon size="sm" onClick={downloadPdf}>
+                                <IconDownload />
+                            </ActionIcon>
+                        </Tooltip>
+                    )
+                )}
+                <Tooltip label="Reload" position="left">
+                    <ActionIcon size="sm" onClick={refreshPage}>
+                        <IconReload />
+                    </ActionIcon>
+                </Tooltip>
                 <TenantSwitcher
                     tenants={userInfo.tenants}
                     refreshPage={refreshPage}

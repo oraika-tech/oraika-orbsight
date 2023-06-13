@@ -1,7 +1,7 @@
 import { HeaderMegaMenu } from './HeaderMegaMenu';
 import { HeaderLink } from './HeaderMenu';
 
-export function LandingPageHeader({ opened, setOpened, dashboardLinks }) {
+export function LandingPageHeader({ opened, setOpened, dashboardLinks, downloadPdf, downloading }) {
     const links: HeaderLink[] = [];
     return (
         <HeaderMegaMenu
@@ -9,6 +9,8 @@ export function LandingPageHeader({ opened, setOpened, dashboardLinks }) {
             opened={opened}
             setOpened={setOpened}
             dashboardLinks={dashboardLinks}
+            downloadPdf={downloadPdf}
+            downloading={downloading}
         />
     );
 }

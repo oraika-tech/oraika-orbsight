@@ -1,4 +1,5 @@
-import { Box, Group, Space, Stack, createStyles } from '@mantine/core';
+import { Box, Group, Modal, Space, Stack, createStyles } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import {
     IconAdjustments,
     IconAlignBoxLeftMiddle,
@@ -12,10 +13,18 @@ import {
     IconTextCaption,
     IconTopologyStar2
 } from '@tabler/icons-react';
+import oraikaLogo from 'assets/images/oraika-logo.png';
+import playarenaLogo from 'assets/images/play-arena-logo.png';
+import shohozLogo from 'assets/images/shohoz-logo.png';
+import { PdfMode, handleDownloadPdf } from 'common-utils/service/pdf-service';
+import { capitalizeFirstLetter, getCurrentDateTimeFormatted } from 'common-utils/utils/common';
 import { UserContext } from 'mantine-components/components/Auth/AuthProvider';
 import NavbarNested, { LinkData } from 'mantine-components/components/Navbars/NestedNavbar';
+import { getDesktopLabelForId } from 'mantine-components/utils/routeUtils';
+import { StaticImageData } from 'next/image';
 import { useRouter } from 'next/router';
-import { ReactNode, useContext, useEffect, useState } from 'react';
+import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import PdfDialog from '../../components/PdfDialog/PdfDialog';
 import { getDashboards } from '../../lib/service/dashboard-service';
 import { LandingPageHeader } from '../LandingPage/Header/Header';
 import LayoutPanel from './LayoutPanel';
@@ -67,10 +76,13 @@ function routeExist(path: string, data: LinkData[]): boolean {
 
 export default function DefaultLayout({ children }: DefaultLayoutProps) {
     const router = useRouter();
+    const childRef = useRef();
     const { classes } = useStyles();
     const [opened, setOpened] = useState(true);
     const [dashboardLinks, setDashboardLinks] = useState([]);
     const { userInfo } = useContext(UserContext);
+    const [downloading, setDownloading] = useState<boolean>(false);
+    const [isOpened, { open, close }] = useDisclosure(false);
 
     const linkData: LinkData[] = [
         { label: 'Home', icon: IconHome, link: '/' },
@@ -106,6 +118,47 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
         return <></>;
     }
 
+    const dashboardMap = getDesktopLabelForId(dashboardLinks);
+    const urlEndPart = path.replace(/\/$/, '').split('/').pop() || 'home';
+    const fileBaseName = capitalizeFirstLetter(dashboardMap.get(urlEndPart) || urlEndPart);
+    const nowDate = getCurrentDateTimeFormatted().replaceAll(' ', '_').replaceAll(':', '.');
+    const defaultFileName = `${fileBaseName}_${nowDate}.pdf`.replaceAll(' ', '-');
+    const defaultTitle = fileBaseName;
+
+    const logoSrcMap: Record<string, StaticImageData> = {
+        '02ddd60c-2d58-47cc-a445-275d8e621252': playarenaLogo,
+        '8f0cbfcd-da2c-42b9-b554-d67e7617e86d': shohozLogo
+    };
+
+    // function to return name of tenant based on user.preferredTenantId from user.tenents list
+    const getTenantName = (tenantId: string) => {
+        const tenant = userInfo.tenants.find((t) => t.identifier === tenantId);
+        return tenant ? tenant.name : '';
+    };
+
+    const generatePdf = (fileName: string, pdfMode: PdfMode, title?: string) => {
+        close();
+        setDownloading(true);
+        const pdfPages: HTMLElement[] = Array.from(document.querySelectorAll('.pdf-page'));
+        const rootGrid: HTMLElement[] = Array.from(document.querySelectorAll('.mantine-Grid-root'));
+        const pages = pdfPages.length > 0 ? pdfPages : (rootGrid.length > 0 ? [rootGrid[0]] : [childRef.current]);
+        const logoSrc = logoSrcMap[userInfo.preferredTenantId] || getTenantName(userInfo.preferredTenantId);
+        // loader is not working on direct call, hence delayed call
+        setTimeout(() => {
+            handleDownloadPdf(
+                pages,
+                fileName,
+                pdfMode,
+                title,
+                oraikaLogo.src,
+                logoSrc,
+                () => {
+                    setDownloading(false);
+                }
+            );
+        }, 100);
+    };
+
     useEffect(() => {
         getDashboards('dashboard-list')
             .then((dashboards) => {
@@ -123,7 +176,16 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
 
     return (
         <Stack className={classes.container} spacing={5}>
-            <LandingPageHeader opened={opened} setOpened={setOpened} dashboardLinks={dashboardLinks} />
+            <Modal opened={isOpened} onClose={close} title="PDF Download">
+                <PdfDialog fileName={defaultFileName} title={defaultTitle} close={close} generatePdf={generatePdf} />
+            </Modal>
+            <LandingPageHeader
+                opened={opened}
+                setOpened={setOpened}
+                dashboardLinks={dashboardLinks}
+                downloadPdf={open}
+                downloading={downloading}
+            />
             <Space h={50} />
             <Group spacing={4} align="flex-start" m={5} noWrap>
                 {opened
@@ -146,8 +208,12 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                         opened={opened}
                         setOpened={setOpened}
                         dashboardLinks={dashboardLinks}
+                        downloadPdf={open}
+                        downloading={downloading}
                     />
-                    {children}
+                    <Box ref={childRef}>
+                        {children}
+                    </Box>
                 </Stack>
             </Group>
         </Stack>

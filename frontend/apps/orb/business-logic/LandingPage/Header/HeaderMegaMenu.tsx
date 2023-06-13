@@ -116,9 +116,12 @@ interface HeaderSearchProps {
     opened: boolean;
     setOpened: (opened: (o: boolean) => boolean) => void
     dashboardLinks: SubLinkData[];
+    downloadPdf: () => void;
+    downloading: boolean;
 }
 
-export function HeaderMegaMenu({ links, opened, setOpened, dashboardLinks }: HeaderSearchProps) {
+export function HeaderMegaMenu({ links, opened, setOpened, dashboardLinks,
+    downloadPdf, downloading }: HeaderSearchProps) {
     const { asPath } = useRouter();
     const [active, setActive] = useState(asPath);
     const { classes, cx } = useStyles();
@@ -195,6 +198,8 @@ export function HeaderMegaMenu({ links, opened, setOpened, dashboardLinks }: Hea
                             opened={opened}
                             setOpened={setOpened}
                             dashboardLinks={dashboardLinks}
+                            downloadPdf={downloadPdf}
+                            downloading={downloading}
                         />
                     </Box>
 

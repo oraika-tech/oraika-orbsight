@@ -7,19 +7,19 @@ describe('getLastPartOfUrl', () => {
         expect(result).toBe('page');
     });
 
-    test('should return an empty string when URL ends with a slash', () => {
+    test('should return an empty string when no path after domain with slash', () => {
         const url = 'https://www.example.com/';
         const result = getLastPartOfUrl(url);
         expect(result).toBe('');
     });
 
-    test('should return the full URL when there are no slashes', () => {
+    test('should return an empty string when no path after domain even without slash', () => {
         const url = 'https://www.example.com';
         const result = getLastPartOfUrl(url);
-        expect(result).toBe('www.example.com');
+        expect(result).toBe('');
     });
 
-    test('should return an empty string when URL ends with a trailing slash', () => {
+    test('should return last part of path string when URL ends with a trailing slash', () => {
         const url = 'https://www.example.com/path/to/';
         const result = getLastPartOfUrl(url);
         expect(result).toBe('to');

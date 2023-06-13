@@ -10,9 +10,12 @@ interface LayoutPanelProps {
     opened: boolean
     setOpened: (opened: (o: boolean) => boolean) => void
     dashboardLinks: SubLinkData[]
+    downloadPdf: () => void
+    downloading: boolean
 }
 
-export default function LayoutPanel({ breakpoint, condition, opened, setOpened, dashboardLinks }: LayoutPanelProps) {
+export default function LayoutPanel({ breakpoint, condition, opened, setOpened, dashboardLinks,
+    downloadPdf, downloading }: LayoutPanelProps) {
     const { userInfo, refreshPage, clearUserInfo, setPreferredTenantId } = useContext(UserContext);
 
     const logout = () => {
@@ -32,6 +35,8 @@ export default function LayoutPanel({ breakpoint, condition, opened, setOpened, 
             userInfo={userInfo}
             setPreferredTenantId={setPreferredTenantId}
             refreshPage={refreshPage}
+            downloadPdf={downloadPdf}
+            downloading={downloading}
         />
     );
 }

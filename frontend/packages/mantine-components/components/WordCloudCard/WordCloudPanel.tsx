@@ -11,7 +11,7 @@ interface WordCloudPanelProps {
 
 export default function WordCloudPanel({ title, words, isLoading }: WordCloudPanelProps) {
     return (
-        <Card sx={{ minHeight: '40vh' }}>
+        <Card sx={{ minHeight: '45vh' }}>
             <Title order={2} sx={{ fontWeight: 800, textAlign: 'center' }}>
                 {title} World Cloud
             </Title>

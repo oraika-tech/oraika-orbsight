@@ -215,6 +215,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     md={component.md}
                                     lg={component.lg}
                                     xl={component.xl}
+                                    data-html2canvas-ignore
                                 >
                                     <Paper pb={15}>
                                         <GenericFilterPanel
@@ -460,6 +461,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     md={component.md}
                                     lg={component.lg}
                                     xl={component.xl}
+                                    className={component.class_name}
                                 >
                                     <Grid gutter={layout.spacing}>
                                         {childGridComponents}
