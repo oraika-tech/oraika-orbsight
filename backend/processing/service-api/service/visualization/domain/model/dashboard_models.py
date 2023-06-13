@@ -24,6 +24,7 @@ class Component(BaseModel):
     xl: Optional[float]
     height: Optional[str]
     name: Optional[str]
+    class_name: Optional[str]
     categories: Optional[List[str]]
     dock_align: Optional[str]  # left, right, top, bottom
     components: Optional[List['Component']]

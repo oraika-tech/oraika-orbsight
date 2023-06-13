@@ -82,6 +82,8 @@ class DynamicDashboardManager(BaseSettings):
         return dashboard
 
     def handle_grid(self, component, charts, tenant_code, filter_list):
+        grid_children = [child for child in component.components if child.disabled is not True]
+        component.components = grid_children
         for child_component in component.components:
             self.handle_components(child_component, charts, tenant_code, filter_list)
 
