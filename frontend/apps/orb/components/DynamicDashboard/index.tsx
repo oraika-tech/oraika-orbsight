@@ -263,6 +263,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const tableData = getValue(component.inputs, 'table_data');
                             const colDefs = getValue(component.inputs, 'column_definition');
                             const maxRows = getValue(component.inputs, 'max_rows') || 10;
+                            const enablePagination = getValue(component.inputs, 'enable_pagination') ?? true;
                             if (tableData && colDefs) {
                                 const col_nos = colDefs.length;
                                 const rows = tableData.slice(1).map((row: string[]) => {
@@ -294,8 +295,9 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                         <DataGridCard
                                             title={component.title}
                                             showLoading={loading}
-                                            hideFooter={!multiPage}
+                                            hideFooter={!enablePagination || !multiPage}
                                             autoHeight={!multiPage}
+                                            enablePagination={enablePagination}
                                             density="xs"
                                             rows={rows}
                                             columns={colDefs}

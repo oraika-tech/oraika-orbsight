@@ -14,13 +14,14 @@ interface DataGridCardProps {
     density?: MRT_DensityState // require page reload to reflect
     hideFooter?: boolean
     autoHeight?: boolean
+    enablePagination?: boolean
     rows: any[]
     columns: any[]
     sx?: any
 }
 
 export default function DataGridCard(
-    { title, showLoading, density, hideFooter, autoHeight, rows, columns, sx }: DataGridCardProps) {
+    { title, showLoading, density, hideFooter, autoHeight, enablePagination, rows, columns, sx }: DataGridCardProps) {
     const [showLoader, setShowLoader] = useState(isLoading(showLoading, rows));
     const stopShowLoader = () => {
         setShowLoader(false);
@@ -43,6 +44,7 @@ export default function DataGridCard(
                     </Title>
                 }
                 <MantineReactTable
+                    enablePagination={enablePagination}
                     autoResetPageIndex={!autoHeight}
                     state={{ isLoading: showLoader }}
                     data={rows}
@@ -60,5 +62,6 @@ DataGridCard.defaultProps = {
     title: null,
     density: 'md',
     hideFooter: false,
-    autoHeight: false
+    autoHeight: false,
+    enablePagination: true
 };
