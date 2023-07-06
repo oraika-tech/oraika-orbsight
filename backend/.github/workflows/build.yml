@@ -16,7 +16,7 @@ jobs:
         run: |
           set -e
           set -x
-          python3 -m pip install mypy
+          python3 -m pip install mypy==1.3.0
           make svc-observer-dep svc-analyzer-dep svc-api-dep
           make svc-observer-dev svc-analyzer-dev svc-api-dev
           make mypy-analyse
