@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react';
 import oraikaLogo from 'assets/images/oraika-logo.png';
 import playarenaLogo from 'assets/images/play-arena-logo.png';
+import playjuniorsLogo from 'assets/images/play-juniors-logo.png';
 import shohozLogo from 'assets/images/shohoz-logo.png';
 import { PdfMode, handleDownloadPdf } from 'common-utils/service/pdf-service';
 import { capitalizeFirstLetter, getCurrentDateTimeFormatted } from 'common-utils/utils/common';
@@ -127,6 +128,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
 
     const logoSrcMap: Record<string, StaticImageData> = {
         '02ddd60c-2d58-47cc-a445-275d8e621252': playarenaLogo,
+        'b6d5a44a-4626-491a-8fc0-3a11344d97f7': playjuniorsLogo,
         '8f0cbfcd-da2c-42b9-b554-d67e7617e86d': shohozLogo
     };
 
