@@ -13,6 +13,8 @@ dependencies = [
     "psycopg2-binary",
     "langdetect",
     "nltk",
+    "openai",
+    "tiktoken",
     "pandas",
     "requests",
     "cachetools",

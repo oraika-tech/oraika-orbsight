@@ -12,20 +12,26 @@ class SqsConsumer(BaseSettings):
     region_name: str = Field('eu-west-1', env='AWS_REGION')
     aws_access_key_id: SecretStr = Field(SecretStr('dummy_key_id'), env='AWS_ACCESS_KEY_ID')
     aws_secret_access_key: SecretStr = Field(SecretStr('dummy_access_key'), env='AWS_SECRET_ACCESS_KEY')
+    # Set env for localstack: 'http://queue.localhost.localstack.cloud:4566/000000000000/sample-queue'
     queue_url: str = Field('dummy_queue_url', env='AWS_SQS_ANALYZER_QUEUE')
-    max_messages: int = Field(5, env='MAX_POLL_MESSAGES')
+    max_messages: int = Field(10, env='MAX_POLL_MESSAGES')
     wait_time: int = Field(5, env='MAX_WAIT_TIME_IN_SEC')
     sqs: Any
 
     def __init__(self, **values: Any):
         super().__init__(**values)
+        endpoint_url = 'http://localhost:4566' if self.is_localstack() else None
         self.sqs = boto3.client(
             'sqs',
             region_name=self.region_name,
             use_ssl=False,
+            endpoint_url=endpoint_url,
             aws_access_key_id=self.aws_access_key_id.get_secret_value(),
             aws_secret_access_key=self.aws_secret_access_key.get_secret_value()
         )
+
+    def is_localstack(self):
+        return 'localhost' in self.queue_url
 
     def receive_messages(self):
         try:

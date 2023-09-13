@@ -3,10 +3,5 @@
     "Namespace": "aws:elasticbeanstalk:application:environment",
     "OptionName": "CORE_DB_PASSWORD",
     "Value": "<Enter during deployment and dont commit>"
-  },
-  {
-    "Namespace": "aws:elasticbeanstalk:application:environment",
-    "OptionName": "TIYARO_API_KEY",
-    "Value": "Enter during deployment and dont commit"
   }
 ]

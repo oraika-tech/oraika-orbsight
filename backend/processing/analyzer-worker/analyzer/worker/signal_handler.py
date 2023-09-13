@@ -11,6 +11,5 @@ class SignalHandler:
         signal(SIGTERM, self._signal_handler)
 
     def _signal_handler(self, signal_type, frame):
-        print(f"handling signal {signal_type}, exiting gracefully")
         logger.info(f"handling signal {signal_type}, exiting gracefully")
         self.received_signal = True

@@ -13,8 +13,6 @@ ENV CORE_DB_NAME orb_core
 ENV CORE_DB_USER orbsight
 ENV CORE_DB_PASSWORD orbsight
 
-ENV TIYARO_API_KEY api_key
-
 ENV AWS_SQS_ANALYSER_QUEUE AWS_SQS_ANALYSER_QUEUE
 
 # install few required tools

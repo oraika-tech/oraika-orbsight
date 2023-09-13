@@ -1,15 +1,15 @@
 from typing import List, Optional
-from uuid import UUID
 
 from pydantic import BaseModel, Field
 
 
 class UnstructuredDataRequest(BaseModel):
-    tenant_id: UUID
+    raw_data_id: int
     raw_text: str
 
 
 class StructuredData(BaseModel):
+    raw_data_id: int
     tags: List[str] = Field([])
     terms: List[str] = Field([])
     categories: Optional[List[str]] = None

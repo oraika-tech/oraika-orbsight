@@ -6,6 +6,10 @@ endif
 
 port=8080
 
+svc-analyzer-compile:
+	cd $(svc_analyzer_dir); \
+	pip-compile --resolver=backtracking -U pyproject.toml
+
 svc-analyzer-dep:
 	cd $(svc_analyzer_dir); \
 	pip install -e .
