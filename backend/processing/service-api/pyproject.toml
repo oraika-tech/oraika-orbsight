@@ -9,46 +9,46 @@ version = "0.0.1"
 description = "Service API interface"
 
 dependencies = [
-    "sqlmodel",
-    "fastapi",
-    "uvicorn[standard]",
-    'uvloop ; sys_platform != "win32" and sys_platform != "cygwin"',
-    "psycopg2-binary",
-    "cachetools",
     "bcrypt",
+    "cachetools",
+    "cachetools",
+    "fastapi",
+    "nile_api",
+    "nltk",
+    "pandas",
+    "psycopg2-binary",
+    "pydantic[email]",
     "python-jose[cryptography]",
     "python-multipart",
-    "pandas",
-    "nltk",
-    "stopwordsiso",
     "rakun2",
-    "cachetools",
     "redis",
-    "nile_api",
     "requests",
-    "pydantic[email]"
+    "sqlmodel",
+    "stopwordsiso",
+    "uvicorn[standard]",
+    'uvloop ; sys_platform != "win32" and sys_platform != "cygwin"',
 ]
 
 [project.optional-dependencies]
 
 dev = [
-    "pre-commit",
     "black",
+    "moto",
     "mypy",
-    "types-requests",
-    "types-python-dateutil",
+    "pgmock",
+    "pip-tools",
+    "pre-commit",
+    "pytest",
+    "pytest-mock",
+    "pytest-pgsql",
     "types-PyYAML",
     "types-dateparser",
     "types-protobuf",
-    "types-pytz",
+    "types-python-dateutil",
     "types-python-jose",
+    "types-pytz",
     "types-redis",
-    "pytest",
-    "pip-tools",
-    "moto",
-    "pytest-mock",
-    "pytest-pgsql",
-    "pgmock",
+    "types-requests",
 ]
 
 [project.urls]

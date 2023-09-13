@@ -9,33 +9,33 @@ version = "0.0.1"
 description = "Observer tool for fetch text from various sources"
 
 dependencies = [
+    "boto3",
     "obsei @ git+https://github.com/obsei/obsei#egg=obsei[source]",
-    "sqlmodel",
     "psycopg2-binary",
-    "boto3"
+    "sqlmodel",
 ]
 
 [project.optional-dependencies]
 
 dev = [
-    "pre-commit",
     "black",
-    "mypy",
-    "types-requests",
-    "types-python-dateutil",
-    "types-PyYAML",
-    "types-dateparser",
-    "types-protobuf",
-    "types-pytz",
-    "types-Pygments",
-    "types-colorama",
-    "types-setuptools",
-    "pytest",
-    "pip-tools",
     "moto",
+    "mypy",
+    "pgmock",
+    "pip-tools",
+    "pre-commit",
+    "pytest",
     "pytest-mock",
     "pytest-pgsql",
-    "pgmock",
+    "types-PyYAML",
+    "types-Pygments",
+    "types-colorama",
+    "types-dateparser",
+    "types-protobuf",
+    "types-python-dateutil",
+    "types-pytz",
+    "types-requests",
+    "types-setuptools",
 ]
 
 [project.urls]

@@ -9,37 +9,37 @@ version = "0.0.1"
 description = "Analyzer worker to process raw data"
 
 dependencies = [
-    "sqlmodel",
-    "psycopg2-binary",
+    "boto3",
+    "cachetools",
     "langdetect",
     "nltk",
     "openai",
-    "tiktoken",
     "pandas",
+    "psycopg2-binary",
     "requests",
-    "cachetools",
-    "boto3",
+    "sqlmodel",
+    "tiktoken",
 ]
 
 [project.optional-dependencies]
 
 dev = [
-    "pre-commit",
     "black",
-    "mypy",
-    "types-requests",
-    "types-python-dateutil",
-    "types-PyYAML",
-    "types-dateparser",
-    "types-protobuf",
-    "types-pytz",
-    "types-cachetools",
-    "pytest",
-    "pip-tools",
     "moto",
+    "mypy",
+    "pgmock",
+    "pip-tools",
+    "pre-commit",
+    "pytest",
     "pytest-mock",
     "pytest-pgsql",
-    "pgmock",
+    "types-PyYAML",
+    "types-cachetools",
+    "types-dateparser",
+    "types-protobuf",
+    "types-python-dateutil",
+    "types-pytz",
+    "types-requests",
 ]
 
 [project.urls]
