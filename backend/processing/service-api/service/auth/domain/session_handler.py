@@ -3,7 +3,7 @@ from typing import Any, Optional, List
 
 from pydantic import BaseSettings, PrivateAttr
 
-from service.auth.domain.model.cache_models import UserCache, TenantCache, UserSession, SessionCache, NileUser
+from service.auth.domain.model.cache_models import UserCache, TenantCache, UserSession, SessionCache
 from service.auth.persistence.redis_manager import EntityRedisManager
 from service.common.settings import settings
 from .base import BasePersistenceManager
@@ -46,14 +46,6 @@ class TenantCacheManager(BaseSettings):
         if tenant.org_id:
             self._entity_manager.set_value(tenant.org_id, tenant.tenant_id, ttl=ttl)
 
-    def get_tenant_by_org(self, org_id) -> Optional[TenantCache]:
-        tenant_id = self._entity_manager.get_value(org_id)
-        if tenant_id:
-            return self.get_tenant_by_id(tenant_id)
-
-        tenant = self.persistence_manager.get_tenant_by_nile_org_id(org_id)
-        return self._save_and_get_cache(tenant)
-
     def get_tenant_by_id(self, tenant_id) -> Optional[TenantCache]:
         tenant_map = self._entity_manager.get_entity(tenant_id)
         if tenant_map:
@@ -69,7 +61,6 @@ class TenantCacheManager(BaseSettings):
         if not tenant_info:
             return None
         tenant_cache = TenantCache(
-            org_id=tenant_info.nile_org_id,
             tenant_id=str(tenant_info.identifier),
             tenant_code=tenant_info.code,
             tenant_name=tenant_info.name
@@ -91,14 +82,6 @@ class SessionHandler(BaseSettings):
         tenant_ids = [str(tenant.identifier) for tenant in user_info.tenants if tenant]
         return self.create_session(tenant_ids, user_info.identifier, user_info.email, user_info.name)
 
-    def create_user_session(self, user_id: str, token: str, nile_user: NileUser,
-                            expiry_at: Optional[int]) -> Optional[UserSession]:
-
-        tenants = [self.org_cache_manager.get_tenant_by_org(org_id) for org_id in nile_user.org_ids]
-        tenant_ids = [tenant.tenant_id for tenant in tenants if tenant]
-
-        return self.create_session(tenant_ids, user_id, nile_user.email, nile_user.name, token, expiry_at)
-
     def create_session(self, tenant_ids: List[str],
                        user_id: str, email: str, name: Optional[str] = None,
                        token: Optional[str] = None, expiry_at: Optional[int] = None):
@@ -119,8 +102,8 @@ class SessionHandler(BaseSettings):
                 tenant_ids=tenant_ids
             )
             self.user_cache_manager.set_user(user_id, user_cache)
-        else:  # update existing attributes from nile to cache
-            if tenant_ids != user_cache.tenant_ids:  # update cache org if changed at Nile
+        else:  # update existing attributes from db to cache
+            if tenant_ids != user_cache.tenant_ids:
                 user_cache.tenant_ids = tenant_ids
                 self.user_cache_manager.update_user(user_id, "tenant_ids", ','.join(tenant_ids))
             if name != user_cache.user_name:
@@ -133,7 +116,6 @@ class SessionHandler(BaseSettings):
         session_cache = SessionCache(
             session_id=session_id,
             user_id=user_id,
-            nile_token=token
         )
         self._entity_manager.set_entity(session_id, vars(session_cache), expiry_at)
 
@@ -154,7 +136,6 @@ class SessionHandler(BaseSettings):
             user_id=session_cache.user_id,
             user_name=user_cache.user_name,
             email=user_cache.email,
-            nile_token=session_cache.nile_token,
             preferred_tenant_id=preferred_tenant_id,
             tenants=tenants,
             expiry_at=expiry_at

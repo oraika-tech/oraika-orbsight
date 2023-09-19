@@ -52,7 +52,7 @@ class ProcessedDataView(SQLModel, table=True):
             raw_text=self.raw_text,
             text_lang=self.text_lang,
             author_name=self.author_name,
-            categories=self.categories,
+            categories=self.categories or [],
             taxonomy_terms=self.taxonomy_terms,
             taxonomy_tags=self.taxonomy_tags,
         )

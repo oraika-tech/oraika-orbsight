@@ -3,12 +3,6 @@ from typing import Any, List, Optional, Dict
 from pydantic import BaseModel
 
 
-class NileUser(BaseModel):
-    email: str
-    name: Optional[str]
-    org_ids: List[str]
-
-
 class UserCache(BaseModel):
     user_id: Optional[str]
     user_name: Optional[str]
@@ -47,7 +41,6 @@ class SessionBase(BaseModel):
 
 class SessionCache(SessionBase):
     user_id: str
-    nile_token: Optional[str]
 
     def __init__(self, entries=None, **data: Any):
         if entries:

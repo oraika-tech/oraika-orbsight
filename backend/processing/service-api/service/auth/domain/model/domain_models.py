@@ -8,4 +8,3 @@ class TenantInfo(BaseModel):
     identifier: Optional[UUID]
     name: str
     code: str
-    nile_org_id: Optional[str]

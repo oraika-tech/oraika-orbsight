@@ -13,7 +13,6 @@ dependencies = [
     "cachetools",
     "cachetools",
     "fastapi",
-    "nile_api",
     "nltk",
     "pandas",
     "psycopg2-binary",

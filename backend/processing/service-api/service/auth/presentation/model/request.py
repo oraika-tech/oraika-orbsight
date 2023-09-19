@@ -1,10 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
 
-class SessionRequest(BaseModel):
-    nile_token: str
-
-
 class LoginRequest(BaseModel):
     username: EmailStr
     password: str

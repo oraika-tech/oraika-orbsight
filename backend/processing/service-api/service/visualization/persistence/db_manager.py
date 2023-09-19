@@ -3,8 +3,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import Column
-from sqlalchemy import Text
+from sqlalchemy import Column, Enum, Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.expression import false, true
@@ -46,7 +45,7 @@ class ChartEntity(SQLModel, table=True):
     __tablename__ = "viz_chart"
 
     identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
-    data_source_type: DataSourceType
+    data_source_type: DataSourceType = SqlField(sa_column=Column(Enum(DataSourceType)))
     data_source_series: Optional[List[DataSourceSeriesDO]] = SqlField(default='{}', sa_column=Column(JSONB))
     chart_type: str
     chart_config: Optional[dict] = SqlField(default='{}', sa_column=Column(JSONB))

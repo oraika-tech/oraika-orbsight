@@ -22,9 +22,5 @@ class BasePersistenceManager(BaseSettings):
         pass
 
     @abstractmethod
-    def get_tenant_by_nile_org_id(self, nile_org_id) -> Optional[TenantInfo]:
-        pass
-
-    @abstractmethod
     def get_demo_tenants(self) -> Optional[List[TenantInfo]]:
         pass

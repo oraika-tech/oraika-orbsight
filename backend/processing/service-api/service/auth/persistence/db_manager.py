@@ -34,7 +34,6 @@ class TenantTable(SQLModel, table=True):
     name: str
     code: str
     type: int
-    nile_org_id: str
     is_enabled: bool
     is_deleted: bool
 
@@ -102,7 +101,6 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                 identifier=tenant.identifier,
                 code=tenant.code,
                 name=tenant.name,
-                nile_org_id=tenant.nile_org_id
             )
             for tenant in tenants
         ]
@@ -111,27 +109,6 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
         with Session(self.core_db_engine) as session:
             tenant_uuids = [UUID(tenant_id) for tenant_id in tenant_ids]
             return self.get_tenants(session, tenant_uuids)
-
-    def get_tenant_by_nile_org_id(self, nile_org_id) -> Optional[TenantInfo]:
-        if not nile_org_id:
-            return None
-
-        with Session(self.core_db_engine) as session:
-            tenant = session.query(TenantTable).filter(
-                TenantTable.nile_org_id == nile_org_id,
-                TenantTable.is_enabled == true(),
-                TenantTable.is_deleted == false()
-            ).first()
-
-            if tenant:
-                return TenantInfo(
-                    identifier=tenant.identifier,
-                    name=tenant.name,
-                    code=tenant.code,
-                    nile_org_id=tenant.nile_org_id
-                )
-            else:
-                return None
 
     def get_demo_tenants(self) -> Optional[List[TenantInfo]]:
         with Session(self.core_db_engine) as session:
@@ -147,7 +124,6 @@ class UserDBManager(BasePersistenceManager, BaseEntityManager):
                         identifier=tenant.identifier,
                         name=tenant.name,
                         code=tenant.code,
-                        nile_org_id=tenant.nile_org_id
                     )
                     for tenant in tenants
                 ]
