@@ -1,7 +1,0 @@
-[
-  {
-    "Namespace": "aws:elasticbeanstalk:application:environment",
-    "OptionName": "CORE_DB_PASSWORD",
-    "Value": "<Enter during deployment and dont commit>"
-  }
-]

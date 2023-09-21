@@ -3,14 +3,15 @@ from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import Column, Enum, Text
+from sqlalchemy import Column, Enum
+from sqlalchemy import Text
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql.expression import false, true
 from sqlmodel import Field as SqlField, col
 from sqlmodel import Session, SQLModel
 
-from service.common.base_entity_manager import BaseEntityManager
+from service.common.db.base_entity_manager import BaseEntityManager
 from service.visualization.domain.base import BasePersistenceManager
 from service.visualization.domain.model.chart_models import ChartDBO, DataSourceType
 from service.visualization.domain.model.chart_models import DataSourceSeriesDO

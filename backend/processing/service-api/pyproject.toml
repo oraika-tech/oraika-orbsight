@@ -8,13 +8,18 @@ name = "service"
 version = "0.0.1"
 description = "Service API interface"
 
+
 dependencies = [
     "bcrypt",
-    "cachetools",
+    "boto3",
     "cachetools",
     "fastapi",
+    "langdetect",
     "nltk",
+    "obsei[source]",
+    "openai",
     "pandas",
+    "prefect",
     "psycopg2-binary",
     "pydantic[email]",
     "python-jose[cryptography]",
@@ -24,6 +29,7 @@ dependencies = [
     "requests",
     "sqlmodel",
     "stopwordsiso",
+    "tiktoken",
     "uvicorn[standard]",
     'uvloop ; sys_platform != "win32" and sys_platform != "cygwin"',
 ]
@@ -41,6 +47,9 @@ dev = [
     "pytest-mock",
     "pytest-pgsql",
     "types-PyYAML",
+    "types-Pygments",
+    "types-cachetools",
+    "types-colorama",
     "types-dateparser",
     "types-protobuf",
     "types-python-dateutil",
@@ -48,6 +57,7 @@ dev = [
     "types-pytz",
     "types-redis",
     "types-requests",
+    "types-setuptools",
 ]
 
 [project.urls]

@@ -8,7 +8,7 @@ port=8080
 
 svc-api-compile:
 	cd $(svc_api_dir); \
-	pip-compile --resolver=backtracking -U pyproject.toml
+	pip-compile --no-strip-extras --resolver=backtracking -U pyproject.toml
 
 svc-api-dep:
 	cd $(svc_api_dir); \
@@ -24,3 +24,16 @@ svc-api-run:
 
 svc-api-test:
 	pytest $(svc_api_dir)/tests
+
+svc-api-docker-build:
+	mypy processing
+	cd $(svc_api_dir); \
+    docker build -t api-service-local .
+
+svc-api-docker-run:
+	cd $(svc_api_dir); \
+	docker-compose up
+
+prefect-tunneling:
+	cd $(svc_api_dir); \
+	bash scripts/prefect-tunneling.sh

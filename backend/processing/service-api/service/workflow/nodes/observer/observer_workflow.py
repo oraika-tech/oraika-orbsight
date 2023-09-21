@@ -1,0 +1,115 @@
+import logging
+from operator import attrgetter
+from typing import Dict, List, Optional, Any, cast
+from uuid import UUID
+
+from prefect import flow, task
+from pydantic import Field
+
+from service.common.db.observer_entity_manager import ObserverEntityManager
+from service.common.db.raw_data_entity_manager import RawDataEntityManager, RawData
+from service.workflow.nodes.observer.domain_models import ObserverType, ObserverJobData
+from service.workflow.nodes.observer.source_executors import BaseObserverExecutor, \
+    TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, GoogleMapsExecutor, FacebookExecutor, RedditExecutor, \
+    GoogleNewsExecutor, ObseiResponse, SourceConfig
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+min_raw_text_length: int = Field(20, env='MIN_TEXT_LENGTH')
+
+rawDataEntityManager = RawDataEntityManager()
+observer_entity_manager = ObserverEntityManager()
+observer_executors: Dict[ObserverType, BaseObserverExecutor] = {
+    ObserverType.Twitter: TwitterExecutor(),
+    ObserverType.Android: PlayStoreExecutor(),
+    ObserverType.iOS: AppleStoreExecutor(),
+    ObserverType.GoogleMaps: GoogleMapsExecutor(),
+    ObserverType.Facebook: FacebookExecutor(),
+    ObserverType.Reddit: RedditExecutor(),
+    ObserverType.GoogleNews: GoogleNewsExecutor(),
+}
+
+
+def fetch_data(event: ObserverJobData) -> List[ObseiResponse]:
+    source_config: Optional[SourceConfig] = None
+    if event.limit_count and event.lookup_period:
+        source_config = SourceConfig(
+            lookup_period=event.lookup_period,
+            limit_count=event.limit_count
+        )
+
+    return observer_executors[event.observer_type].fetch_data(event, source_config)
+
+
+@task
+def handle_job(job: ObserverJobData):
+    data_list = fetch_data(job)
+    data_list.sort(key=attrgetter('event_time'))
+    logger.info(f'{job.observer_id} fetch count: {data_list}')
+
+    raw_data_list = [
+        RawData(
+            observer_id=job.observer_id,
+            reference_id=unstructured_data.reference_id,
+            parent_reference_id=unstructured_data.parent_reference_id,
+            raw_text=unstructured_data.raw_text,
+            unstructured_data=unstructured_data.data or {},
+            event_time=unstructured_data.event_time
+        )
+        for unstructured_data in data_list
+    ]
+
+    success_raw_data_list = rawDataEntityManager.insert_raw_data(job.tenant_id, raw_data_list)
+    return len(success_raw_data_list)
+
+
+@task
+def get_observer_tasks(tenant_id: UUID):
+    return observer_entity_manager.get_observer_tasks(tenant_id)
+
+
+limit_count_map = {
+    ObserverType.Twitter: 100,
+    ObserverType.Android: 20,
+    ObserverType.iOS: 100
+}
+
+
+def get_observer_limit(limit_count: int, observer_type: ObserverType):
+    if limit_count > 0:
+        return limit_count
+    else:
+        return limit_count_map.get(observer_type) or 20
+
+
+@flow()
+def observer_workflow(tenant_id: UUID, lookup_period: str, limit_count: int = 0):
+    results: List[Dict[str, Any]] = get_observer_tasks(tenant_id) or cast(List[Dict[str, Any]], [])
+    messages = [
+        ObserverJobData(
+            tenant_id=tenant_id,
+            observer_id=result['identifier'],
+            observer_type=result['type'],
+            url=result['url'],
+            query=result['query'],
+            country=result['country'],
+            language=result['language'],
+            page_id=result['page_id'],
+            subreddit=result['subreddit'],
+            limit_count=get_observer_limit(limit_count, result['type'])
+        )
+        for result in results
+    ]
+
+    for message in messages:
+        try:
+            message.lookup_period = lookup_period
+            count = handle_job(message)
+            logger.info("Handled observer jobs:%d", count)
+        except Exception as error:
+            logger.error("Unable to process observer:%s", message.observer_id)
+            logger.error(error)
+
+
+observer_wf = observer_workflow

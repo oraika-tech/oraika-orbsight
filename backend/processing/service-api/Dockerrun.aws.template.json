@@ -8,6 +8,10 @@
     {
       "ContainerPort": "8080",
       "HostPort": 80
+    },
+    {
+      "ContainerPort": "4200",
+      "HostPort": 4200
     }
   ]
 }

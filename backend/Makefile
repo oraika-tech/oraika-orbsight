@@ -11,12 +11,6 @@ cron-deploy:
 svc_api_dir=processing/service-api
 include $(svc_api_dir)/Makefile
 
-svc_analyzer_dir=processing/analyzer-worker
-include $(svc_analyzer_dir)/Makefile
-
-svc_observer_dir=processing/observer-worker
-include $(svc_observer_dir)/Makefile
-
 db_dir=database_v2
 include $(db_dir)/Makefile
 

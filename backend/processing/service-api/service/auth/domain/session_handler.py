@@ -6,8 +6,8 @@ from pydantic import BaseSettings, PrivateAttr
 from service.auth.domain.model.cache_models import UserCache, TenantCache, UserSession, SessionCache
 from service.auth.persistence.redis_manager import EntityRedisManager
 from service.common.settings import settings
-from .base import BasePersistenceManager
 from .model.domain_models import TenantInfo
+from ...common.db.tenant_entity_manager import TenantEntityManager
 from ...common.model.user import UserInfo
 from ...common.utils import now_epoch
 
@@ -35,11 +35,12 @@ class UserCacheManager(BaseSettings):
 
 class TenantCacheManager(BaseSettings):
     _entity_manager: EntityRedisManager = PrivateAttr()
-    persistence_manager: BasePersistenceManager
+    tenant_entity_manager: TenantEntityManager
 
     def __init__(self, **values: Any):
         super().__init__(**values)
         self._entity_manager = EntityRedisManager('tnt')
+        self.tenant_entity_manager = TenantEntityManager()
 
     def set_tenant(self, tenant: TenantCache, ttl: int = settings.DEFAULT_MAX_CACHE_TTL_SECONDS):
         self._entity_manager.set_entity(tenant.tenant_id, vars(tenant), ttl=ttl)
@@ -51,7 +52,7 @@ class TenantCacheManager(BaseSettings):
         if tenant_map:
             return TenantCache(entries=tenant_map)
         else:  # tenant entry when not in cache
-            tenant_info_list: List[TenantInfo] = self.persistence_manager.get_tenant_by_ids([tenant_id])
+            tenant_info_list: List[TenantInfo] = self.tenant_entity_manager.get_tenant_by_ids([tenant_id])
             if len(tenant_info_list) > 0:
                 return self._save_and_get_cache(tenant_info_list[0])
             else:
@@ -84,7 +85,7 @@ class SessionHandler(BaseSettings):
 
     def create_session(self, tenant_ids: List[str],
                        user_id: str, email: str, name: Optional[str] = None,
-                       token: Optional[str] = None, expiry_at: Optional[int] = None):
+                       expiry_at: Optional[int] = None):
 
         if len(tenant_ids) == 0:
             return None

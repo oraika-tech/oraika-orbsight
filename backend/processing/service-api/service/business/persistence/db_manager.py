@@ -13,7 +13,7 @@ from service.business.domain.model.observer import (OBSERVER_TYPE,
                                                     ObserverData, ObserverInfo)
 from service.business.domain.model.stats import StatsInfo
 from service.business.domain.model.taxonomy import TaxonomyInfo
-from service.common.base_entity_manager import BaseEntityManager
+from service.common.db.base_entity_manager import BaseEntityManager
 from service.common.utils import search_dict
 
 
@@ -92,7 +92,7 @@ class Observer(SQLModel, table=True):
     name: str
     type: int
     entity_id: UUID
-    config_data: str
+    config_data: dict = SqlField(default='{}', sa_column=Column(JSONB))
     is_enabled: bool
     is_deleted: bool
 

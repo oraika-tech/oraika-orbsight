@@ -8,12 +8,14 @@ from .base import BasePersistenceManager
 from .model.cache_models import UserSession
 from .model.domain_models import TenantInfo
 from .session_handler import UserCacheManager, TenantCacheManager, SessionHandler
+from ...common.db.tenant_entity_manager import TenantEntityManager
 
 logger = logging.getLogger(__name__)
 
 
 class AuthHandler(BaseSettings):
     persistence_manager: BasePersistenceManager
+    tenant_entity_manager: TenantEntityManager
     user_cache_manager: UserCacheManager
     org_cache_manager: TenantCacheManager
     session_handler: SessionHandler
@@ -26,7 +28,7 @@ class AuthHandler(BaseSettings):
             return None
 
     def demo_login(self, email: str) -> Optional[UserSession]:
-        demo_tenants = self.persistence_manager.get_demo_tenants()
+        demo_tenants = self.tenant_entity_manager.get_demo_tenants()
         if not demo_tenants:
             return None
         demo_tenant_ids = [str(tenant.identifier) for tenant in demo_tenants]

@@ -7,7 +7,7 @@ from sqlalchemy.sql.operators import is_not
 from sqlmodel import Field as SqlField
 from sqlmodel import Session, SQLModel
 
-from service.common.base_entity_manager import BaseEntityManager
+from service.common.db.base_entity_manager import BaseEntityManager
 from service.data.domain.base import BasePersistenceManager
 from service.data.domain.model.filter_query_params import FilterQueryParams
 from service.data.domain.model.text_analysis_data import TextAnalysisData

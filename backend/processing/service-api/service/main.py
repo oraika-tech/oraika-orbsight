@@ -1,5 +1,7 @@
 import logging
 import os
+import threading
+from multiprocessing import Process
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -11,6 +13,7 @@ from starlette.responses import JSONResponse
 
 from service import api_router
 from service.common.settings import settings
+from service.workflow.workflow import workflow_agent
 
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
 logging.basicConfig(
@@ -19,6 +22,7 @@ logging.basicConfig(
     level=LOGLEVEL
 )
 logger = logging.getLogger(__name__)
+logging.getLogger("httpx").setLevel(logging.WARNING)  # stop prefect verbose logging
 
 PORT = settings.SERVICE_PORT
 
@@ -58,5 +62,21 @@ def app_init():
     logger.info(f"Open http://127.0.0.1:{PORT}/openapi.json")
 
 
+is_multi_process = False
+
 if __name__ == "__main__":
+    logger.info("STARTED...")
+
+    workflow_runner: Process | threading.Thread
+
+    if is_multi_process:
+        workflow_runner = Process(target=workflow_agent)
+    else:
+        workflow_runner = threading.Thread(target=workflow_agent)
+
+    workflow_runner.start()
     uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
+
+    workflow_runner.join()
+
+    logger.info("ENDED...")
