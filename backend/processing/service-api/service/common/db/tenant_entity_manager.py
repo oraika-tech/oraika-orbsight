@@ -68,6 +68,23 @@ class TenantEntityManager(BaseEntityManager):
                 for tenant in tenants
             ]
 
+    def get_all_demo_tenants(self) -> List[TenantInfo]:
+        with Session(self.core_db_engine) as session:
+            tenants = session.query(TenantTable).filter(
+                TenantTable.type == 0,
+                TenantTable.is_enabled == true(),
+                TenantTable.is_deleted == false()
+            ).all()
+
+            return [
+                TenantInfo(
+                    identifier=tenant.identifier,
+                    code=tenant.code,
+                    name=tenant.name
+                )
+                for tenant in tenants
+            ]
+
     def get_tenant_by_ids(self, tenant_ids) -> List[TenantInfo]:
         with Session(self.core_db_engine) as session:
             tenant_uuids = [UUID(tenant_id) for tenant_id in tenant_ids]

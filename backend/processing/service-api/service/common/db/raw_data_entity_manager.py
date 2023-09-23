@@ -1,16 +1,17 @@
 import copy
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import Column, UniqueConstraint, false
-from sqlalchemy import not_, and_
+from sqlalchemy import UniqueConstraint, false
+from sqlalchemy import and_
+from sqlalchemy import not_
 from sqlalchemy.dialects.postgresql import JSONB, UUID as DB_UUID
 from sqlalchemy.orm import Session
 from sqlmodel import Field as SqlField, col
-from sqlmodel import Session, SQLModel
+from sqlmodel import SQLModel, Session, Column
 
 from service.common.db.base_entity_manager import BaseEntityManager
 from service.common.db.processed_data_entity_manager import ProcessedDataEntity
@@ -117,3 +118,16 @@ class RawDataEntityManager(BaseEntityManager):
                 )
             )
             return query.all()
+
+    def rotate_event_time(self, tenant_id: UUID, period_days: int):
+        with Session(self._get_tenant_engine(tenant_id)) as session:
+            items_to_update = session.query(RawDataEntity).filter(
+                RawDataEntity.event_time < datetime.now() - timedelta(days=period_days)
+            ).all()
+
+            logger.info("Items to update: %d", len(items_to_update))
+
+            for item in items_to_update:
+                item.event_time += timedelta(days=period_days)
+
+            session.commit()
