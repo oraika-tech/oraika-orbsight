@@ -14,6 +14,7 @@ ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 ENV KEEP_ALIVE 10
 ENV PREFECT_SERVER_API_HOST=0.0.0.0
 ENV PREFECT_API_URL=http://localhost:4200/api
+ENV SPACEPULSE_URL=https://dev.carvelle.in/capAm/enquiry/partner
 
 ENV DB_HOST localhost:5432
 

@@ -14,15 +14,8 @@ from service.business.domain.model.observer import (OBSERVER_TYPE,
 from service.business.domain.model.stats import StatsInfo
 from service.business.domain.model.taxonomy import TaxonomyInfo
 from service.common.db.base_entity_manager import BaseEntityManager
+from service.common.db.tenant_config_entity_manager import TenantConfig
 from service.common.utils import search_dict
-
-
-class TenantConfig(SQLModel, table=True):
-    __tablename__ = "tenant_config"
-
-    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
-    config_key: str
-    config_value: dict = SqlField(default='{}', sa_column=Column(JSONB))
 
 
 class TaxonomyEntity(SQLModel, table=True):

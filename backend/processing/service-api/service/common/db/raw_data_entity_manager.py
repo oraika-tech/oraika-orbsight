@@ -5,12 +5,12 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import UniqueConstraint, false
+from sqlalchemy import UniqueConstraint, false, DateTime
 from sqlalchemy import and_
 from sqlalchemy import not_
 from sqlalchemy.dialects.postgresql import JSONB, UUID as DB_UUID
 from sqlalchemy.orm import Session
-from sqlmodel import Field as SqlField, col
+from sqlmodel import Field as SqlField, col, Field
 from sqlmodel import SQLModel, Session, Column
 
 from service.common.db.base_entity_manager import BaseEntityManager
@@ -40,6 +40,7 @@ class RawDataEntity(SQLModel, table=True):
     raw_text: str
     unstructured_data: Optional[dict] = SqlField(default='{}', sa_column=Column(JSONB))
     event_time: datetime
+    updated_at: Optional[datetime] = Field(sa_column=Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow))
 
 
 class RawDataEntityManager(BaseEntityManager):

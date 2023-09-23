@@ -17,7 +17,7 @@ from service.workflow.workflow import workflow_agent
 
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
 logging.basicConfig(
-    format="%(asctime)s - %(levelname)5s - [%(thread)d:%(threadName)s] - %(name)s:%(lineno)d - %(message)s",
+    format="%(asctime)s - %(levelname)5s - [%(thread)d:%(threadName)s] - %(filename)s - %(name)s:%(lineno)d - %(message)s",
     datefmt="%m/%d/%Y %I:%M:%S %p",
     level=LOGLEVEL
 )

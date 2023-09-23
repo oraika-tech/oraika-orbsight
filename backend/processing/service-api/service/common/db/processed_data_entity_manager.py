@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlmodel import SQLModel, Field as SqlField, Session
+from sqlalchemy import Column, DateTime
+from sqlmodel import SQLModel, Field, Session
 
 from service.common.db.base_entity_manager import BaseEntityManager
 from service.workflow.nodes.analyzer.domain_models import StructuredData
@@ -17,7 +19,7 @@ class DBStoreRequest(BaseModel):
 class ProcessedDataEntity(SQLModel, table=True):
     __tablename__ = "insight_processed_data"
 
-    identifier: Optional[int] = SqlField(default=None, primary_key=True)
+    identifier: Optional[int] = Field(default=None, primary_key=True)
     raw_data_id: int
     # Extraction from Text
     taxonomy_tags: List[str]
@@ -30,7 +32,8 @@ class ProcessedDataEntity(SQLModel, table=True):
     text_lang: str
     # To store some comment or un categories info
     remark: str
-    is_deleted: bool = SqlField(default=False)
+    updated_at: Optional[datetime] = Field(sa_column=Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow))
+    is_deleted: bool = Field(default=False)
 
     @staticmethod
     def convert_to_entity(data_request: DBStoreRequest):

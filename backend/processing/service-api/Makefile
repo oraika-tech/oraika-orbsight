@@ -37,3 +37,8 @@ svc-api-docker-run:
 prefect-tunneling:
 	cd $(svc_api_dir); \
 	bash scripts/prefect-tunneling.sh
+
+prefect-local-run:
+	cd $(svc_api_dir); \
+	bash scripts/prefect-run.sh
+

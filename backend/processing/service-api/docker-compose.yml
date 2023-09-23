@@ -12,6 +12,8 @@ services:
       - PREFECT_API_URL=http://127.0.0.1:4200/api
       - OPENAI_API_KEY=xsdfex
       - OUTSCRAPPER_API_KEY=styhbgfds
+      - SPACEPULSE_URL=http://host.docker.internal:3001/capAm/enquiry/partner
+      - SPACEPULSE_API_KEY=sdflkj
     ports:
       - "4200:4200"
       - "8080:8080"
