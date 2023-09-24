@@ -1,0 +1,24 @@
+# The cache and queue driver to use for the Cube.js deployment
+CUBEJS_CACHE_AND_QUEUE_DRIVER=memory
+# Set this to false or leave unset to disable development mode
+CUBEJS_DEV_MODE=true
+# An application ID used to uniquely identify the Cube.js deployment
+CUBEJS_APP=orbsight-cube
+# Set to true so a Cube.js instance acts as a refresh worker
+CUBEJS_REFRESH_WORKER=true
+# If true, then send telemetry to CubeJS
+CUBEJS_TELEMETRY=false
+# The logging level for Cube.js
+CUBEJS_LOG_LEVEL=warn
+DEBUG_LOG=false
+# Enable SSL if required https://cube.dev/docs/config/databases/postgres#additional-configuration-aws-rds
+CUBEJS_DB_SSL=false
+
+# The timeout value for any queries made to the database by Cube
+CUBEJS_DB_QUERY_TIMEOUT=1m
+
+CUBEJS_API_SECRET=${cubejs_api_secret}
+CUBESTORE_S3_BUCKET=${cubestore_s3_bucket}
+CUBESTORE_S3_REGION=${cubestore_s3_region}
+CUBESTORE_AWS_ACCESS_KEY_ID=${cubestore_access_key_id}
+CUBESTORE_AWS_SECRET_ACCESS_KEY=${cubestore_secret_access_key}

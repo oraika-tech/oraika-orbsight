@@ -26,7 +26,7 @@ svc-api-test:
 	pytest $(svc_api_dir)/tests
 
 svc-api-docker-build:
-	mypy processing
+	mypy service-api
 	cd $(svc_api_dir); \
     docker build -t api-service-local .
 

@@ -65,7 +65,7 @@ class DynamicDashboardManager(BaseSettings):
                                                  for component in dashboard.component_layout.components
                                                  if not component.disabled]
 
-        # section for batch processing by type
+        # section for batch src by type
         charts = {}
         components_type_wise = self.get_all_components_type(dashboard.component_layout.components)
         for component_type, component_list in components_type_wise.items():
@@ -75,7 +75,7 @@ class DynamicDashboardManager(BaseSettings):
                              if component.identifier]
                 charts = self.persistence_manager.get_charts_by_ids(tenant_id, chart_ids)
 
-        # section for single processing by type
+        # section for single src by type
         for component in dashboard.component_layout.components:
             self.handle_components(component, charts, tenant_code, filter_list)
 

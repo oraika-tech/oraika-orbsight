@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - preConditions:
+      dbms:
+        type: postgresql
+
+  - includeAll:
+      path: sql/
+      relativeToChangelogFile: true
+
+  - includeAll:
+      path: ../common/
+      relativeToChangelogFile: true

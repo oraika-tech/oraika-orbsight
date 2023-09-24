@@ -12,11 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+
       - name: "Build"
         run: |
           set -e
           set -x
-          python3 -m pip install mypy==1.3.0
+          python3 -m pip install mypy
           make svc-api-dep svc-api-dev
           make mypy-analyse
           make tnt-onboarding-build

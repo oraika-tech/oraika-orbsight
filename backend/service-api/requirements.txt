@@ -42,9 +42,9 @@ beautifulsoup4==4.9.3
     #   gnews
     #   obsei
     #   reddit-rss-reader
-boto3==1.28.50
+boto3==1.28.53
     # via service (pyproject.toml)
-botocore==1.31.50
+botocore==1.31.53
     # via
     #   boto3
     #   s3transfer
@@ -85,7 +85,7 @@ coolname==2.2.0
     # via prefect
 croniter==1.4.1
     # via prefect
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   prefect
     #   python-jose
@@ -126,13 +126,13 @@ frozenlist==1.4.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2023.9.1
+fsspec==2023.9.2
     # via prefect
 gnews==0.3.1
     # via obsei
 google-api-core==2.11.1
     # via google-api-python-client
-google-api-python-client==2.99.0
+google-api-python-client==2.100.0
     # via obsei
 google-auth==2.23.0
     # via
@@ -193,7 +193,7 @@ jsonpatch==1.33
     # via prefect
 jsonpointer==2.4
     # via jsonpatch
-jsonschema==4.19.0
+jsonschema==4.19.1
     # via prefect
 jsonschema-specifications==2023.7.1
     # via jsonschema
@@ -201,7 +201,7 @@ kiwisolver==1.4.5
     # via
     #   matplotlib
     #   rakun2
-kubernetes==27.2.0
+kubernetes==28.1.0
     # via prefect
 langdetect==1.0.9
     # via service (pyproject.toml)
@@ -259,7 +259,7 @@ packaging==23.1
     #   pytest
     #   pytest-sugar
     #   rakun2
-pandas==2.1.0
+pandas==2.1.1
     # via
     #   obsei
     #   service (pyproject.toml)
@@ -277,7 +277,7 @@ praw==7.7.1
     # via obsei
 prawcore==2.3.0
     # via praw
-prefect==2.13.1
+prefect==2.13.2
     # via service (pyproject.toml)
 protobuf==4.24.3
     # via
