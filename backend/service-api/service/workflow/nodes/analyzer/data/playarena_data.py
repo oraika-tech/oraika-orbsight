@@ -1,4 +1,4 @@
-from service.common.utils import merge_dict_arrays_comp
+from service.common.utils.utils import merge_dict_arrays_comp
 from service.workflow.nodes.analyzer.data.common_data import gpt_prompt_department_classification_template
 
 department_list = [

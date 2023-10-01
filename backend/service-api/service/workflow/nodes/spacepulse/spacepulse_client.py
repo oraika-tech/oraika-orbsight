@@ -1,13 +1,15 @@
 import json
 import logging
-import os
 from dataclasses import dataclass, asdict
+from typing import Optional
 
 import requests
 from pydantic import BaseModel
 
-spacepulse_url = os.environ["SPACEPULSE_URL"]
-spacepulse_api_key = os.environ["SPACEPULSE_API_KEY"]
+from service.common.config.app_settings import app_settings
+
+spacepulse_url = app_settings.SPACEPULSE_URL
+spacepulse_api_key = app_settings.SPACEPULSE_API_KEY
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +24,14 @@ class SpacePulsePostRequest:
     id: int
     text: str
     source: str
-    link: str
+    link: Optional[str]
     sentiment: str
     departments: list[str]
     activities: list[str]
-    rating: int
+    rating: Optional[int]
     timestamp: int
-    owner_answer_timestamp: int
-    likes: int
+    owner_answer_timestamp: Optional[int]
+    likes: Optional[int]
 
     # def to_str(self):
     #     return "\n".join(f"{key}: {value}" for key, value in asdict(self).items())

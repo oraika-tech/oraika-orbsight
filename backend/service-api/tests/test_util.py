@@ -1,4 +1,4 @@
-from service.common.utils import to_space_camel_case
+from service.common.utils.utils import to_space_camel_case
 
 
 def test_to_space_camel_case():

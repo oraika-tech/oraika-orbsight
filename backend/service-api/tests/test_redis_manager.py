@@ -1,6 +1,6 @@
-from service.auth.persistence.redis_manager import EntityRedisManager
+from service.common.infra.redis_provider import EntityRedisProvider
 
-test_entity_manager = EntityRedisManager(key_prefix='test', host="localhost", port=6379)
+test_entity_manager = EntityRedisProvider(key_prefix='test', host="localhost", port=6379)
 
 
 def test_single_data_lifecycle():

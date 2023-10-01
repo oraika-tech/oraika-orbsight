@@ -1,14 +1,14 @@
 import json
 import logging
-import os
 import sys
 
 import openai
 import tiktoken
 
-from service.common.utils import extract_json
+from service.common.config.app_settings import app_settings
+from service.common.utils.utils import extract_json
 
-openai.api_key = os.environ["OPENAI_API_KEY"]
+openai.api_key = app_settings.OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
 

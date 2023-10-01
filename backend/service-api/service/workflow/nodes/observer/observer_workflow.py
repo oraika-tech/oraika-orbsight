@@ -1,4 +1,3 @@
-import logging
 from operator import attrgetter
 from typing import Dict, List, Optional, Any, cast
 from uuid import UUID
@@ -6,20 +5,18 @@ from uuid import UUID
 from prefect import flow, task
 from pydantic import Field
 
-from service.common.db.observer_entity_manager import ObserverEntityManager
-from service.common.db.raw_data_entity_manager import RawDataEntityManager, RawData
-from service.workflow.nodes.observer.domain_models import ObserverType, ObserverJobData
+from service.app.business.business_db_provider import insert_raw_data_dp
+from service.app.data.data_models import RawData
+from service.common.utils import logger_utils
+from service.workflow.nodes.observer.observer_db_provider import get_observer_tasks_dp
 from service.workflow.nodes.observer.source_executors import BaseObserverExecutor, \
     TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, GoogleMapsExecutor, FacebookExecutor, RedditExecutor, \
-    GoogleNewsExecutor, ObseiResponse, SourceConfig
+    GoogleNewsExecutor, ObseiResponse, SourceConfig, ObserverType, ObserverJobData
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger = logger_utils.initialize_logger(__name__)
 
 min_raw_text_length: int = Field(20, env='MIN_TEXT_LENGTH')
 
-rawDataEntityManager = RawDataEntityManager()
-observer_entity_manager = ObserverEntityManager()
 observer_executors: Dict[ObserverType, BaseObserverExecutor] = {
     ObserverType.Twitter: TwitterExecutor(),
     ObserverType.Android: PlayStoreExecutor(),
@@ -60,13 +57,13 @@ def handle_job(job: ObserverJobData):
         for unstructured_data in data_list
     ]
 
-    success_raw_data_list = rawDataEntityManager.insert_raw_data(job.tenant_id, raw_data_list)
+    success_raw_data_list = insert_raw_data_dp(job.tenant_id, raw_data_list)
     return len(success_raw_data_list)
 
 
 @task
 def get_observer_tasks(tenant_id: UUID):
-    return observer_entity_manager.get_observer_tasks(tenant_id)
+    return get_observer_tasks_dp(tenant_id)
 
 
 limit_count_map = {

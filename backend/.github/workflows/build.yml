@@ -23,5 +23,6 @@ jobs:
           set -x
           python3 -m pip install mypy
           make svc-api-dep svc-api-dev
+          make svc-validate-imports
           make mypy-analyse
           make tnt-onboarding-build

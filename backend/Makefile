@@ -4,7 +4,7 @@ mypy-analyse:
 	mypy service-api
 
 clean:
-	rm -rf .mypy_cache .pytest_cache src/lambda/tenant_onboarding/app/build
+	rm -rf .mypy_cache .pytest_cache
 
 # $(*_dir) variable are required by respective Makefile to resolve parent directory
 

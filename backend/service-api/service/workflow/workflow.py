@@ -1,27 +1,20 @@
-import logging
-
 from prefect.client.schemas.schedules import CronSchedule
 from prefect.runner import serve
 
-from service.common.db.tenant_entity_manager import TenantEntityManager
+from service.app.auth.auth_db_provider import get_all_demo_tenants_dp
+from service.common.utils import logger_utils
+from service.workflow.infra.workflow_db_provider import get_all_enabled_tenants_dp
 from service.workflow.nodes.analyzer.analyzer_workflow import analyzer_wf
 from service.workflow.nodes.event_rotator.event_rotator_workflow import event_time_rotator_wf
 from service.workflow.nodes.observer.observer_workflow import observer_wf
 from service.workflow.nodes.spacepulse.spacepulse_workflow import spacepulse_wf
 
-# --------- Logging configuration ------------------------
-# stop prefect verbose logging
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logging.getLogger().setLevel(logging.INFO)
-logger = logging.getLogger(__name__)
-# --------- Logging configuration ------------------------
-
-tenant_entity_manager = TenantEntityManager()
+logger = logger_utils.initialize_logger(__name__)
 
 
 def workflow_agent():
-    tenants = tenant_entity_manager.get_all_enabled_tenants()
-    demo_tenants = tenant_entity_manager.get_all_demo_tenants()
+    tenants = get_all_enabled_tenants_dp()
+    demo_tenants = get_all_demo_tenants_dp()
 
     jobs = ([
                 observer_wf.to_deployment(

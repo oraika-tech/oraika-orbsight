@@ -1,7 +1,9 @@
 import logging
 from abc import abstractmethod
 from datetime import datetime
+from enum import Enum
 from typing import Optional, Dict, Any, List
+from uuid import UUID
 
 import dateparser
 import mmh3
@@ -16,11 +18,34 @@ from obsei.source.reddit_source import RedditSource, RedditConfig, RedditCredInf
 from obsei.source.twitter_source import TwitterSource, TwitterSourceConfig, TwitterCredentials
 from pydantic import BaseModel, BaseSettings, SecretStr, Field
 
-from service.common.dateutils import convert_to_local_time
-from service.workflow.nodes.observer.domain_models import ObserverType, ObserverJobData
+from service.common.utils.dateutils import convert_to_local_time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+class ObserverType(int, Enum):
+    Twitter = 1
+    Android = 2
+    iOS = 3
+    GoogleMaps = 4
+    Facebook = 5
+    Reddit = 6
+    GoogleNews = 7
+
+
+class ObserverJobData(BaseModel):
+    tenant_id: UUID
+    observer_id: UUID
+    observer_type: ObserverType  # - app | twitter
+    url: Optional[str]
+    query: Optional[str]
+    country: Optional[str]
+    language: Optional[str]
+    page_id: Optional[str]
+    subreddit: Optional[str]
+    lookup_period: Optional[str]
+    limit_count: Optional[int]
 
 
 class SourceConfig(BaseModel):

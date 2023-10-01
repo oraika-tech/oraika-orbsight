@@ -1,6 +1,6 @@
 import unittest
 
-from service.common.utils import extract_json
+from service.common.utils.utils import extract_json
 
 
 class MyTestCase(unittest.TestCase):

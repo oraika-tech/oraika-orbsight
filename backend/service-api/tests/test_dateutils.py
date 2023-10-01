@@ -3,7 +3,7 @@ from datetime import datetime
 
 import pytz
 
-from service.common.dateutils import convert_to_local_time
+from service.common.utils.dateutils import convert_to_local_time
 
 
 class TestConvertToLocalTime(unittest.TestCase):

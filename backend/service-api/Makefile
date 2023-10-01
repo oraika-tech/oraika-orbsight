@@ -18,9 +18,13 @@ svc-api-dev:
 	cd $(svc_api_dir); \
 	pip install '.[dev]'
 
+svc-validate-imports:
+	cd $(svc_api_dir); \
+	python scripts/import_validator.py
+
 svc-api-run:
 	cd $(svc_api_dir); \
-	uvicorn service.main:app --reload --port=$(port)
+	uvicorn service.app.main:app --reload --port=$(port)
 
 svc-api-test:
 	pytest $(svc_api_dir)/tests

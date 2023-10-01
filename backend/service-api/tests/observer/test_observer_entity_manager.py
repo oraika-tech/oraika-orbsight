@@ -2,20 +2,19 @@ import unittest
 from unittest.mock import patch, Mock
 from uuid import UUID
 
-from service.common.db.observer_entity_manager import ObserverEntityManager
+from service.common.infra.db.entity_manager.business_entity_manager import get_observer_tasks
 
 
 class TestObserverEntityManager(unittest.TestCase):
 
-    @patch('service.common.db.observer_entity_manager.Session')
-    @patch('service.common.db.base_entity_manager.BaseEntityManager._get_tenant_engine')
-    def test_get_observer_tasks(self, MockedGetTenantEngine, MockedSession):
+    @patch('service.common.infra.db.db_utils.get_tenant_engine')
+    def test_get_observer_tasks(self, mocked_get_tenant_engine, mocked_session):
         # Arrange
         mocked_session_instance = Mock()
-        MockedSession.return_value.__enter__.return_value = mocked_session_instance
+        mocked_session.return_value.__enter__.return_value = mocked_session_instance
 
         mocked_engine = Mock()
-        MockedGetTenantEngine.return_value = mocked_engine
+        mocked_get_tenant_engine.return_value = mocked_engine
 
         # Mock query and filter behavior
         mock_query = Mock()
@@ -31,13 +30,12 @@ class TestObserverEntityManager(unittest.TestCase):
         ]
 
         tenant_id = UUID("12345678-1234-5678-1234-567812345678")
-        manager = ObserverEntityManager()
 
         # Act
-        results = manager.get_observer_tasks(tenant_id)
+        results = get_observer_tasks(tenant_id)
 
         # Assert
-        MockedGetTenantEngine.assert_called_once_with(tenant_id)
+        mocked_get_tenant_engine.assert_called_once_with(tenant_id)
         self.assertEqual(len(results), 2)
         self.assertEqual(results[0]['identifier'], 1)
         self.assertEqual(results[0]['type'], 'type1')

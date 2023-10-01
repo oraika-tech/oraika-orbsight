@@ -1,0 +1,150 @@
+root-package: service
+
+rules:
+  - title: DB utils to common
+    type: allowed
+    from: service.**.db_utils
+    to: service.common.**
+
+  - title: App utils to utils, models & settings
+    type: allowed
+    from: service.**.*utils
+    to:
+      - service.**.*utils
+      - service.**.utils.**
+      - service.**.*models.**
+      - service.**.app_settings
+
+  - title: Forbid utils to all other modules
+    type: forbidden
+    from: service.**.*utils
+    to: service.**
+
+  # Layered architecture in apps
+  # Wild cards:
+  # - single star (*): any single module
+  # - double star (**): multilevel nested module
+
+  - title: Controller only access domain layer
+    type: allowed
+    from: service.app.*.*_apis
+    to:
+      - service.*.*_service.**
+      - service.**.domain.**
+      - service.app.auth.domain.user_service.get_current_user
+
+  - title: Any app module can access domain models
+    type: allowed
+    from: service.app.**
+    to:
+      - service.common.models
+      - service.app.**.*_models.*
+
+  - title: Domain layer access db_provider and other domain service
+    type: allowed
+    from: service.app.**.*_service
+    to:
+      - service.app.**.*_service.**
+      - service.app.**.*_db_provider**
+      - service.app.**.handler.**
+      - service.**.domain.**
+
+  - title: Routes creation in app, to access all api routes
+    type: allowed
+    from: service.app.__init__
+    to: service.app.**.*_apis
+
+  - title: Anyone can call utils
+    type: allowed
+    from: service.**
+    to: service.app.**.*utils**
+
+  - title: Main can access anything inside app
+    type: allowed
+    from: service.app.main
+    to: service.app.**
+
+  - title: Only db_provider is allowed to access db
+    type: allowed
+    from: service.**.*_db_provider
+    to:
+      - service.common.infra.db.**
+      - service.**.reflection_utils
+
+  - title: All apps can call model converter
+    type: allowed
+    from: service.app.**
+    to: service.**.reflection_utils
+
+  - title: Nothing else in apps is allowed to access db
+    type: forbidden
+    from: service.app.**
+    to: service.common.infra.db.**
+
+  - title: Nothing else in workflows is allowed to access db
+    type: forbidden
+    from: service.workflow.**
+    to: service.common.infra.db.**
+
+  - title: Repositories can access only common utils & models
+    type: allow
+    from: service.common.infra.db.repository.**
+    to:
+      - service.common.infra.db.db_utils.**
+      - service.common.models.**
+
+  - title: Repositories can's access anything except common utils & models
+    type: forbidden
+    from: service.common.infra.db.repository.**
+    to: service.**
+
+  - title: Anyone can access common but common can't access anyone
+    type: allowed
+    from: service.**
+    to: service.common.**
+
+  - title: Anyone can access auth to get user and tenant info
+    type: allowed
+    from: service.**
+    to: service.app.auth.**
+
+  - title: Workflow aggregator can access only workflows
+    type: allowed
+    from: service.workflow.workflow
+    to:
+      - service.workflow.nodes.**.*_wf
+      - service.workflow.infra.workflow_db_provider.**
+
+  - title: Workflow can access app domain and its own domain
+    type: allowed
+    from: service.workflow.nodes.**.*_workflow
+    to:
+      - service.app.**.*_db_provider.**
+      - service.app.**.*_service.**
+      - service.app.**.*_models.**
+      - service.workflow.nodes.**
+      - service.workflow.infra.*_db_provider.**
+
+  - title: Subdirectory files can access each other
+    type: allowed
+    from: service.workflow.nodes.*.**
+    to: service.workflow.nodes.*.**
+
+  - title: DB provider can access models
+    type: allowed
+    from: service.workflow.infra.*_db_provider
+    to:
+      - service.**.*_models**
+      - service.workflow.nodes.**
+
+  - title: Handler can access each other and clients
+    type: allowed
+    from: service.app.visualization.dynamic_dashboard.handler.**
+    to:
+      - service.app.visualization.dynamic_dashboard.handler.**
+      - service.app.**.*_client.**
+
+  - title: Except allowed forbid all
+    type: forbidden
+    from: service.**
+    to: service.**

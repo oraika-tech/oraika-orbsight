@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from service.common.utils import merge_dict_arrays_comp
+from service.common.utils.utils import merge_dict_arrays_comp
 
 
 class TestSegregateTagsTerms(unittest.TestCase):

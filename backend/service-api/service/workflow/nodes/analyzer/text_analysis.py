@@ -4,19 +4,16 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from service.common.utils import intersect_arrays, split_array, flatten_array
-from service.workflow.nodes.analyzer.data.common_data import gpt_prompt_sentiment_analysis, sentiment_fx, \
-    classification_fx
+from service.common.utils.utils import intersect_arrays, split_array, flatten_array
+from service.workflow.nodes.analyzer.data.common_data import gpt_prompt_sentiment_analysis, sentiment_fx, classification_fx
 from service.workflow.nodes.analyzer.data.playarena_data import activities as playarena_activities
 from service.workflow.nodes.analyzer.data.playarena_data import department_list as playarena_department_list
 from service.workflow.nodes.analyzer.data.playarena_data import department_sublist as playarena_department_sublist
-from service.workflow.nodes.analyzer.data.playarena_data import \
-    gpt_prompt_department_classification as playarena_classification_prompt
+from service.workflow.nodes.analyzer.data.playarena_data import gpt_prompt_department_classification as playarena_classification_prompt
 from service.workflow.nodes.analyzer.data.playjuniors_data import activities as playjuniors_activities
 from service.workflow.nodes.analyzer.data.playjuniors_data import department_list as playjuniors_department_list
 from service.workflow.nodes.analyzer.data.playjuniors_data import department_sublist as playjuniors_department_sublist
-from service.workflow.nodes.analyzer.data.playjuniors_data import \
-    gpt_prompt_department_classification as playjuniors_classification_prompt
+from service.workflow.nodes.analyzer.data.playjuniors_data import gpt_prompt_department_classification as playjuniors_classification_prompt
 from service.workflow.nodes.analyzer.domain_models import UnstructuredDataRequest, StructuredData
 from service.workflow.nodes.analyzer.gpt_client import prompt
 
