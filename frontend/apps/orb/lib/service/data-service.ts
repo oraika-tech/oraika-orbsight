@@ -43,9 +43,3 @@ export async function getData(subUrl: string, dataRequest: DataRequest) {
 export async function getDirectData(url: string) {
     return restApi(getUrlRoot() + url);
 }
-
-export async function getPanelData(key: string) {
-    const queryParams = new URLSearchParams();
-    queryParams.set('panel', key);
-    return restApi(`${getUrlRoot()}/dashboards/panels?${queryParams}`);
-}
