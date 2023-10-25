@@ -8,6 +8,7 @@ class AppSettings(BaseSettings):
     OPENAI_API_KEY: str
     SPACEPULSE_URL: str
     SPACEPULSE_API_KEY: str
+    SPACEPULSE_API_SECRET: str
 
     # Fields with default values
     DB_HOST: str = "localhost:5432"

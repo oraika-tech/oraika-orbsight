@@ -8,7 +8,7 @@ def convert_model(input_object: Any, return_type: Type[T], field_map=None) -> Op
         return None
     if field_map is None:
         field_map = {}
-    data = input_object.dict()
+    data = input_object if isinstance(input_object, dict) else input_object.dict()
     mapped_data = {field_map.get(k, k): v for k, v in data.items()}
     return return_type(**mapped_data)
 

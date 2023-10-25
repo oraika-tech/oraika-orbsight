@@ -40,9 +40,10 @@ def workflow_agent():
             ] + [
                 spacepulse_wf.to_deployment(
                     name=tenant.name + " - SpacePulse Push",
+                    schedule=CronSchedule(cron="30 1 * * *", timezone="Asia/Kolkata"),
                     parameters={
                         "tenant_id": tenant.identifier,
-                        "lookup_period": "3d",  # 3 tries
+                        "lookup_period": "1d",  # 1 try
                     }
                 )
                 for tenant in tenants

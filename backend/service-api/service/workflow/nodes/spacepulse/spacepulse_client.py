@@ -10,6 +10,7 @@ from service.common.config.app_settings import app_settings
 
 spacepulse_url = app_settings.SPACEPULSE_URL
 spacepulse_api_key = app_settings.SPACEPULSE_API_KEY
+spacepulse_api_secret = app_settings.SPACEPULSE_API_SECRET
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,8 @@ def spacepulse_post(tenant_info: SpacePulseTenantInfo, review_data: SpacePulsePo
         headers={
             'tenant': tenant_info.tenant_code,
             'Content-Type': 'application/json',
-            'Cookie': 'JSESSIONID=' + spacepulse_api_key
+            'xapikey': spacepulse_api_key,
+            'xapisecret': spacepulse_api_secret
         },
         json={
             # "enquiryMessage": review_data.to_str(),

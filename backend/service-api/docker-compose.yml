@@ -13,7 +13,8 @@ services:
       - OPENAI_API_KEY=xsdfex
       - OUTSCRAPPER_API_KEY=styhbgfds
       - SPACEPULSE_URL=http://host.docker.internal:3001/capAm/enquiry/partner
-      - SPACEPULSE_API_KEY=sdflkj
+      - SPACEPULSE_API_KEY=dummykey
+      - SPACEPULSE_API_SECRET=dummaysecret
     ports:
       - "4200:4200"
       - "8080:8080"
