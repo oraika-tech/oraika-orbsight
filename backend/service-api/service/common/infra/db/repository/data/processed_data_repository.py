@@ -19,6 +19,7 @@ class ProcessedDataEntity(SQLModel, table=True):
     # Extraction from AI model
     emotion: str
     categories: List[str]
+    people: Optional[List[str]]
     # Text Features
     text_length: int
     text_lang: str

@@ -16,6 +16,8 @@ Instructions:
 - Process each review independently and don't mix up.
 '''
 
+gpt_prompt_people_analysis = '''You are an expert ner analyser. Extract all people names of a given text.'''
+
 sentiment_fx = [
     {
         "name": "sentiment_logger",
@@ -69,6 +71,36 @@ classification_fx = [
                             }
                         },
                         "required": ["raw_data_id", "departments"]
+                    }
+                }
+            },
+            "required": ["data"]
+        }
+    }
+]
+
+people_fx = [
+    {
+        "name": "people_logger",
+        "description": "Store people names of text by id for later use",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "raw_data_id": {
+                                "type": "integer"
+                            },
+                            "people": {
+                                "type": "array",
+                                'items': {'type': 'string'},
+                                "description": "extract people names in pascal case without any salutation"
+                            }
+                        },
+                        "required": ["raw_data_id", "people"]
                     }
                 }
             },

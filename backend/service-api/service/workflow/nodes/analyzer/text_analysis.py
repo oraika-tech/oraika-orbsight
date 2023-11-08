@@ -1,11 +1,13 @@
 import logging
 from enum import Enum
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel
 
-from service.common.utils.utils import intersect_arrays, split_array, flatten_array
-from service.workflow.nodes.analyzer.data.common_data import gpt_prompt_sentiment_analysis, sentiment_fx, classification_fx
+from service.common.utils.utils import intersect_arrays, split_array, flatten_array, convert_to_pascal
+from service.workflow.nodes.analyzer.data.common_data import gpt_prompt_sentiment_analysis, sentiment_fx, classification_fx, \
+    gpt_prompt_people_analysis, people_fx
 from service.workflow.nodes.analyzer.data.playarena_data import activities as playarena_activities
 from service.workflow.nodes.analyzer.data.playarena_data import department_list as playarena_department_list
 from service.workflow.nodes.analyzer.data.playarena_data import department_sublist as playarena_department_sublist
@@ -36,6 +38,11 @@ class Sentiment(str, Enum):
 class TextSentiment(BaseModel):
     raw_data_id: int
     sentiment: Sentiment
+
+
+class TextPeople(BaseModel):
+    raw_data_id: int
+    people: List[str]
 
 
 tenant_data = {
@@ -94,6 +101,24 @@ def text_sentiment_analysis(reviews: list) -> list[TextSentiment]:
     ]
 
 
+def correct_name_case(people_list: List[str]) -> List[str]:
+    return [convert_to_pascal(people) for people in people_list]
+
+
+def text_people_analysis(reviews: list) -> list[TextPeople]:
+    reviews_list = split_array(reviews, 10)
+    response_list = [prompt(gpt_prompt_people_analysis, people_fx, reviews_sublist)
+                     for reviews_sublist in reviews_list]
+    response = flatten_array(response_list)
+    return [
+        TextPeople(
+            raw_data_id=element['raw_data_id'],
+            people=correct_name_case(element['people'])
+        )
+        for element in response
+    ]
+
+
 def review_analysis(tenant_id: UUID, reviews: list[UnstructuredDataRequest]) -> list[StructuredData]:
     if len(reviews) == 0:
         return []
@@ -101,17 +126,19 @@ def review_analysis(tenant_id: UUID, reviews: list[UnstructuredDataRequest]) -> 
     review_list = [el.dict() for el in reviews]
     classified_reviews = text_classification(tenant_id, review_list)
     reviews_sentiment = text_sentiment_analysis(review_list)
+    reviews_people = {people_info.raw_data_id: people_info.people for people_info in text_people_analysis(review_list)}
 
     return [
         StructuredData(
-            raw_data_id=review_data[0].raw_data_id,  # ---- input
-            tags=review_data[1].tags,  # ------------------ gpt - classifier
-            terms=review_data[1].terms,  # ---------------- gpt - classifier
-            categories=[],  # ----------------------------- constant
-            emotion=review_data[2].sentiment,  # ---------- gpt - sentiment analysis
-            text_length=len(review_data[0].raw_text),  # -- calc
-            text_language='en',  # ------------------------ constant
-            remark=None  # -------------------------------- constant
+            raw_data_id=review_data[0].raw_data_id,  # -------------- input
+            tags=review_data[1].tags,  # ---------------------------- gpt - classifier
+            terms=review_data[1].terms,  # -------------------------- gpt - classifier
+            categories=[],  # --------------------------------------- constant
+            people=reviews_people[review_data[0].raw_data_id],  # --- gpt - people names
+            emotion=review_data[2].sentiment,  # -------------------- gpt - sentiment analysis
+            text_length=len(review_data[0].raw_text),  # ------------ calc
+            text_language='en',  # ---------------------------------- constant
+            remark=None  # ------------------------------------------ constant
         )
         for review_data in zip(reviews, classified_reviews, reviews_sentiment)
     ]

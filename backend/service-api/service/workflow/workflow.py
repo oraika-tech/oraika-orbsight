@@ -6,6 +6,7 @@ from service.common.utils import logger_utils
 from service.workflow.infra.workflow_db_provider import get_all_enabled_tenants_dp
 from service.workflow.nodes.analyzer.analyzer_workflow import analyzer_wf
 from service.workflow.nodes.event_rotator.event_rotator_workflow import event_time_rotator_wf
+from service.workflow.nodes.ner_people.ner_workflow import ner_wf
 from service.workflow.nodes.observer.observer_workflow import observer_wf
 from service.workflow.nodes.spacepulse.spacepulse_workflow import spacepulse_wf
 
@@ -34,6 +35,7 @@ def workflow_agent():
                     parameters={
                         "tenant_id": tenant.identifier,
                         "lookup_period": "3d",  # 3 tries
+                        "limit_count": 0
                     }
                 )
                 for tenant in tenants
@@ -57,6 +59,16 @@ def workflow_agent():
                     }
                 )
                 for tenant in demo_tenants
+            ] + [
+                ner_wf.to_deployment(
+                    name=tenant.name + " - NER",
+                    parameters={
+                        "tenant_id": tenant.identifier,
+                        "lookup_period": "30d",  # 3 tries
+                        "limit_count": 0  # zero is infinity
+                    }
+                )
+                for tenant in tenants
             ])
 
     serve(*jobs)

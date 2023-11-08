@@ -4,6 +4,7 @@
 
 CREATE SCHEMA IF NOT EXISTS data_view;
 
+DROP VIEW IF EXISTS data_view.processed_data_view_v1;
 CREATE OR REPLACE VIEW data_view.processed_data_view_v1 AS
 SELECT
 	event_time,
@@ -53,7 +54,8 @@ SELECT
     -- analysis data --------
     taxonomy_tags,
     taxonomy_terms,
-    categories
+    categories,
+    COALESCE(people, ARRAY[]::varchar[]) as people
 FROM insight_raw_data rd
 LEFT JOIN insight_processed_data pd ON rd.identifier = pd.raw_data_id
 INNER JOIN config_observer obs ON obs.identifier = rd.observer_id

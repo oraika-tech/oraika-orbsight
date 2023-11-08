@@ -132,7 +132,7 @@ rules:
 
   - title: DB provider can access models
     type: allowed
-    from: service.workflow.infra.*_db_provider
+    from: service.workflow.**.*_db_provider
     to:
       - service.**.*_models**
       - service.workflow.nodes.**

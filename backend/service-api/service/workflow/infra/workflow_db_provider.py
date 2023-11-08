@@ -16,8 +16,8 @@ from service.workflow.nodes.analyzer.text_analysis import Sentiment
 from service.workflow.nodes.spacepulse.spacepulse_client import SpacePulsePostRequest
 
 
-def get_unprocessed_data_dp(tenant_id: UUID, min_event_time: datetime) -> List[RawData]:
-    raw_data_entities = get_unprocessed_data(tenant_id, min_event_time)
+def get_unprocessed_data_dp(tenant_id: UUID, min_event_time: datetime, limit_count: int) -> List[RawData]:
+    raw_data_entities = get_unprocessed_data(tenant_id, min_event_time, limit_count)
     return convert_models(raw_data_entities, RawData)
 
 
@@ -57,6 +57,7 @@ def insert_structured_data_dp(tenant_id: UUID, structured_data: StructuredData) 
         taxonomy_terms=structured_data.terms,
         emotion=structured_data.emotion if structured_data.emotion else str(Sentiment.UNDETERMINED),
         categories=structured_data.categories if structured_data.categories else [],
+        people=structured_data.people,
         text_length=structured_data.text_length,
         text_lang=structured_data.text_language,
         remark=structured_data.remark

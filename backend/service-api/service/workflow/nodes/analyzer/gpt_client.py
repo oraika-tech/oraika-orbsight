@@ -28,6 +28,7 @@ def prompt(system_message: str, fx_params_def, user_message):
                        - num_tokens_from_functions(fx_params_def))
 
     try:
+        # logger.info(f"model={MODEL_NAME}, messages={final_messages}, functions={fx_params_def}, max_tokens={max_token_count}")
         response = openai.ChatCompletion.create(
             model=MODEL_NAME,
             messages=final_messages,
@@ -36,6 +37,7 @@ def prompt(system_message: str, fx_params_def, user_message):
             max_tokens=max_token_count,
             temperature=0
         )
+        # logger.info(f"response={response}")
     except openai.error.AuthenticationError:
         # logger.error("OpenAI API failure: %s", error.user_message) # openai itself is logging
         sys.exit(127)  # Why exit ? No point hitting expired token

@@ -1,5 +1,6 @@
 import json
 import logging
+import re
 import time
 from itertools import chain
 from typing import Any, List, Tuple, Optional, Dict
@@ -31,6 +32,17 @@ def search_dict(partial: Any, search_key: str):
 def to_camel_case(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
+
+
+def is_pascal_case(name: str) -> bool:
+    return bool(re.match(r'^([A-Z][a-z0-9]*)(\s[A-Z][a-z0-9]*)*$', name))
+
+
+def convert_to_pascal(name: str) -> str:
+    words = name.split()
+    for i in range(len(words)):
+        words[i] = words[i][0].upper() + words[i][1:].lower()
+    return " ".join(words)
 
 
 def dict_replace_keys(obj, key_map: dict[str, str]):

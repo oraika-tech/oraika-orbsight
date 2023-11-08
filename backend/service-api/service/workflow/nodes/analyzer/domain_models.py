@@ -21,6 +21,7 @@ class StructuredData(BaseModel):
     tags: List[str] = Field([])
     terms: List[str] = Field([])
     categories: Optional[List[str]] = None
+    people: Optional[List[str]] = None
     text_length: int
     emotion: Optional[str]
     remark: Optional[str] = None
