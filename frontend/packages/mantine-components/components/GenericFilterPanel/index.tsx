@@ -94,7 +94,10 @@ function recalculateWidth(filters: FilterData[], showFilterButton: boolean) {
 function handleDateField(
     filter: FilterData,
     filterHandler: (filterChangeEvent: FilterChangeEvent) => boolean) {
-    const filterDateChangeHandler = (dateValue: Date) => {
+    const filterDateChangeHandler = (dateValue: Date | null) => {
+        if (!dateValue) {
+            return;
+        }
         const filterChangeEvents: FilterChangeEvent = {
             newValues: [dateValue.toUTCString()]
         };
@@ -127,7 +130,10 @@ function handleAutoCompleteField(
     filter: FilterData,
     filterHandler: (filterChangeEvent: FilterChangeEvent) => boolean
 ) {
-    const filterChangeHandler = (value: string, defaultValue: any, filterName: string) => {
+    const filterChangeHandler = (value: string | null, defaultValue: any, filterName: string) => {
+        if (!value) {
+            return;
+        }
         const newValue = value ?? defaultValue;
         const filterChangeEvent: FilterChangeEvent = {
             name: filterName,
@@ -178,7 +184,8 @@ function handleAutoCompleteField(
     // }
 
     return (
-        // <Grid.Col key={filter.id} md={filter.width} lg={filter.width} sx={{ minWidth: '6rem' }}>
+        // <Grid.Col key={filter.id} md={filter.width} lg={filter.width} style={{ minWidth: '6rem' }}>
+        // </Grid.Col>
         <Select
             id={filter.id}
             key={filter.id}
@@ -186,9 +193,8 @@ function handleAutoCompleteField(
             data={options}
             value={selectedValue}
             maxDropdownHeight={350}
-            onChange={(value: string) => filterChangeHandler(value, defaultValueString, filterId)}
+            onChange={(value: string | null) => filterChangeHandler(value, defaultValueString, filterId)}
         />
-        // </Grid.Col>
     );
 }
 
@@ -227,13 +233,9 @@ export default function GenericFilterPanel({ filtersData, filterHandler, showFil
 
     return (
         <SimpleGrid
-            cols={2}
-            spacing="md"
+            cols={{ base: 2, xs: filterCount / 2, lg: filterCount }}
+            spacing={{ base: 'sm', xs: 'md' }}
             verticalSpacing="xs"
-            breakpoints={[
-                { minWidth: 'lg', cols: filterCount, spacing: 'md' },
-                { minWidth: 'xs', cols: filterCount / 2, spacing: 'sm' }
-            ]}
         >
             {filterComponents}
 

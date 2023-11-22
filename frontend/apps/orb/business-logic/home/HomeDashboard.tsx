@@ -13,9 +13,9 @@ export default function HomeDashboard() {
                 setDashboards(response);
                 setLoading(false);
             })
-            .catch(onrejected => {
+            .catch(() => {
                 setLoading(false);
-                console.log('API call error: ', onrejected);
+                // console.log('API call error: ', onrejected);
             });
     }, []);
 

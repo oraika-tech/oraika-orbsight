@@ -23,7 +23,7 @@ export default function EmotionCell({ emotion }: EmotionCellParams) {
     }
     return (
         <Text
-            sx={{
+            style={{
                 ...sx,
                 fontSize: '1rem',
                 overflow: 'hidden',

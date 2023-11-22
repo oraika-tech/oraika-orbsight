@@ -1,0 +1,18 @@
+.link {
+    text-decoration: none;
+    color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-5));
+}
+
+.container {
+    height: 100%
+}
+
+.card {
+    min-width: 250;
+    max-width: 350;
+}
+
+.badge {
+    color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-9));
+    background-color: light-dark(var(--mantine-color-violet-4), var(--mantine-color-teal-7))
+}

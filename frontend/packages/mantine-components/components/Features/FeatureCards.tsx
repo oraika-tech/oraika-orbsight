@@ -1,56 +1,7 @@
-import { Card, Center, createStyles, Divider, Grid, Image, Stack, Text, Title, useMantineTheme } from '@mantine/core';
+import { Card, Center, Divider, Grid, Image, Stack, Text, Title, useMantineTheme } from '@mantine/core';
 import { useViewportSize } from '@mantine/hooks';
 import { StaticImageData } from 'next/image';
-
-const useStyles = createStyles((theme) => ({
-    title: {
-        color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 2 : 4],
-        paddingBottom: 10
-    },
-    // heading3: {
-    //     bold
-    // },
-    flex: {
-        width: '100%'
-    },
-    featureText: {
-        paddingLeft: '10px',
-        width: '90%'
-    },
-    image: {
-        [`@media (max-width: ${theme.breakpoints.sm})`]: {
-            maxWidth: '90%'
-        },
-
-        [`@media (min-width: ${theme.breakpoints.sm})`]: {
-            maxWidth: 700
-        }
-    },
-    timeline: {
-        [theme.fn.smallerThan('sm')]: {
-            display: 'none'
-        }
-    },
-    hiddenMobile: {
-        [theme.fn.smallerThan('sm')]: {
-            display: 'none'
-        }
-    },
-
-    hiddenDesktop: {
-        [theme.fn.largerThan('sm')]: {
-            display: 'none'
-        }
-    },
-
-    dividerVerticalLine: {
-        alignSelf: 'stretch',
-        height: 'auto',
-        borderLeftWidth: '2px',
-        borderLeftColor: '#ced4da',
-        borderLeftStyle: 'solid'
-    }
-}));
+import classes from './FeatureCards.module.css';
 
 export interface FeatureSection {
     heading: string
@@ -65,21 +16,20 @@ interface FeatureLineProps {
 }
 
 export default function FeatureCards({ title, sections }: FeatureLineProps) {
-    const { classes } = useStyles();
     const { width } = useViewportSize();
     const theme = useMantineTheme();
 
     const getImage = (section: FeatureSection, imgWidth?: number) => (
         <Center>
-            <Image src={section.image.src} width={imgWidth || 170} className={classes.image} />
+            <Image src={section.image.src} w={imgWidth || 170} className={classes.image} />
         </Center>
     );
 
     const getText = (section: FeatureSection) => (
         <Center>
             <Stack className={classes.featureText}>
-                <Title align="left" order={3}><b>{section.heading}</b></Title>
-                <Text align="left">{section.description}</Text>
+                <Title ta="left" order={3}><b>{section.heading}</b></Title>
+                <Text ta="left">{section.description}</Text>
             </Stack>
         </Center>
     );
@@ -94,10 +44,10 @@ export default function FeatureCards({ title, sections }: FeatureLineProps) {
 
     const getImageAndTextHorizontal = (section: FeatureSection) => (
         <Grid key={section.heading}>
-            <Grid.Col xs={6}>
+            <Grid.Col span={6}>
                 {getImage(section)}
             </Grid.Col>
-            <Grid.Col xs={6} className={classes.dividerVerticalLine}>
+            <Grid.Col span={6} className={classes.dividerVerticalLine}>
                 <Center>
                     {getText(section)}
                 </Center>
@@ -107,10 +57,10 @@ export default function FeatureCards({ title, sections }: FeatureLineProps) {
 
     const getTextAndImageHorizontal = (section: FeatureSection) => (
         <Grid key={section.heading}>
-            <Grid.Col xs={6}>
+            <Grid.Col span={6}>
                 {getText(section)}
             </Grid.Col>
-            <Grid.Col xs={6} className={classes.dividerVerticalLine}>
+            <Grid.Col span={6} className={classes.dividerVerticalLine}>
                 {getImage(section)}
             </Grid.Col>
         </Grid>
@@ -134,8 +84,8 @@ export default function FeatureCards({ title, sections }: FeatureLineProps) {
         ));
 
     return (
-        <Stack spacing="lg">
-            <Title order={2} align="center" className={classes.title}>
+        <Stack gap="lg">
+            <Title order={2} ta="center" className={classes.title}>
                 {title}
             </Title>
             {sectionItems}

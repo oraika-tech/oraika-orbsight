@@ -14,8 +14,8 @@ export default function ChipColumn({ title, words, isLoading, bgColor, height }:
     const sx = { height };
 
     return (
-        <Card sx={{ ...sx, paddingTop: '0.3rem', paddingBottom: '0.5rem' }}>
-            <Text sx={{ fontSize: '1.1rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}>
+        <Card style={{ ...sx, paddingTop: '0.3rem', paddingBottom: '0.5rem' }}>
+            <Text style={{ fontSize: '1.1rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}>
                 {title}
             </Text>
             {isLoading
@@ -28,7 +28,7 @@ export default function ChipColumn({ title, words, isLoading, bgColor, height }:
                         bgColor={bgColor}
                         spacing={0.5}
                     />
-                    : <Text sx={{ fontWeight: 800, paddingTop: '7rem', textAlign: 'center' }}> No Data ! </Text>
+                    : <Text style={{ fontWeight: 800, paddingTop: '7rem', textAlign: 'center' }}> No Data ! </Text>
             }
         </Card>
     );

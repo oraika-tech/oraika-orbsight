@@ -36,5 +36,5 @@ export default function WithRoute({ children }: WithRouteProps) {
     if (loaded) {
         return <>{children}</>;
     }
-    return <><Progress animate value={progress} /></>;
+    return <><Progress animated value={progress} /></>;
 }

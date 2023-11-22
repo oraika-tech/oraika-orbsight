@@ -31,7 +31,7 @@ export default function LiveFeedDashboard() {
                 ? (
                     <div>
                         <DynamicDashboard dashboard_id={dashboard_id} />
-                        <Card sx={{ marginTop: '0.5rem', padding: '0.6rem' }}>
+                        <Card style={{ marginTop: '0.5rem', padding: '0.6rem' }}>
                             <Text>Note: Upto top 100 results only.</Text>
                         </Card>
                     </div>

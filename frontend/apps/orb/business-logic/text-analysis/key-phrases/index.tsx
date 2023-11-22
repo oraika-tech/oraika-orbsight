@@ -83,20 +83,20 @@ export default function KeyPhrasesAnalysis() {
 
     return (
         <Grid gutter="md">
-            <Grid.Col xs={12}>
+            <Grid.Col span={12}>
                 <FilterPanel
                     defaultValue={defaultFilterPanelData}
                     filterHandler={handleChange}
                 />
             </Grid.Col>
             {cards.map(card =>
-                <Grid.Col xs={12} lg={6} key={card.title}>
+                <Grid.Col span={{ base: 12, lg: 6 }} key={card.title}>
                     <Card style={{ textAlign: 'center', minHeight: '45vh', maxHeight: '65vh', overflow: 'scroll' }}>
                         <Grid style={{ height: '90%' }} gutter="xl">
-                            <Grid.Col xs={12}>
+                            <Grid.Col span={12}>
                                 <Title style={{ fontWeight: 800 }} order={2}>{card.title} Key Phrases</Title>
                             </Grid.Col>
-                            <Grid.Col xs={12} style={{ height: '100%' }}>
+                            <Grid.Col span={12} style={{ height: '100%' }}>
                                 {isLoading
                                     ? <Center h={200}><Loader /></Center>
                                     : card.keyPhrases === undefined
@@ -115,7 +115,7 @@ export default function KeyPhrasesAnalysis() {
                                         : card.keyPhrases.length
                                             ? (
                                                 <Grid style={{ justifyContent: 'left' }} gutter={3}>
-                                                    <Grid.Col xs={12} md={6}>
+                                                    <Grid.Col span={{ base: 12, md: 6 }}>
                                                         <ChipArray
                                                             sx={{
                                                                 fontWeight: 700,
@@ -131,7 +131,7 @@ export default function KeyPhrasesAnalysis() {
                                                             bgColor={card.chipColor}
                                                         />
                                                     </Grid.Col>
-                                                    <Grid.Col xs={12} md={6}>
+                                                    <Grid.Col span={{ base: 12, md: 6 }}>
                                                         <ChipArray
                                                             sx={{
                                                                 fontWeight: 700,
@@ -150,13 +150,13 @@ export default function KeyPhrasesAnalysis() {
                                             )
                                             : <EmptyData />
                                 }
-                                <Grid.Col xs={6} />
+                                <Grid.Col span={6} />
                             </Grid.Col>
                         </Grid>
                     </Card>
                 </Grid.Col>
             )
             }
-        </Grid >
+        </Grid>
     );
 }

@@ -27,11 +27,7 @@ export default function IconGroup({ iconGroup, height, spacing, direction, cols,
     return (
         <SimpleGrid
             spacing={spacing}
-            cols={columns}
-            breakpoints={[
-                { maxWidth: 576, cols: scolumns },
-                { maxWidth: 992, cols: mcolumns }
-            ]}
+            cols={{ base: scolumns, sm: mcolumns, md: columns }}
         >
             {iconGroup.map((iconComponent) =>
                 <IconComponent

@@ -84,15 +84,15 @@ export default function DataSource() {
                     return dataSource;
                 }));
             })
-            .catch(error => {
-                console.error('There has been a problem with your operation:', error);
+            .catch(() => {
+                // console.error('There has been a problem with your operation:', error);
                 handlerDone(false);
             });
     };
 
     return (
         <Grid gutter={2}>
-            <Grid.Col xs={12}>
+            <Grid.Col span={12}>
                 <DataSourceTable
                     rows={dataSources}
                     handleEnableToggle={handleEnableToggle}

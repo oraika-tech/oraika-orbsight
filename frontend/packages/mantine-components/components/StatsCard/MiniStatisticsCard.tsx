@@ -26,16 +26,16 @@ export function MiniStatisticsCard({ title, count, countColor, percentage,
 
     return (
         <Card shadow="sm">
-            <Group position="apart">
-                <Stack spacing="xs">
-                    <Title order={2} size="sm" color="gray">
+            <Group justify="space-between">
+                <Stack gap="xs">
+                    <Title order={2} size="sm" c="gray">
                         {title.text}
                     </Title>
-                    <Group spacing={5} align="flex-end">
-                        <Text size="xl" fw="bolder" color={countColor}>
+                    <Group gap={5} align="flex-end">
+                        <Text size="xl" fw="bolder" c={countColor}>
                             {count}
                         </Text>
-                        <Text size="md" pb={1.5} fw="bold" color={percentageColor}>
+                        <Text size="md" pb={1.5} fw="bold" c={percentageColor}>
                             {percentageText}
                         </Text>
                     </Group>

@@ -1,0 +1,29 @@
+.title {
+    color: light-dark(var(--mantine-primary-color-light), var(--mantine-primary-color-filled));
+    padding-bottom: 50
+}
+
+.flex {
+    width: 100%
+}
+
+.featureText {
+    padding-left: 10px;
+    width: 90%
+}
+
+.image {
+    @media (max-width: $mantine-breakpoint-sm) {
+        max-width: 90%
+    }
+
+    @media (min-width: $mantine-breakpoint-sm) {
+        max-width: 700
+    }
+}
+
+.timeline {
+    @media (max-width: $mantine-breakpoint-sm) {
+        display: none
+    }
+}

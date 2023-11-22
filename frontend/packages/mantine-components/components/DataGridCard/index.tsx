@@ -36,8 +36,8 @@ export default function DataGridCard(
     }, [showLoading, rows]);
     const sxStyle = showLoader ? { alignItems: 'center', paddingTop: '20%' } : {};
     return (
-        <Card sx={{ ...sx, ...sxStyle }}>
-            <Stack spacing="md">
+        <Card style={{ ...sx, ...sxStyle }}>
+            <Stack gap="md">
                 {title &&
                     <Title order={2}>
                         {title}

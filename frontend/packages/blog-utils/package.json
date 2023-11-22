@@ -1,16 +1,14 @@
 {
-  "name": "blog-utils",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "@emotion/core": "^11.0.0",
-    "@emotion/styled": "^11.11.0",
-    "@mantine/core": "6.0.10",
-    "@mantine/hooks": "6.0.10",
-    "dayjs": "^1.11.7",
-    "gray-matter": "^4.0.3",
-    "next": "13.4.1",
-    "reading-time": "^1.5.0",
-    "remark-toc": "^8.0.1"
-  }
+    "name": "blog-utils",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@mantine/core": "7.2.2",
+        "@mantine/hooks": "7.2.2",
+        "dayjs": "^1.11.10",
+        "gray-matter": "^4.0.3",
+        "next": "14.0.3",
+        "reading-time": "^1.5.0",
+        "remark-toc": "^9.0.0"
+    }
 }

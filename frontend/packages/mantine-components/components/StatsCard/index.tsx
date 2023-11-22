@@ -19,10 +19,10 @@ export function StatsCard({ height, template, values }: StatsCardProps) {
         message = message.replace(`{${field}}`, values[field]);
         const sx = height ? { height } : {};
         return (
-            <Card sx={{ ...sx, padding: '-0.2rem' }}>
+            <Card style={{ ...sx, padding: '-0.2rem' }}>
                 <Text
                     variant="button"
-                    transform="capitalize"
+                    tt="capitalize"
                 >
                     <div dangerouslySetInnerHTML={{ __html: message }} />
                 </Text>
@@ -30,7 +30,7 @@ export function StatsCard({ height, template, values }: StatsCardProps) {
         );
     }
     return (
-        <Card sx={{ padding: '1rem' }}>
+        <Card style={{ padding: '1rem' }}>
             ...
         </Card>
     );

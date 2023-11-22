@@ -81,7 +81,7 @@ export default function WordCloudAnalysis({ height }) {
     const getTitle = (titleText: string) => (
         <Title
             order={1}
-            sx={{ fontSize: '1.3rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}
+            style={{ fontSize: '1.3rem', padding: '1%', fontWeight: 500, textAlign: 'center' }}
         >
             {titleText}
         </Title>
@@ -110,14 +110,14 @@ export default function WordCloudAnalysis({ height }) {
     );
 
     return (
-        <Grid gutter="sm" sx={{ minHeight: height }}>
-            <Grid.Col xs={12}>
+        <Grid gutter="sm" style={{ minHeight: height }}>
+            <Grid.Col span={12}>
                 <Card>
                     <Grid gutter={0}>
-                        <Grid.Col xs={12}>
+                        <Grid.Col span={12}>
                             {getTitle('Key Entities')}
                         </Grid.Col>
-                        <Grid.Col xs={12}>
+                        <Grid.Col span={12}>
                             {isLoading
                                 ? <Loader />
                                 : words || words.length > 0
@@ -129,11 +129,11 @@ export default function WordCloudAnalysis({ height }) {
                 </Card>
             </Grid.Col>
 
-            <Grid.Col xs={12} sm={6} md={12} xl={6}>
+            <Grid.Col span={{ base: 12, sm: 6, md: 12, xl: 6 }}>
                 {keyPhrasesComponent('Positive Keyphrases', positiveKeywords, 'green')}
             </Grid.Col>
 
-            <Grid.Col xs={12} sm={6} md={12} xl={6}>
+            <Grid.Col span={{ base: 12, sm: 6, md: 12, xl: 6 }}>
                 {keyPhrasesComponent('Negative Keyphrases', negativeKeywords, 'red')}
             </Grid.Col>
 

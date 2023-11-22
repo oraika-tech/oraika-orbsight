@@ -3,7 +3,7 @@ import './style.css';
 
 function IFrameCard(props) {
     return (
-        <Card sx={{ height: "100%" }}>
+        <Card style={{ height: "100%" }}>
             <iframe
                 style={props.style}
                 title={props.title}

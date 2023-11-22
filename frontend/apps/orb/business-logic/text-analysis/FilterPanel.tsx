@@ -176,7 +176,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
     return (
         <Paper>
             <Grid
-                sx={{
+                style={{
                     flexWrap: 'wrap',
                     minHeight: 100,
                     maxHeight: 300,
@@ -185,7 +185,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                 align="center"
                 gutter="md"
             >
-                <Grid.Col xs={1.6} sx={{ minWidth: '11.5rem' }}>
+                <Grid.Col span={1.6} style={{ minWidth: '11.5rem' }}>
                     {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
                     <DatePickerInput
                         label="Start"
@@ -198,7 +198,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                     />
                     {/* </LocalizationProvider> */}
                 </Grid.Col>
-                <Grid.Col xs={1.6} sx={{ minWidth: '11.5rem' }}>
+                <Grid.Col span={1.6} style={{ minWidth: '11.5rem' }}>
                     {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
                     <DatePickerInput
                         label="End"
@@ -212,7 +212,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                     {/* </LocalizationProvider> */}
                 </Grid.Col>
 
-                <Grid.Col xs={4.5} md={6.8} lg={2} sx={{ minWidth: '10rem' }}>
+                <Grid.Col span={{ base: 4.5, md: 6.8, lg: 2 }} style={{ minWidth: '10rem' }}>
                     <Select
                         label="Language"
                         id={langData.id}
@@ -223,7 +223,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                         }}
                     />
                 </Grid.Col>
-                <Grid.Col md={4.5} lg={2} sx={{ minWidth: '10rem' }}>
+                <Grid.Col span={{ md: 4.5, lg: 2 }} style={{ minWidth: '10rem' }}>
                     <Select
                         label="Entity"
                         id={entityData.id}
@@ -234,7 +234,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                         }}
                     />
                 </Grid.Col>
-                <Grid.Col md={4.5} lg={2} sx={{ minWidth: '10rem' }}>
+                <Grid.Col span={{ md: 4.5, lg: 2 }} style={{ minWidth: '10rem' }}>
                     <Select
                         label="Source"
                         id={sourceData.id}
@@ -245,7 +245,7 @@ export default function FilterPanel({ defaultValue, filterHandler, showFilterBut
                         }}
                     />
                 </Grid.Col>
-                <Grid.Col md={4} lg={2} sx={{ minWidth: '10rem' }}>
+                <Grid.Col span={{ base: 4, lg: 2 }} style={{ minWidth: '10rem' }}>
                     <Select
                         label="Term"
                         id={termData.id}

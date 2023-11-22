@@ -1,0 +1,13 @@
+.formFrame {
+    height: 810px;
+    border: none;
+    border-radius: 0.8rem;
+
+    @media (min-width: $mantine-breakpoint-xs) {
+        width: 510p;
+    }
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        width: 90;
+    }
+}

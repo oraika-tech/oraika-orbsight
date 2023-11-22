@@ -27,7 +27,7 @@ export default function LinearDeterminate({ period }: LinearDeterminateProps) {
     }, []);
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box style={{ width: '100%' }}>
             <Progress variant="determinate" value={progress} />
         </Box>
     );

@@ -12,17 +12,17 @@ export interface MentionCardProps {
 
 export default function MentionCard({ logoUrl, logoSize, alt, title, link }: MentionCardProps) {
     return (
-        <Stack align="center" spacing={0}>
-            <Box sx={{ height: '100px' }}>
-                <Image width={logoSize} src={logoUrl} alt={alt} />
+        <Stack align="center" gap={0}>
+            <Box style={{ height: '100px' }}>
+                <Image w={logoSize} src={logoUrl} alt={alt} />
             </Box>
             {title &&
-                <Title order={3} color="dimmed">{title}</Title>
+                <Title order={3} c="dimmed">{title}</Title>
             }
             {link &&
                 <Link href={link} target="_blank">
-                    <Button variant="subtle" uppercase rightIcon={<IconArrowRight size="1.2rem" />}>
-                        Read More
+                    <Button variant="subtle" rightSection={<IconArrowRight size="1.2rem" />}>
+                        READ MORE
                     </Button>
                 </Link>
             }

@@ -1,0 +1,10 @@
+.breadcrumbsCard {
+    position: sticky;
+    top: 70px;
+    z-index: 1;
+    opacity: 0.8;
+    padding: 10px;
+    border-radius: 5;
+    padding-top: 5;
+    padding-bottom: 5
+}

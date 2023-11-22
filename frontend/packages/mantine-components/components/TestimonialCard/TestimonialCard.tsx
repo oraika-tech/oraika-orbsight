@@ -9,11 +9,12 @@ import {
     Space,
     Stack,
     Text,
-    Title
+    Title,
+    useMantineColorScheme
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { ReactNode } from 'react';
-import useStyles from './TestimonialCard.styles';
+import classes from './TestimonialCard.module.css';
 
 export interface TestimonialCardProps {
     reviewerPictureUrl?: string
@@ -35,24 +36,24 @@ export default function TestimonialCard({
     companyName,
     companyLogoUrl,
     rating,
-
     highlightedTexts,
     reviewText,
     reviewTime,
     reviewSourceIcon }: TestimonialCardProps) {
     const mobileScreen = useMediaQuery('(max-width: 350px)');
-    const { classes, theme } = useStyles();
+    const { colorScheme } = useMantineColorScheme();
+    const avatarBg = colorScheme === 'light' ? 'var(--mantine-color-gray-2)' : 'var(--mantine-color-gray-3)';
     return (
         <Card shadow="xl" p="lg" radius={15} className={classes.card}>
             <Grid>
                 {rating &&
-                    <Grid.Col xs={3}>
+                    <Grid.Col span={3}>
                         <Rating value={rating} size="md" fractions={5} readOnly />
                     </Grid.Col>
                 }
                 <Grid.Col>
-                    <Blockquote cite={reviewTime && reviewTime.toDateString()}>
-                        <Highlight align={mobileScreen ? 'left' : 'justify'} highlight={highlightedTexts}>
+                    <Blockquote cite={reviewTime && reviewTime.toDateString()} color="teal">
+                        <Highlight ta={mobileScreen ? 'left' : 'justify'} highlight={highlightedTexts}>
                             {reviewText}
                         </Highlight>
                     </Blockquote>
@@ -65,7 +66,7 @@ export default function TestimonialCard({
 
                 {reviewerPictureUrl
                     ? (
-                        <Grid.Col xs={1.7}>
+                        <Grid.Col span={1.7}>
                             <Avatar
                                 className={classes.picImage}
                                 radius="xl"
@@ -75,22 +76,22 @@ export default function TestimonialCard({
                             />
                         </Grid.Col>
                     ) : (
-                        <Grid.Col xs={1.5}>
+                        <Grid.Col span={1.5}>
                             <Avatar
                                 className={classes.picImage}
                                 variant="filled"
-                                bg={theme.colorScheme === 'dark' ? theme.colors.gray[3] : theme.colors.gray[1]}
+                                bg={avatarBg}
                                 size="lg"
                                 radius={40}
                                 p="0.4rem"
                                 src={companyLogoUrl}
                             />
-                            {/* <Image width={50} height={20} src={companyLogoUrl} /> */}
+                            {/* <Image span={{ base:50, height:20 }} src={companyLogoUrl} /> */}
                         </Grid.Col>
                     )
                 }
-                <Grid.Col xs={7}>
-                    <Stack spacing={0} h="100%" justify="center" align="flex-start">
+                <Grid.Col span={7}>
+                    <Stack gap={0} h="100%" justify="center" align="flex-start">
                         <Title order={5}>
                             {reviewerName}
                         </Title>
@@ -99,12 +100,12 @@ export default function TestimonialCard({
                         </Text>
                     </Stack>
                 </Grid.Col>
-                <Grid.Col xs={1.7}>
+                <Grid.Col span={1.7}>
                     <Space />
                 </Grid.Col>
                 {reviewerPictureUrl &&
-                    <Grid.Col xs={1}>
-                        <Image width={50} height={50} src={companyLogoUrl} />
+                    <Grid.Col span={1}>
+                        <Image w={50} height={50} src={companyLogoUrl} />
                     </Grid.Col>
                 }
 

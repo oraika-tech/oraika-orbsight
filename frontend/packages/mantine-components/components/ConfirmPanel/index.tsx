@@ -8,7 +8,7 @@ interface ConfirmPanelProps {
 
 export default function ConfirmPanel({ onConfirm, onCancel }: ConfirmPanelProps) {
     return (
-        <Group spacing={5}>
+        <Group gap={5}>
             <Button
                 size="xs"
                 variant="filled"

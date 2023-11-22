@@ -1,16 +1,4 @@
-import { MantineTheme, MantineThemeOverride } from '@mantine/core';
-
-export function getGrayBgShade(theme: MantineTheme) {
-    return theme.colors.gray[theme.colorScheme === 'dark' ? 9 : 1];
-}
-
-export function getPrimaryFontShade(theme: MantineTheme) {
-    return theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 3 : 7];
-}
-
-export function getSecondaryFontShade(theme: MantineTheme) {
-    return theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 2 : 4];
-}
+import { MantineThemeOverride } from '@mantine/core';
 
 export const globalTheme: MantineThemeOverride = {
     colors: {
@@ -45,45 +33,21 @@ export const globalTheme: MantineThemeOverride = {
     headings: {
         sizes: {
             h1: {
-                fontWeight: 800,
+                fontWeight: '800px',
                 fontSize: '3rem'
             },
             h2: {
-                fontWeight: 600,
+                fontWeight: '600px',
                 fontSize: '2.25rem'
             },
             h3: {
-                fontWeight: 500,
+                fontWeight: '500px',
                 fontSize: '1.5rem'
             }
         }
     },
 
     components: {
-        Title: {
-            styles: (theme) => ({
-                root: {
-                    // '&:is(h1)': {
-                    //     color: getPrimaryFontShade(theme),
-                    //     [`@media (max-width: ${theme.breakpoints.xs})`]: {
-                    //         fontSize: 32
-                    //     }
-                    // },
-                    '&:is(h2)': {
-                        color: getPrimaryFontShade(theme),
-                        [`@media (max-width: ${theme.breakpoints.xs})`]: {
-                            fontSize: 24
-                        }
-                    },
-                    '&:is(h3)': {
-                        color: getSecondaryFontShade(theme),
-                        [`@media (max-width: ${theme.breakpoints.xs})`]: {
-                            fontSize: 20
-                        }
-                    }
-                }
-            })
-        },
         Button: {
             defaultProps: {
                 radius: 'xl'
@@ -94,17 +58,15 @@ export const globalTheme: MantineThemeOverride = {
                 width: '100%'
             }
         },
-        Link: {
-            styles: (theme) => ({
-                root: {
-                    textDecoration: 'none',
-                    color: theme.colorScheme === 'dark' ? theme.colors.dark[1] : theme.colors.gray[7],
-                    '&:hover': {
-                        backgroundColor:
-                            theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0]
-                    }
-                }
-            })
+        ActionIcon: {
+            defaultProps: {
+                variant: 'transparent'
+            }
+        },
+        ThemeIcon: {
+            defaultProps: {
+                variant: 'transparent'
+            }
         },
         Paper: {
             defaultProps: {

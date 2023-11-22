@@ -46,7 +46,7 @@ export default function KeyPhrasesPanel({ title, keyPhrases, chipColor, isLoadin
                         ? (
                             <Grid style={{ justifyContent: 'left' }} gutter="sm">
                                 {keyPhrasesList.map((phrases) => (
-                                    <Grid.Col key={phrases[0]} span={12} xs={6} md={12} lg={6}>
+                                    <Grid.Col key={phrases[0]} span={{ base: 12, xs: 6, md: 12, lg: 6 }}>
                                         <ChipArray
                                             sx={{
                                                 fontWeight: 700,
@@ -58,7 +58,7 @@ export default function KeyPhrasesPanel({ title, keyPhrases, chipColor, isLoadin
                                             chipList={phrases}
                                             direction="column"
                                             spacing="xs"
-                                            size="sm"
+                                            size="lg"
                                             bgColor={chipColor}
                                         />
                                     </Grid.Col>

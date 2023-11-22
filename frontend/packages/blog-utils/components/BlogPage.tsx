@@ -40,26 +40,24 @@ export default function BlogPage({ loading, components, post, classes }: BlogPag
                     />
                 </Center>
             )}
-            <Grid gutter="xl">
+            {/* "overflow: unset" is required for "position: sticky" to work */}
+            <Grid gutter="xl" style={{ overflow: 'unset' }}>
                 <Grid.Col>
                     <Container size="md">
-                        <Title className={classes.heading} align="center">{post.title}</Title>
+                        <Title className={classes.heading} ta="center">{post.title}</Title>
                     </Container>
                 </Grid.Col>
-                <Grid.Col span={12} xs={10} sm={8} md={4}>
+                <Grid.Col span={{ base: 12, xs: 10, sm: 8, md: 4 }}>
                     <TableOfContent tocItems={post.toc} />
                 </Grid.Col>
-                <Grid.Col span={12} xs={12} sm={12} md={8}>
+                <Grid.Col span={{ base: 12, xs: 12, sm: 12, md: 8 }}>
                     <Container size="md">
-                        <Stack spacing="md">
-                            <Group position="apart">
+                        <Stack gap="md">
+                            <Group justify="space-between">
                                 {post.author && post.author.name && (
-                                    <Group spacing={5}>
+                                    <Group gap={5}>
                                         {post.author.picture
-                                            ? <Avatar
-                                                radius="xl"
-                                                src={`/assets/images/${post.author.picture}`}
-                                            />
+                                            ? <Avatar radius="xl" src={`/assets/images/${post.author.picture}`} />
                                             : <Avatar radius="xl" />
                                         }
                                         <Text size="lg">
@@ -77,8 +75,8 @@ export default function BlogPage({ loading, components, post, classes }: BlogPag
                                 {...source}
                                 components={components}
                             />
-                            <Group spacing={5} position="right">
-                                {post.tags.map((tag) => (
+                            <Group gap={5} justify="flex-end">
+                                {post.tags.map((tag: string) => (
                                     <Badge
                                         key={tag}
                                         size="sm"

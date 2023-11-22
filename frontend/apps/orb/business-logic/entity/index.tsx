@@ -36,8 +36,8 @@ export default function Entity() {
                 setEntities(response.map(convertData));
                 setShowLoader(false);
             })
-            .catch(error => {
-                console.error('There has been a problem with your operation:', error);
+            .catch(() => {
+                // console.error('There has been a problem with your operation:', error);
                 setShowLoader(false);
             });
 
@@ -58,15 +58,15 @@ export default function Entity() {
                     return entity;
                 }));
             })
-            .catch(error => {
-                console.error('There has been a problem with your operation:', error);
+            .catch(() => {
+                // console.error('There has been a problem with your operation:', error);
                 handlerDone(false);
             });
     };
 
     return (
         <Grid gutter={2}>
-            <Grid.Col xs={12}>
+            <Grid.Col span={12}>
                 <EntityTable rows={entities} handleEnableToggle={handleEnableToggle} showLoader={showLoader} />
             </Grid.Col>
         </Grid>

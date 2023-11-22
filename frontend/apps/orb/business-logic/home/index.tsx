@@ -1,4 +1,4 @@
-import { Grid, createStyles } from '@mantine/core';
+import { Grid } from '@mantine/core';
 import { IconBuildingBank, IconCategory, IconCircleDot, IconMessage } from '@tabler/icons-react';
 
 import LiveFeed, { FeedData } from 'mantine-components/components/LiveFeed';
@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getStats } from '../../lib/service/stats-service';
 import { getTextAnalysisData } from '../../lib/service/text-analysis-data';
+import classes from './index.module.css';
 
 interface Stats {
     active: number
@@ -63,14 +64,7 @@ const convertStats = (responseElements: StatsResponseElement[]) => {
 
 const getConsistentValue = (value: number) => value >= 0 ? value : '-';
 
-const useStyles = createStyles(() => ({
-    link: {
-        textDecoration: 'none'
-    }
-}));
-
 export default function Home() {
-    const { classes } = useStyles();
     const [feeds, setFeeds] = useState<FeedData[]>([]);
 
     const [entityStats, setEntityStats] = useState<Stats>(initialStats());
@@ -84,8 +78,8 @@ export default function Home() {
             .catch(() => { }); // eat 401
 
         const syncStats = (url, setMethod) => getStats(url)
-            .then((response: StatsResponseElement[]) => setMethod(convertStats(response)))
-            .catch(err => console.log(err));
+            .then((response: StatsResponseElement[]) => setMethod(convertStats(response)));
+        // .catch(err => console.log(err));
 
         const timerId = setInterval(syncFeeds, 300000);
 
@@ -103,12 +97,12 @@ export default function Home() {
 
     return (
         <Grid gutter="sm">
-            <Grid.Col xs={12} sm={9}>
+            <Grid.Col span={{ base: 12, sm: 9 }}>
                 <LiveFeed displayCount={3} feeds={feeds} />
             </Grid.Col>
-            <Grid.Col xs={12} sm={3}>
+            <Grid.Col span={{ base: 12, sm: 3 }}>
                 <Grid gutter="xs">
-                    <Grid.Col xs={12}>
+                    <Grid.Col span={12}>
                         <Link key="entity" className={classes.link} href="/manage/entity">
                             <MiniStatisticsCard
                                 title={{ text: 'Entities' }}
@@ -119,7 +113,7 @@ export default function Home() {
                             />
                         </Link>
                     </Grid.Col>
-                    <Grid.Col xs={12}>
+                    <Grid.Col span={12}>
                         <Link key="data-source" className={classes.link} href="/manage/data-source">
                             <MiniStatisticsCard
                                 title={{ text: 'Data Sources' }}
@@ -130,7 +124,7 @@ export default function Home() {
                             />
                         </Link>
                     </Grid.Col>
-                    <Grid.Col xs={12}>
+                    <Grid.Col span={12}>
                         <Link key="taxonomy" className={classes.link} href="/manage/taxonomy">
                             <MiniStatisticsCard
                                 title={{ text: 'Taxonomies' }}
@@ -141,7 +135,7 @@ export default function Home() {
                             />
                         </Link>
                     </Grid.Col>
-                    <Grid.Col xs={12}>
+                    <Grid.Col span={12}>
                         <Link key="taxonomy" className={classes.link} href="/manage/taxonomy">
                             <MiniStatisticsCard
                                 title={{ text: 'Categories' }}

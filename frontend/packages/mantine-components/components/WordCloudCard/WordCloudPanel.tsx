@@ -11,15 +11,15 @@ interface WordCloudPanelProps {
 
 export default function WordCloudPanel({ title, words, isLoading }: WordCloudPanelProps) {
     return (
-        <Card sx={{ minHeight: '45vh' }}>
-            <Title order={2} sx={{ fontWeight: 800, textAlign: 'center' }}>
+        <Card style={{ minHeight: '45vh' }}>
+            <Title order={2} style={{ fontWeight: 800, textAlign: 'center' }}>
                 {title} World Cloud
             </Title>
             {isLoading
                 ? <Center h={200}><Loader /></Center>
                 : words === undefined
                     ? (
-                        <Title order={2} sx={{ fontWeight: 800, paddingTop: '1rem', textAlign: 'center' }}>
+                        <Title order={2} style={{ fontWeight: 800, paddingTop: '1rem', textAlign: 'center' }}>
                             Please select filter !
                         </Title>
                     )

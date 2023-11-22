@@ -1,9 +1,9 @@
-import { Badge, Group, MantineNumberSize, MantineSize, Stack } from '@mantine/core';
+import { Badge, Group, MantineSize, MantineSpacing, Stack } from '@mantine/core';
 
 export interface ChipArrayProps {
     chipList: string[];
     bgColor?: string;
-    spacing?: MantineNumberSize;
+    spacing?: MantineSpacing;
     direction?: 'row' | 'column';
     justify?: 'center' | 'left' | 'right' | 'apart';
     size?: MantineSize;
@@ -36,15 +36,15 @@ export default function ChipArray({ chipList, bgColor, ...props }: ChipArrayProp
         <Stack
             justify={justifyMap[props.justify || 'left']}
             align="center"
-            spacing={spacing}
+            gap={spacing}
         >
             {badgeList}
         </Stack>
     ) : (
         <Group
-            position={props.justify || 'left'}
+            justify={props.justify || 'left'}
             align="center"
-            spacing={spacing}
+            gap={spacing}
         >
             {badgeList}
         </Group>

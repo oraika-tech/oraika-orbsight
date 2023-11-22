@@ -38,7 +38,7 @@ export default function PdfDialog({ fileName, title, close, generatePdf }: PdfDi
                 form.onSubmit(handlePdfDownload)(event);
             }}
         >
-            <Stack spacing="md" p="xs">
+            <Stack gap="md" p="xs">
                 <SegmentedControl
                     data={[
                         { label: 'Report', value: PdfMode.REPORT.toString() },
@@ -50,7 +50,7 @@ export default function PdfDialog({ fileName, title, close, generatePdf }: PdfDi
                 {form.values.pdfMode === PdfMode.REPORT.toString() && (
                     <TextInput label="Report Title" {...form.getInputProps('title')} />
                 )}
-                <Group p="xl" position="apart">
+                <Group p="xl" justify="space-between">
                     <Button
                         w={120}
                         radius="md"

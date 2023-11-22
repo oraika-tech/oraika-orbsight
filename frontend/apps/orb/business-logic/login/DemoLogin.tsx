@@ -9,8 +9,7 @@ import {
     SimpleGrid,
     Space,
     Text,
-    TextInput,
-    createStyles
+    TextInput
 } from '@mantine/core';
 import {
     IconBallBasketball,
@@ -29,14 +28,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useRef, useState } from 'react';
 
-const useStyles = createStyles(() => ({
-    input: {
-        border: '1.5px solid gray !important'
-    }
-}));
+import classes from './DemoLogin.module.css';
 
 export default function DemoLogin() {
-    const { classes } = useStyles();
     const router = useRouter();
     const [isLoading, setLoading] = useState<Boolean>(false);
     const [shouldLogin, setShouldLogin] = useState(false);
@@ -123,7 +117,7 @@ export default function DemoLogin() {
                     <Image
                         src={brand.src}
                         alt="Oraika"
-                        width="11rem"
+                        w="11rem"
                         // bgcolor="#FFFFFF"
                         radius={10}
                         p={2}
@@ -133,8 +127,8 @@ export default function DemoLogin() {
             <Center mb={1} ml={0.5} p="0rem" pt="6vh" display="flex">
                 <Text
                     component="label"
-                    weight="bold"
-                    size={48}
+                    fw={700}
+                    size="lg"
                     style={{ backgroundColor: '#FFFFFF', borderRadius: 15 }}
                     pl={20}
                     pr={20}
@@ -145,19 +139,15 @@ export default function DemoLogin() {
             </Center>
             <Space h={30} />
             <SimpleGrid
-                cols={1}
-                spacing="xl"
+                cols={{ base: 1, md: 2 }}
+                spacing={{ base: 'xl', md: 'sm' }}
                 p="xl"
-                breakpoints={[
-                    { minWidth: 'md', cols: 2, spacing: 'sm' }
-                ]}
             >
                 <Card m={20} pl={40} pr={40} shadow="lg" style={{ border: '1.5px solid #000000', borderRadius: 20 }}>
                     <Text
                         component="label"
-                        size={18}
+                        size="md"
                         style={{ backgroundColor: '#FFFFFF', overflow: 'auto' }}
-                        // borderRadius={10}
                         p="1rem"
                     >
                         <p style={{ paddingBottom: '0.5rem' }}>
@@ -215,11 +205,11 @@ export default function DemoLogin() {
                             role="form"
                             ref={formRef}
                             onSubmit={tryLogin}
-                            sx={{ border: 1, width: '99%', borderRadius: '1rem', shadow: 5, bgcolor: '#FFFFFF' }}
+                            style={{ border: 1, width: '99%', borderRadius: '1rem', shadow: 5, bgcolor: '#FFFFFF' }}
                         >
                             <Box mb={2}>
                                 <Center mb={1} ml={0.5} p="3rem 0rem 1rem 0rem" display="flex">
-                                    <Text component="label" variant="caption" size={24}>
+                                    <Text component="label" variant="caption" size="lg">
                                         Please provide your email
                                     </Text>
                                 </Center>
@@ -228,7 +218,7 @@ export default function DemoLogin() {
                                         name="email"
                                         placeholder="Email"
                                         onChange={handleTextChange}
-                                        icon={<IconMail />}
+                                        leftSection={<IconMail />}
                                         rightSection={
                                             <ActionIcon type="submit">
                                                 <IconCircleArrowRight />
@@ -244,7 +234,7 @@ export default function DemoLogin() {
                                     <Text
                                         component="label"
                                         variant="caption"
-                                        size={18}
+                                        size="md"
                                     >
                                         Or proceed as Guest (without email)
                                     </Text>

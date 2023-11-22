@@ -1,5 +1,6 @@
-import { Card, NavLink, Stack, Title, createStyles } from '@mantine/core';
+import { Card, NavLink, Stack, Title } from '@mantine/core';
 import { getHeadingAnchor } from 'blog-utils/md-utils';
+import classes from './TableOfContent.module.css';
 
 interface TocItem {
     text: string;
@@ -29,18 +30,10 @@ function getNavs(tocItems: TocItem[]) {
     });
 }
 
-const useStyles = createStyles((theme) => ({
-    card: {
-        position: 'sticky',
-        top: '90px'
-    }
-}));
-
 export default function TableOfContent({ tocItems }: TableOfContentProps) {
-    const { classes } = useStyles();
     return (
         <Card className={classes.card} shadow="xl" radius="lg" p={20}>
-            <Stack justify="flex-start" spacing={0}>
+            <Stack justify="flex-start" gap={0}>
                 <Title order={4}>
                     Table of Content
                 </Title>

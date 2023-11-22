@@ -7,9 +7,9 @@ export default function ObserverTypeCell({ observerType }) {
     return (
         <Grid justify="right">
             <Grid.Col
-                sx={{ minHeight: '1rem', minWidth: '1rem' }}
+                style={{ minHeight: '1rem', minWidth: '1rem' }}
             >
-                <Tooltip label={observerType} position="right">
+                <Tooltip label={observerType}>
                     <Image
                         width={24}
                         height={24}

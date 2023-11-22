@@ -1,0 +1,28 @@
+link {
+    text-decoration: none;
+}
+
+h1 {
+    align-items: center;
+    color: light-dark(
+        var(--mantine-primary-color-filled),
+        var(--mantine-primary-color-filled-hover)
+    );
+    padding-bottom: 30;
+    font-weight: 800 !important;
+}
+
+h2 {
+    color: light-dark(var(--mantine-color-blue-9), var(--mantine-color-blue-4));
+    padding-top: 1rem;
+    padding-bottom: 0.1rem;
+    font-weight: 600 !important;
+}
+
+h3 {
+    align-items: center;
+    color: light-dark(var(--mantine-color-blue-4), var(--mantine-color-blue-2));
+    font-weight: 500 !important;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}

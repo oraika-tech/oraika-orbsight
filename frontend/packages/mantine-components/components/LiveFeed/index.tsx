@@ -48,15 +48,15 @@ export default function LiveFeed({ isTitle, height, feeds, displayCount }: LiveF
     const style = height ? { height } : {};
 
     return (
-        <Card padding="md" sx={{ ...style, overflow: 'scroll' }} ref={containerRef}>
-            <Grid sx={{ justifyContent: 'stretch' }}>
+        <Card padding="md" style={{ ...style, overflow: 'scroll' }} ref={containerRef}>
+            <Grid style={{ justifyContent: 'stretch' }}>
                 {isTitle && (
-                    <Grid.Col xs={12}>
-                        <Title order={4} sx={{ height: '3rem', padding: '1rem' }}>Recent Review</Title>
+                    <Grid.Col span={12}>
+                        <Title order={4} style={{ height: '3rem', padding: '1rem' }}>Recent Review</Title>
                     </Grid.Col>
                 )}
                 {cycleSelectArray(feeds, displayCount, feedIndex).map(feed => (
-                    <Grid.Col key={feed.rawDataId} sx={{ padding: '0.5rem' }}>
+                    <Grid.Col key={feed.rawDataId} style={{ padding: '0.5rem' }}>
                         <FeedCard {...feed} />
                     </Grid.Col>
                 ))}

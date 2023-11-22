@@ -1,0 +1,25 @@
+.wrapper {
+    padding-top: 10;
+    padding-bottom: 10;
+    min-height: 50
+}
+
+.title {
+    margin-bottom: calc(var(--mantine-spacing-xl) * 1.5)
+}
+
+.description {
+    text-align: center;
+
+    @media (max-width: $mantine-breakpoint-xs) {
+        text-align: left;
+        font-size: var(--mantine-font-size-md)
+    }
+}
+
+.item {
+    border-radius: var(--mantine-radius-md);
+    margin-bottom: var(--mantine-spacing-lg);
+
+    border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))
+}

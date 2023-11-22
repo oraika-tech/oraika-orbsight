@@ -14,7 +14,10 @@ interface TenantSwitcherProps {
 }
 
 export function TenantSwitcher({ tenants, refreshPage, preferredTenantId, setPreferredTenantId }: TenantSwitcherProps) {
-    const handleChange = (value: string) => {
+    const handleChange = (value: string | null) => {
+        if (!value) {
+            return;
+        }
         const selectedPreferredTenantId = value;
 
         setPreferredTenant(selectedPreferredTenantId)

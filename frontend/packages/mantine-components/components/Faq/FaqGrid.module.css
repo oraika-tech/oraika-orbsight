@@ -1,0 +1,22 @@
+.wrapper {
+    padding-top: 10;
+    padding-bottom: 10
+}
+
+.title {
+    margin-bottom: var(--mantine-spacing-md);
+    text-align: center;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+        font-size: 28;
+        text-align: left;
+    }
+}
+
+.description {
+    text-align: center;
+
+    @media (max-width: $mantine-breakpoint-sm) {
+        text-align: left;
+    }
+}

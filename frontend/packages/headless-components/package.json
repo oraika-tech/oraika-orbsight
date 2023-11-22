@@ -1,8 +1,8 @@
 {
-  "name": "headless-components",
-  "version": "0.0.1",
-  "private": true,
-  "dependencies": {
-    "@tawk.to/tawk-messenger-react": "2.0.1"
-  }
+    "name": "headless-components",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "@tawk.to/tawk-messenger-react": "^2.0.2"
+    }
 }

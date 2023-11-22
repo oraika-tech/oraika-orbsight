@@ -51,23 +51,23 @@ export default function Taxonomy() {
 
     return (
         <Grid gutter="md">
-            <Grid.Col xs={8}>
+            <Grid.Col span={{ base: 12, xs: 8 }}>
                 <Card>
-                    <Stack spacing="xs">
-                        <Title order={2} sx={{ height: '3rem', padding: '0.3rem' }}>Terms</Title>
+                    <Stack gap="xs">
+                        <Title order={2} style={{ height: '3rem', padding: '0.3rem' }}>Terms</Title>
                         <TaxonomyTable rows={taxonomies} loading={loading} />
                     </Stack>
                 </Card>
             </Grid.Col>
-            <Grid.Col xs={4}>
-                <Card sx={{ height: '71vh' }}>
-                    <Stack spacing="xl">
-                        <Title order={2} sx={{ height: '3rem' }}>Categories</Title>
+            <Grid.Col span={{ base: 12, xs: 4 }}>
+                <Card style={{ height: '71vh' }}>
+                    <Stack gap="xl">
+                        <Title order={2} style={{ height: '3rem' }}>Categories</Title>
                         <Space h="xl" />
                         <Category />
                     </Stack>
                 </Card>
             </Grid.Col>
-        </Grid >
+        </Grid>
     );
 }

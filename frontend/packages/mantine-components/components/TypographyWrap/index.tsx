@@ -37,8 +37,8 @@ export default function TypographyWrap(props: TypographyWrapProps) {
                     {props.children}
                 </Text>
             </Popover.Target>
-            <Popover.Dropdown sx={{ pointerEvents: 'none' }}>
-                <Text color="dark" variant="body2">
+            <Popover.Dropdown style={{ pointerEvents: 'none' }}>
+                <Text c="dark" variant="body2">
                     {props.children}
                 </Text>
             </Popover.Dropdown>

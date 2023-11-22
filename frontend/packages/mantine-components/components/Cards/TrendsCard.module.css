@@ -1,0 +1,4 @@
+.heading1 {
+    color: light-dark(var(--mantine-primary-color-filled), var(--mantine-primary-color-filled));
+    font-weight: 800;
+}

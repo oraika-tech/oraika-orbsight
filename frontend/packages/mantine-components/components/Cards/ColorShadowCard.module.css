@@ -1,0 +1,15 @@
+.shadowCard {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+
+    .before {
+        content: "";
+        position: absolute;
+        height: 12%;
+        width: 32%;
+        background: linear-gradient(90deg, purple, green, hotpink);
+        z-index: -1;
+        filter: blur(10px)
+    }
+}

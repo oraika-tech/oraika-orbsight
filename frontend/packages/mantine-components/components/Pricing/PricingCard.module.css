@@ -1,0 +1,25 @@
+.cardWrapper {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 450px;
+}
+
+.badge {
+    background-color: var(--mantine-primary-color-filled-hover);
+}
+
+.text {
+    color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-gray-4));
+    font-weight: 700;
+}
+
+.actionButton {
+    @mixin hover {
+        cursor: default;
+    }
+}

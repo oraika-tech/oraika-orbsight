@@ -1,0 +1,23 @@
+.heading1 {
+    align-items: center;
+    color: light-dark(var(--mantine-primary-color-filled), var(--mantine-primary-color-outline));
+    padding-bottom: 30;
+}
+
+.heading2 {
+    padding-top: 1rem;
+    padding-bottom: 0.3rem;
+}
+
+.heading3 {
+    padding-top: 1rem;
+    padding-bottom: 0.1rem;
+}
+
+.text {
+    hyphens: auto;
+}
+
+.list {
+    margin-top: 0.2rem;
+}

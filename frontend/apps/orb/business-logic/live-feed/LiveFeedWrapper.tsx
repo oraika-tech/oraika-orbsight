@@ -55,4 +55,4 @@ export default function LiveFeedWrapper({ isTitle, height }: LiveFeedWrapperProp
 
 LiveFeedWrapper.defaultProps = {
     isTitle: true
-}
+};

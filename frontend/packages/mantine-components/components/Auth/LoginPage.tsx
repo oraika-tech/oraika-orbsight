@@ -85,12 +85,12 @@ export default function LoginPage({ isForgetPassword }: LoginPageProps) {
     return (
         <Container w={500} size="md" my={80}>
             <Title
-                align="center"
-                sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}
+                ta="center"
+                style={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}
             >
                 Welcome back!
             </Title>
-            <Text color="dimmed" size="sm" align="center" mt={5}>
+            <Text c="dimmed" size="sm" ta="center" mt={5}>
                 Do not have an account yet?{' '}
                 <Anchor href="/signup" size="sm">
                     Create account
@@ -121,7 +121,7 @@ export default function LoginPage({ isForgetPassword }: LoginPageProps) {
                         {...form.getInputProps('password')}
                     />
                     {isForgetPassword && (
-                        <Group position="apart" mt="lg">
+                        <Group justify="space-between" mt="lg">
                             <Checkbox label="Remember me" />
                             <Anchor component="button" size="sm">
                                 Forgot password?

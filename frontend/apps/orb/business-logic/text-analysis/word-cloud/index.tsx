@@ -78,23 +78,26 @@ export default function WordCloudAnalysis() {
 
     return (
         <Grid gutter="xs">
-            <Grid.Col xs={12}>
+            <Grid.Col span={12}>
                 <FilterPanel
                     defaultValue={defaultFilterPanelData}
                     filterHandler={handleChange}
                 />
             </Grid.Col>
             {cards.map(card =>
-                <Grid.Col key={card.title} xs={12} lg={6}>
-                    <Card sx={{ minHeight: '40vh' }}>
-                        <Title order={2} sx={{ fontWeight: 800, textAlign: 'center' }}>
+                <Grid.Col key={card.title} span={{ base: 12, lg: 6 }}>
+                    <Card style={{ minHeight: '40vh' }}>
+                        <Title order={2} style={{ fontWeight: 800, textAlign: 'center' }}>
                             {card.title} World Cloud
                         </Title>
                         {isLoading
                             ? <Center h={200}><Loader /></Center>
                             : card.words === undefined
                                 ? (
-                                    <Title order={2} sx={{ fontWeight: 800, paddingTop: '1rem', textAlign: 'center' }}>
+                                    <Title
+                                        order={2}
+                                        style={{ fontWeight: 800, paddingTop: '1rem', textAlign: 'center' }}
+                                    >
                                         Please select filter !
                                     </Title>
                                 )

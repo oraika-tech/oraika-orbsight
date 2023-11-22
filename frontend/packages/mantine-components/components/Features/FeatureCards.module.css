@@ -1,0 +1,38 @@
+.title {
+    color: var(--mantine-primary-color-filled);
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+.flex {
+    width: 100%
+}
+
+.featureText {
+    padding-left: 10px;
+    width: 90%
+}
+
+.image {
+    @media (max-width: $mantine-breakpoint-sm) {
+        max-width: 90%
+    }
+
+    @media (min-width: $mantine-breakpoint-sm) {
+        max-width: 700
+    }
+}
+
+.timeline {
+    @media (max-width: $mantine-breakpoint-sm) {
+        display: none
+    }
+}
+
+.dividerVerticalLine {
+    align-self: stretch;
+    height: auto;
+    border-left-width: 2px;
+    border-left-color: #ced4da;
+    border-left-style: solid
+}

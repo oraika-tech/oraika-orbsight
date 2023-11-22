@@ -1,0 +1,22 @@
+.container {
+    border-radius: 10;
+    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+    height: 100%
+}
+
+.navbar {
+    position: sticky;
+    top: 70px;
+    z-index: 1
+}
+
+.breadcrumbsCard {
+    position: sticky;
+    top: 70px;
+    z-index: 1;
+    opacity: 0.8;
+    padding: 10px;
+    border-radius: 5;
+    padding-top: 5;
+    padding-bottom: 5
+}

@@ -10,7 +10,7 @@ export default function IconTextVertical({ icon, label }: IconTextVerticalProps)
     return (
         <Stack>
             <Center>
-                <Image src={icon.src} width={50} />
+                <Image src={icon.src} w={50} />
             </Center>
             <Center>
                 <Text>{label}</Text>

@@ -1,13 +1,5 @@
-import {
-    Container,
-    createStyles,
-    Divider,
-    SimpleGrid,
-    Stack,
-    Text,
-    Title,
-    useMantineTheme
-} from '@mantine/core';
+import { Container, Divider, SimpleGrid, Stack, Text, Title, useMantineTheme } from '@mantine/core';
+import classes from './FaqGrid.module.css';
 
 interface FeatureProps {
     title: React.ReactNode;
@@ -17,40 +9,15 @@ interface FeatureProps {
 export function Feature({ title, description }: FeatureProps) {
     const theme = useMantineTheme();
     return (
-        <Stack spacing={5}>
+        <Stack gap={5}>
             <Divider />
             <Text style={{ marginTop: theme.spacing.sm, marginBottom: 7 }}>{title}</Text>
-            <Text size="sm" color="dimmed" style={{ lineHeight: 1.6 }}>
+            <Text size="sm" c="dimmed" style={{ lineHeight: 1.6 }}>
                 {description}
             </Text>
         </Stack>
     );
 }
-
-const useStyles = createStyles((theme) => ({
-    wrapper: {
-        paddingTop: 10,
-        paddingBottom: 10
-    },
-
-    title: {
-        marginBottom: theme.spacing.md,
-        textAlign: 'center',
-
-        [theme.fn.smallerThan('sm')]: {
-            fontSize: 28,
-            textAlign: 'left'
-        }
-    },
-
-    description: {
-        textAlign: 'center',
-
-        [theme.fn.smallerThan('sm')]: {
-            textAlign: 'left'
-        }
-    }
-}));
 
 interface FeaturesGridProps {
     title: React.ReactNode;
@@ -59,7 +26,6 @@ interface FeaturesGridProps {
 }
 
 export function FaqGrid({ title, description, questions }: FeaturesGridProps) {
-    const { classes, theme } = useStyles();
     const features = questions.map((feature, index) => <Feature {...feature} key={index} />);
 
     return (
@@ -72,12 +38,8 @@ export function FaqGrid({ title, description, questions }: FeaturesGridProps) {
 
             <SimpleGrid
                 mt={20}
-                cols={3}
-                spacing={`calc(${theme.spacing.md} * 2)`}
-                breakpoints={[
-                    { maxWidth: 980, cols: 2, spacing: 'xl' },
-                    { maxWidth: 755, cols: 1, spacing: 'xl' }
-                ]}
+                cols={{ base: 1, sm: 2, md: 3 }}
+                spacing="calc(var(--mantine-spacing-md) * 2)"
             >
                 {features}
             </SimpleGrid>

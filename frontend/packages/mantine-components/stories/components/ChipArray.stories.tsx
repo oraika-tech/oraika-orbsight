@@ -17,7 +17,7 @@ export default {
 
 export const Default = {
     args: {
-        chipList: ['Chip 1', 'Chip 2', 'Chip 3'],
+        chipList: ['Chip 1', 'Chip 2', 'Chip 3']
     }
 };
 

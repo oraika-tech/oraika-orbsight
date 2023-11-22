@@ -27,7 +27,7 @@ export default function Highlighted({ text = '', chipHighlights = [], markHighli
     return (
         <span>
             {parts.filter(String).map((part, i) => chipRegex.test(part)
-                ? <Badge sx={{ fontWeight: 500 }} key={i} size="small" color="success">{part}</Badge>
+                ? <Badge style={{ fontWeight: 500 }} key={i} size="small" color="success">{part}</Badge>
                 : markRegex.test(part)
                     ? <mark key={i}>{part}</mark>
                     : <span key={i}>{part}</span>)}

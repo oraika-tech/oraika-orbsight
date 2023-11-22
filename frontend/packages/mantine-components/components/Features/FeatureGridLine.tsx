@@ -1,45 +1,7 @@
-import { Box, createStyles, Divider, Grid, Image, Stack, Text, ThemeIcon, Timeline, Title } from '@mantine/core';
+import { Box, Divider, Grid, Image, Stack, Text, ThemeIcon, Timeline, Title } from '@mantine/core';
 import { IconDotsVertical } from '@tabler/icons-react';
 import { StaticImageData } from 'next/image';
-
-const useStyles = createStyles((theme) => ({
-    title: {
-        color: theme.colors[theme.primaryColor][theme.colorScheme === 'dark' ? 4 : 6],
-        paddingBottom: 50
-    },
-    flex: {
-        width: '100%'
-    },
-    featureText: {
-        paddingLeft: '10px',
-        width: '90%'
-    },
-    image: {
-        [`@media (max-width: ${theme.breakpoints.sm})`]: {
-            maxWidth: '90%'
-        },
-
-        [`@media (min-width: ${theme.breakpoints.sm})`]: {
-            maxWidth: 700
-        }
-    },
-    timeline: {
-        [theme.fn.smallerThan('sm')]: {
-            display: 'none'
-        }
-    },
-    hiddenMobile: {
-        [theme.fn.smallerThan('sm')]: {
-            display: 'none'
-        }
-    },
-
-    hiddenDesktop: {
-        [theme.fn.largerThan('sm')]: {
-            display: 'none'
-        }
-    }
-}));
+import classes from './FeatureGridLine.module.css';
 
 export interface FeatureSection {
     heading: string
@@ -54,22 +16,20 @@ interface FeatureLineProps {
 }
 
 export default function FeatureGridLine({ title, sections }: FeatureLineProps) {
-    const { classes } = useStyles();
-
     const getTextOrImage = (isGetImage: boolean, section: FeatureSection) => {
         let sectionItem;
         if (isGetImage) {
             sectionItem = (
                 <center>
-                    <Image src={section.image.src} width={250} className={classes.image} />
+                    <Image src={section.image.src} w={250} className={classes.image} />
                 </center>
             );
         } else {
             sectionItem = (
                 <center>
                     <Stack className={classes.featureText}>
-                        <Title align="left" order={2}>{section.heading}</Title>
-                        <Text align="left">{section.description}</Text>
+                        <Title ta="left" order={2}>{section.heading}</Title>
+                        <Text ta="left">{section.description}</Text>
                     </Stack>
                 </center>
             );
@@ -79,15 +39,15 @@ export default function FeatureGridLine({ title, sections }: FeatureLineProps) {
 
     const sectionItems = sections.map(section => (
         <Grid key={section.heading}>
-            <Grid.Col xs={12} sm={6} className={classes.hiddenMobile}>
+            <Grid.Col span={{ base: 12, sm: 6 }} visibleFrom="sm">
                 {getTextOrImage(section.imageAlign === 'left', section)}
             </Grid.Col>
 
-            <Grid.Col xs={12} sm={6} className={classes.hiddenDesktop}>
+            <Grid.Col span={{ base: 12, sm: 6 }} hiddenFrom="sm">
                 {getTextOrImage(true, section)}
             </Grid.Col>
 
-            <Grid.Col xs={1} className={classes.hiddenMobile}>
+            <Grid.Col span={1} visibleFrom="md">
                 <Timeline
                     className={classes.timeline}
                     color="lime"
@@ -96,7 +56,7 @@ export default function FeatureGridLine({ title, sections }: FeatureLineProps) {
                     lineWidth={2}
                 >
                     <Timeline.Item>
-                        <Box sx={{ height: '250px' }}> </Box>
+                        <Box style={{ height: '250px' }}> </Box>
                     </Timeline.Item>
                     <Timeline.Item bullet={
                         <ThemeIcon color="lime" radius={50} variant="light">
@@ -107,15 +67,15 @@ export default function FeatureGridLine({ title, sections }: FeatureLineProps) {
                 </Timeline>
             </Grid.Col>
 
-            <Grid.Col xs={12} sm={5} className={classes.hiddenMobile}>
+            <Grid.Col span={{ base: 12, sm: 5 }} visibleFrom="sm">
                 {getTextOrImage(section.imageAlign === 'right', section)}
             </Grid.Col>
 
-            <Grid.Col xs={12} sm={5} className={classes.hiddenDesktop}>
+            <Grid.Col span={{ base: 12, sm: 5 }} hiddenFrom="sm">
                 {getTextOrImage(false, section)}
             </Grid.Col>
 
-            <Grid.Col xs={12} className={classes.hiddenDesktop}>
+            <Grid.Col span={12} hiddenFrom="sm">
                 <Divider size="sm" />
             </Grid.Col>
 
@@ -123,8 +83,8 @@ export default function FeatureGridLine({ title, sections }: FeatureLineProps) {
     ));
 
     return (
-        <Stack spacing="lg">
-            <Title align="center" className={classes.title}>
+        <Stack gap="lg">
+            <Title ta="center" className={classes.title}>
                 {title}
             </Title>
             {sectionItems}

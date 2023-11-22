@@ -1,4 +1,4 @@
-import { Box, Group, Modal, Space, Stack, createStyles } from '@mantine/core';
+import { Box, Group, Modal, Space, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
     IconAdjustments,
@@ -28,34 +28,12 @@ import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
 import PdfDialog from '../../components/PdfDialog/PdfDialog';
 import { getDashboards } from '../../lib/service/dashboard-service';
 import { LandingPageHeader } from '../LandingPage/Header/Header';
+import classes from './DefaultLayout.module.css';
 import LayoutPanel from './LayoutPanel';
 
 interface DefaultLayoutProps {
     children: ReactNode
 }
-
-const useStyles = createStyles((theme) => ({
-    container: {
-        borderRadius: 10,
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.colors.gray[1],
-        height: '100%'
-    },
-    navbar: {
-        position: 'sticky',
-        top: '70px',
-        zIndex: 1
-    },
-    breadcrumbsCard: {
-        position: 'sticky',
-        top: '70px',
-        zIndex: 1,
-        opacity: 0.8,
-        padding: '10px',
-        borderRadius: 5,
-        paddingTop: 5,
-        paddingBottom: 5
-    }
-}));
 
 function routeExist(path: string, data: LinkData[]): boolean {
     for (const link of data) {
@@ -78,7 +56,6 @@ function routeExist(path: string, data: LinkData[]): boolean {
 export default function DefaultLayout({ children }: DefaultLayoutProps) {
     const router = useRouter();
     const childRef = useRef();
-    const { classes } = useStyles();
     const [opened, setOpened] = useState(true);
     const [dashboardLinks, setDashboardLinks] = useState([]);
     const { userInfo } = useContext(UserContext);
@@ -177,7 +154,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
     }, []);
 
     return (
-        <Stack className={classes.container} spacing={5}>
+        <Stack className={classes.container} gap={5}>
             <Modal opened={isOpened} onClose={close} title="PDF Download">
                 <PdfDialog fileName={defaultFileName} title={defaultTitle} close={close} generatePdf={generatePdf} />
             </Modal>
@@ -189,7 +166,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                 downloading={downloading}
             />
             <Space h={50} />
-            <Group spacing={4} align="flex-start" m={5} noWrap>
+            <Group gap={4} align="flex-start" m={5} wrap="nowrap">
                 {opened
                     ? (
                         <Box className={classes.navbar}>
@@ -203,7 +180,7 @@ export default function DefaultLayout({ children }: DefaultLayoutProps) {
                     )
                     : <></>
                 }
-                <Stack align="stretch" w="100%" m={5} spacing={10}>
+                <Stack align="stretch" w="100%" m={5} gap={10}>
                     <LayoutPanel
                         breakpoint={992}
                         condition="lte"

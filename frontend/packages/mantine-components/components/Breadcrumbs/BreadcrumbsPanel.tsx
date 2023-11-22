@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Loader, Paper, Tooltip, createStyles } from '@mantine/core';
+import { ActionIcon, Group, Loader, Paper, Tooltip } from '@mantine/core';
 import { useViewportSize } from '@mantine/hooks';
 import {
     IconDownload,
@@ -10,19 +10,7 @@ import UrlBreadcrumbs from 'mantine-components/components/Breadcrumbs/UrlBreadcr
 import CollapseToggleButton from 'mantine-components/components/Buttons/CollapseToggleButton';
 import { SubLinkData } from '../Navbars/NestedNavbar';
 import { TenantSwitcher } from '../Tenant/TenantSwitcher';
-
-const useStyles = createStyles(() => ({
-    breadcrumbsCard: {
-        position: 'sticky',
-        top: '70px',
-        zIndex: 1,
-        opacity: 0.8,
-        padding: '10px',
-        borderRadius: 5,
-        paddingTop: 5,
-        paddingBottom: 5
-    }
-}));
+import classes from './BreadcrumbsPanel.module.css';
 
 interface BreadcrumbsPanelProps {
     breakpoint: number;
@@ -41,12 +29,11 @@ interface BreadcrumbsPanelProps {
 export default function BreadcrumbsPanel({
     breakpoint, condition, opened, setOpened, dashboardLinks, logout,
     userInfo, setPreferredTenantId, refreshPage, downloadPdf, downloading }: BreadcrumbsPanelProps) {
-    const { classes } = useStyles();
     const { width } = useViewportSize();
 
     const panelGroup = (
-        <Group w="100%" h="100%" mt={4} position="apart">
-            <Group noWrap>
+        <Group w="100%" h="100%" mt={4} justify="space-between">
+            <Group wrap="nowrap">
                 <CollapseToggleButton
                     opened={opened}
                     toggle={() => setOpened((o) => !o)}

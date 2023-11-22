@@ -1,4 +1,5 @@
 import { Container, useMantineTheme } from '@mantine/core';
+import { StoryFn } from '@storybook/react';
 import MY_PIC from '../../assets/images/girish-picture.jpg';
 import ORAIKA_LOGO from '../../assets/images/oraika-logo.png';
 import PLAY_LOGO from '../../assets/images/play-logo.png';
@@ -15,7 +16,7 @@ export default {
     }
 };
 
-const Template = (args: TestimonialCardProps) => {
+const Template: StoryFn<TestimonialCardProps> = (args: TestimonialCardProps) => {
     const theme = useMantineTheme();
     return (
         <Container size="xs" bg={theme.colors.gray[0]}>
@@ -38,11 +39,11 @@ const reviewTextShort = "Oraika has been crucial in managing our Google reviews.
 
 export const RichFrame = Template.bind({});
 RichFrame.args = {
-    reviewerPictureUrl: MY_PIC,
+    reviewerPictureUrl: MY_PIC.src,
     reviewerName: 'Girish Patel',
     reviewerTitle: 'Software Developer',
     companyName: 'Oraika Tech',
-    companyLogoUrl: ORAIKA_LOGO,
+    companyLogoUrl: ORAIKA_LOGO.src,
     rating: 3.4,
     highlightedTexts: ['Nilesh', 'Google'],
     reviewText: reviewTextLong,
@@ -54,7 +55,7 @@ MinimumFrame.args = {
     reviewerName: 'Linda Joseph',
     reviewerTitle: 'Department Head',
     companyName: 'PLaY Arena',
-    companyLogoUrl: PLAY_LOGO,
+    companyLogoUrl: PLAY_LOGO.src,
     rating: 5,
     highlightedTexts: ['increase in our overall rating', 'highly recommend'],
     reviewText: reviewTextShort

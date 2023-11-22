@@ -11,7 +11,7 @@ interface IconTextProps {
 
 export default function IconText({ icon, altText, placeholder, children }: IconTextProps) {
     return (
-        <Group noWrap spacing={0}>
+        <Group wrap="nowrap" gap={0}>
             <BackgroundImage w={32} src={placeholder || ''}>
                 <Image
                     width={24}

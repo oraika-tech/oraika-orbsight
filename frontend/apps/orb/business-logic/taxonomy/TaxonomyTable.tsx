@@ -22,7 +22,7 @@ function TaxonomyTable({ rows, loading }) {
                         size="md"
                         color="teal"
                         variant="filled"
-                        sx={{ fontWeight: 500, marginLeft: '0.1rem' }}
+                        style={{ fontWeight: 500, marginLeft: '0.1rem' }}
                     >
                         {cell.getValue() as string}
                     </Badge>
@@ -36,7 +36,7 @@ function TaxonomyTable({ rows, loading }) {
                         size="md"
                         color="lime"
                         variant="filled"
-                        sx={{ fontWeight: 500, marginLeft: '0.1rem' }}
+                        style={{ fontWeight: 500, marginLeft: '0.1rem' }}
                     >
                         {cell.getValue() as string}
                     </Badge>

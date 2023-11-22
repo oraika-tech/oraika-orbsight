@@ -1,4 +1,5 @@
 import { Container, useMantineTheme } from '@mantine/core';
+import { StoryFn } from '@storybook/react';
 import ET_LOGO from '../../assets/images/et_logo.jpeg';
 import YC_LOGO from '../../assets/images/yellow_chapter_logo.jpg';
 import YS_LOGO from '../../assets/images/yourstory_logo.svg';
@@ -18,7 +19,7 @@ const etLink = 'https://economictimes.indiatimes.com/news/economy/finance/tone-t
     + '-in-2-categories-of-rbis-first-global-hackathon/articleshow/91969433.cms';
 const ysLink = 'https://yourstory.com/2022/06/rbi-results-first-global-hackathon-harbinger-2021-digital-payments';
 
-const Template = (args: MentionCardProps) => {
+const Template: StoryFn<MentionCardProps> = (args: MentionCardProps) => {
     const theme = useMantineTheme();
     return (
         <Container size="xs" bg={theme.colors.gray[0]}>
@@ -29,7 +30,7 @@ const Template = (args: MentionCardProps) => {
 
 export const YellowChapter = Template.bind({});
 YellowChapter.args = {
-    logoUrl: YC_LOGO,
+    logoUrl: YC_LOGO.src,
     logoSize: '80px',
     alt: 'Yellow Chapter',
     title: 'Yellow Chapter',
@@ -38,7 +39,7 @@ YellowChapter.args = {
 
 export const EconomicsTimes = Template.bind({});
 EconomicsTimes.args = {
-    logoUrl: ET_LOGO,
+    logoUrl: ET_LOGO.src,
     logoSize: '80px',
     alt: 'Economics Times',
     title: 'The Economics Times',

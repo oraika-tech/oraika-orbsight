@@ -7,7 +7,7 @@ interface HeadingCardProps {
 
 function HeadingCard(props: HeadingCardProps) {
     return (
-        <Card sx={{ height: '100%' }}>
+        <Card style={{ height: '100%' }}>
             <h1>{props.children}</h1>
         </Card>
     );

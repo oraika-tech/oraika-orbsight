@@ -1,8 +1,9 @@
 /* eslint-disable no-case-declarations */
-import { Card, Grid, Loader, Paper, Text, createStyles } from '@mantine/core';
+import { Card, Grid, Loader, Paper, Text } from '@mantine/core';
 import { trackFilter } from 'common-utils/scripts/mixpanel';
 import { arrayEquals } from 'common-utils/utils';
-import ReactEcharts from 'echarts-for-react';
+import dynamic from 'next/dynamic';
+// import EChartsReact from 'echarts-for-react';
 import DataGridCard from 'mantine-components/components/DataGridCard';
 import GenericFilterPanel, { FilterChangeEvent } from 'mantine-components/components/GenericFilterPanel';
 import KeyPhrasesPanel from 'mantine-components/components/KeyPhrases/KeyPhrasesPanel';
@@ -16,6 +17,9 @@ import { useEffect, useState } from 'react';
 import LiveFeedWrapper from '../../business-logic/live-feed/LiveFeedWrapper';
 import HomeTextAnalysis from '../../business-logic/text-analysis/HomeTextAnalysis';
 import { getDashboard } from '../../lib/service/dashboard-service';
+import classes from './index.module.css';
+
+const EChartsReact = dynamic(() => import('echarts-for-react'), { ssr: false });
 
 interface ChartConfig {
     type: string
@@ -70,17 +74,7 @@ export function getValue(arrayObj: FieldValue[], key: string) {
     return result ? result.value : null;
 }
 
-const useStyles = createStyles(() => ({
-    loader: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)'
-    }
-}));
-
 export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps) {
-    const { classes } = useStyles();
     const location = useRouter();
 
     const [loading, setLoading] = useState<boolean>(false);
@@ -147,7 +141,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
 
     if (!dashboardInfo) {
         return (
-            <Card sx={{ height: '40vh', paddingTop: '30vh', alignItems: 'center' }}>
+            <Card style={{ height: '40vh', paddingTop: '30vh', alignItems: 'center' }}>
                 {loading
                     ? <Loader className={classes.loader} />
                     : <Text>Something went wrong, try again !</Text>
@@ -177,14 +171,16 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             localGridComponents.push(
                                 <Grid.Col
                                     key={component.identifier || component.name}
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <Card>
-                                        <ReactEcharts
+                                        <EChartsReact
                                             notMerge
                                             showLoading={loading}
                                             style={{ ...styleConfig, padding: '0.5rem' }}
@@ -210,11 +206,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             });
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                     data-html2canvas-ignore
                                 >
                                     <Paper pb={15}>
@@ -231,11 +229,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const liveFeeds = getValue(component.inputs, 'live_feeds');
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <Card>
                                         <LiveFeedTable showLoading={loading} dataset={liveFeeds} />
@@ -249,11 +249,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
 
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <Heading title={title} sx={style} />
                                 </Grid.Col>
@@ -286,11 +288,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                 // const tableHeight = `${totalRowHeight + headerHeight + titleHeight}rem`;
                                 localGridComponents.push(
                                     <Grid.Col
-                                        xs={component.xs}
-                                        sm={component.sm}
-                                        md={component.md}
-                                        lg={component.lg}
-                                        xl={component.xl}
+                                        span={{
+                                            xs: component.xs,
+                                            sm: component.sm,
+                                            md: component.md,
+                                            lg: component.lg,
+                                            xl: component.xl
+                                        }}
                                     >
                                         <DataGridCard
                                             title={component.title}
@@ -308,7 +312,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             } else {
                                 localGridComponents.push(
                                     <Card
-                                        sx={{
+                                        style={{
                                             height: '10rem',
                                             width: '100%',
                                             alignItems: 'center',
@@ -325,11 +329,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const seriesData = getValue(component.inputs, 'series_data');
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <StatsCard
                                         height={component.height}
@@ -342,11 +348,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                         case 'TextAnalysis':
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <HomeTextAnalysis height={component.height} />
                                 </Grid.Col>
@@ -355,12 +363,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                         case 'LiveFeed':
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
-
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <LiveFeedWrapper isTitle={false} height={component.height} />
                                 </Grid.Col>
@@ -383,11 +392,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             */
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <MiniStatisticsCard
                                         title={statsTitle}
@@ -405,11 +416,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const color = getValue(component.inputs, 'color');
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <KeyPhrasesPanel
                                         title={phrasesTitle}
@@ -425,11 +438,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const wordsTitle = getValue(component.inputs, 'title');
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
                                     <WordCloudPanel
                                         title={wordsTitle}
@@ -442,13 +457,15 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                         case 'EmptyCard':
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                 >
-                                    <Card sx={{ minHeight: component.height }}>
+                                    <Card style={{ minHeight: component.height }}>
                                         &nbsp;
                                     </Card>
                                 </Grid.Col>
@@ -458,11 +475,13 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                             const childGridComponents = getGridComponents(component.components);
                             localGridComponents.push(
                                 <Grid.Col
-                                    xs={component.xs}
-                                    sm={component.sm}
-                                    md={component.md}
-                                    lg={component.lg}
-                                    xl={component.xl}
+                                    span={{
+                                        xs: component.xs,
+                                        sm: component.sm,
+                                        md: component.md,
+                                        lg: component.lg,
+                                        xl: component.xl
+                                    }}
                                     className={component.class_name}
                                 >
                                     <Grid gutter={layout.spacing}>

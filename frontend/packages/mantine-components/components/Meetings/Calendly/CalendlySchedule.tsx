@@ -1,14 +1,6 @@
-import { createStyles } from '@mantine/core';
-
-const useStyles = createStyles((theme) => ({
-    divFrame: {
-        minWidth: '320px',
-        height: '630px'
-    }
-}));
+import classes from './CalendlySchedule.module.css';
 
 export default function CalendlySchedule() {
-    const { classes } = useStyles();
     return (
         <>
             <div

@@ -129,7 +129,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
         showLoading={showLoading ?? false}
         rows={dataRows}
         columns={columns}
-        density="sm"
+        density="xs"
         hideFooter={false}
         // fixedHeader={true}
         // fixedFooter={true}

@@ -1,15 +1,8 @@
-import { createStyles } from '@mantine/core';
 import { NoMaxWidthTooltip } from 'mantine-components/components/NoMaxWidthTooltip';
 import Link from 'next/link';
-
-const useStyles = createStyles(() => ({
-    link: {
-        textDecoration: 'none'
-    }
-}));
+import classes from './LinkCell.module.css';
 
 export default function LinkCell({ title, link }) {
-    const { classes } = useStyles();
     if (link) {
         return (
             <NoMaxWidthTooltip label={link}>

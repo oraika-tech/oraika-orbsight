@@ -1,5 +1,5 @@
-import { createStyles } from '@mantine/core';
 import Image, { StaticImageData } from 'next/image';
+import classes from './IconComponent.module.css';
 
 export interface IconComponentProps {
     height?: number
@@ -7,23 +7,7 @@ export interface IconComponentProps {
     alt: string
 }
 
-const useStyles = createStyles(() => ({
-    imageDiv: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-        // border: '1px solid'
-    },
-    image: {
-        layout: 'responsive',
-        objectFit: 'contain',
-        width: '100%'
-    }
-}));
-
 export default function IconComponent({ height, src, alt }: IconComponentProps) {
-    const { classes } = useStyles();
     // const width = 70;
     // const height = (src.height * width) / src.width;
     return (

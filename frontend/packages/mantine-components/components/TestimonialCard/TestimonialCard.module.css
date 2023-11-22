@@ -1,0 +1,14 @@
+.card {
+    width: 100%;
+}
+
+.picImage {
+    border: 2px solid orange;
+    background: linear-gradient(to right, red, purple);
+}
+
+.highlight {
+    @media (max-width: $mantine-breakpoint-sm) {
+        textAlign: left;
+    }
+}

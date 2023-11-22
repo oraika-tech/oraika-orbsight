@@ -4,7 +4,7 @@ export function getHeadings(source: string) {
 
     function getHeadingLevel(line: string) {
         let level = 0;
-        for (let i = 0; i < line.length; i++) {
+        for (let i = 0; i < line.length; i += 1) {
             if (line[i] === '#') {
                 level += 1;
             } else {
