@@ -1,27 +1,30 @@
 import json
 import logging
 import sys
+from typing import List
 
-import openai
 import tiktoken
+from openai import OpenAI, AuthenticationError
+from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam, ChatCompletionMessageParam, ChatCompletion
 
 from service.common.config.app_settings import app_settings
-from service.common.utils.utils import extract_json
-
-openai.api_key = app_settings.OPENAI_API_KEY
 
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = 'gpt-3.5-turbo'
 MODEL_CONTEXT_SIZE = 4096
 
+client = OpenAI(
+    api_key=app_settings.OPENAI_API_KEY  # defaults to os.environ.get("OPENAI_API_KEY")
+)
+
 
 def prompt(system_message: str, fx_params_def, user_message):
-    final_messages = [
-        {"role": "system", "content": system_message}
+    final_messages: List[ChatCompletionMessageParam] = [
+        ChatCompletionSystemMessageParam(role="system", content=system_message)
     ]
     for raw_data in user_message:
-        final_messages.append({"role": "user", "content": json.dumps(raw_data)})
+        final_messages.append(ChatCompletionUserMessageParam(role="user", content=json.dumps(raw_data)))
 
     max_token_count = (MODEL_CONTEXT_SIZE
                        - num_tokens_from_messages(final_messages)
@@ -29,7 +32,7 @@ def prompt(system_message: str, fx_params_def, user_message):
 
     try:
         # logger.info(f"model={MODEL_NAME}, messages={final_messages}, functions={fx_params_def}, max_tokens={max_token_count}")
-        response = openai.ChatCompletion.create(
+        response: ChatCompletion = client.chat.completions.create(
             model=MODEL_NAME,
             messages=final_messages,
             functions=fx_params_def,
@@ -38,32 +41,12 @@ def prompt(system_message: str, fx_params_def, user_message):
             temperature=0
         )
         # logger.info(f"response={response}")
-    except openai.error.AuthenticationError:
+    except AuthenticationError:
         # logger.error("OpenAI API failure: %s", error.user_message) # openai itself is logging
         sys.exit(127)  # Why exit ? No point hitting expired token
 
-    return json.loads(response.choices[0].message.function_call.arguments)['data']
-
-
-def prompt_plain(system_message: str, user_message):
-    system_message = "You are a microservice which strictly communicate only in json format. " + \
-                     "You will be given json input and you will give json output. " + \
-                     system_message
-
-    final_messages = [
-        {"role": "system", "content": system_message}
-    ]
-    for raw_data in user_message:
-        final_messages.append({"role": "user", "content": json.dumps(raw_data)})
-
-    max_token_count = MODEL_CONTEXT_SIZE - num_tokens_from_messages(final_messages)
-    response = openai.ChatCompletion.create(
-        model=MODEL_NAME,
-        messages=final_messages,
-        max_tokens=max_token_count,
-        temperature=0
-    )
-    return extract_json(response.choices[0].message.content)
+    fc = response.choices[0].message.function_call
+    return json.loads(fc.arguments)['data'] if fc else {}
 
 
 def num_tokens_from_functions(functions, model="gpt-3.5-turbo-0613"):

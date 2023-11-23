@@ -27,7 +27,7 @@ dependencies = [
     "rakun2",
     "redis",
     "requests",
-    "sqlmodel",
+    "sqlmodel==0.0.8",
     "stopwordsiso",
     "tiktoken",
     "uvicorn[standard]",

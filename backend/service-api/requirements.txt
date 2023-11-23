@@ -4,34 +4,30 @@
 #
 #    pip-compile pyproject.toml
 #
-aiohttp==3.8.5
-    # via openai
-aiosignal==1.3.1
-    # via aiohttp
 aiosqlite==0.19.0
     # via prefect
-alembic==1.12.0
+alembic==1.12.1
     # via prefect
 anyio==3.7.1
     # via
     #   fastapi
-    #   httpcore
+    #   httpx
+    #   openai
     #   prefect
     #   starlette
     #   watchfiles
 app-store-reviews-reader==1.2
     # via obsei
-apprise==1.5.0
+apprise==1.6.0
     # via prefect
 asgi-lifespan==2.1.0
     # via prefect
 async-timeout==4.0.3
-    # via aiohttp
-asyncpg==0.28.0
+    # via asyncpg
+asyncpg==0.29.0
     # via prefect
 attrs==23.1.0
     # via
-    #   aiohttp
     #   jsonschema
     #   referencing
 bcrypt==4.0.1
@@ -42,19 +38,19 @@ beautifulsoup4==4.9.3
     #   gnews
     #   obsei
     #   reddit-rss-reader
-boto3==1.28.53
+boto3==1.29.6
     # via service (pyproject.toml)
-botocore==1.31.53
+botocore==1.32.6
     # via
     #   boto3
     #   s3transfer
 bs4==0.0.1
     # via gnews
-cachetools==5.3.1
+cachetools==5.3.2
     # via
     #   google-auth
     #   service (pyproject.toml)
-certifi==2023.7.22
+certifi==2023.11.17
     # via
     #   apprise
     #   httpcore
@@ -62,12 +58,10 @@ certifi==2023.7.22
     #   kubernetes
     #   rakun2
     #   requests
-cffi==1.15.1
+cffi==1.16.0
     # via cryptography
 charset-normalizer==2.0.12
-    # via
-    #   aiohttp
-    #   requests
+    # via requests
 click==8.1.7
     # via
     #   apprise
@@ -75,30 +69,32 @@ click==8.1.7
     #   prefect
     #   typer
     #   uvicorn
-cloudpickle==2.2.1
+cloudpickle==3.0.0
     # via prefect
 colorama==0.4.6
     # via griffe
-contourpy==1.1.1
+contourpy==1.2.0
     # via matplotlib
 coolname==2.2.0
     # via prefect
-croniter==1.4.1
+croniter==2.0.1
     # via prefect
-cryptography==41.0.4
+cryptography==41.0.5
     # via
     #   prefect
     #   python-jose
-cycler==0.11.0
+cycler==0.12.1
     # via
     #   matplotlib
     #   rakun2
 dataclasses-json==0.5.14
     # via python-facebook-api
-dateparser==1.1.8
+dateparser==1.2.0
     # via
     #   obsei
     #   prefect
+distro==1.8.0
+    # via openai
 dnspython==1.16.0
     # via
     #   email-validator
@@ -109,32 +105,26 @@ ecdsa==0.18.0
     # via python-jose
 email-validator==1.3.1
     # via pydantic
-fastapi==0.103.1
-    # via
-    #   prefect
-    #   service (pyproject.toml)
+fastapi==0.104.1
+    # via service (pyproject.toml)
 feedparser==6.0.10
     # via
     #   app-store-reviews-reader
     #   gnews
     #   reddit-rss-reader
-fonttools==4.42.1
+fonttools==4.45.0
     # via
     #   matplotlib
     #   rakun2
-frozenlist==1.4.0
-    # via
-    #   aiohttp
-    #   aiosignal
-fsspec==2023.9.2
+fsspec==2023.10.0
     # via prefect
-gnews==0.3.1
+gnews==0.3.6
     # via obsei
-google-api-core==2.11.1
+google-api-core==2.14.0
     # via google-api-python-client
-google-api-python-client==2.100.0
+google-api-python-client==2.108.0
     # via obsei
-google-auth==2.23.0
+google-auth==2.23.4
     # via
     #   google-api-core
     #   google-api-python-client
@@ -144,13 +134,13 @@ google-auth-httplib2==0.1.1
     # via google-api-python-client
 google-play-scraper==1.2.4
     # via obsei
-googleapis-common-protos==1.60.0
+googleapis-common-protos==1.61.0
     # via google-api-core
 graphviz==0.20.1
     # via prefect
-greenlet==2.0.2
+greenlet==3.0.1
     # via sqlalchemy
-griffe==0.36.2
+griffe==0.38.0
     # via prefect
 h11==0.14.0
     # via
@@ -160,16 +150,20 @@ h2==4.1.0
     # via httpx
 hpack==4.0.0
     # via h2
-httpcore==0.18.0
-    # via httpx
+httpcore==1.0.2
+    # via
+    #   httpx
+    #   prefect
 httplib2==0.22.0
     # via
     #   google-api-python-client
     #   google-auth-httplib2
-httptools==0.6.0
+httptools==0.6.1
     # via uvicorn
-httpx[http2]==0.25.0
-    # via prefect
+httpx[http2]==0.25.1
+    # via
+    #   openai
+    #   prefect
 hyperframe==6.0.1
     # via h2
 idna==3.4
@@ -178,7 +172,6 @@ idna==3.4
     #   email-validator
     #   httpx
     #   requests
-    #   yarl
 iniconfig==2.0.0
     # via pytest
 jinja2==3.1.2
@@ -193,9 +186,9 @@ jsonpatch==1.33
     # via prefect
 jsonpointer==2.4
     # via jsonpatch
-jsonschema==4.19.1
+jsonschema==4.20.0
     # via prefect
-jsonschema-specifications==2023.7.1
+jsonschema-specifications==2023.11.1
     # via jsonschema
 kiwisolver==1.4.5
     # via
@@ -205,9 +198,9 @@ kubernetes==28.1.0
     # via prefect
 langdetect==1.0.9
     # via service (pyproject.toml)
-mako==1.2.4
+mako==1.3.0
     # via alembic
-markdown==3.4.4
+markdown==3.5.1
     # via apprise
 markdown-it-py==3.0.0
     # via rich
@@ -217,23 +210,19 @@ markupsafe==2.1.3
     #   mako
 marshmallow==3.20.1
     # via dataclasses-json
-matplotlib==3.8.0
+matplotlib==3.8.2
     # via rakun2
 mdurl==0.1.2
     # via markdown-it-py
 mmh3==4.0.1
     # via obsei
-multidict==6.0.4
-    # via
-    #   aiohttp
-    #   yarl
 mypy-extensions==1.0.0
     # via typing-inspect
-networkx==3.1
+networkx==3.2.1
     # via rakun2
 nltk==3.8.1
     # via service (pyproject.toml)
-numpy==1.26.0
+numpy==1.26.2
     # via
     #   contourpy
     #   matplotlib
@@ -244,13 +233,13 @@ oauthlib==3.2.2
     # via
     #   kubernetes
     #   requests-oauthlib
-obsei[app-store-scraper,facebook-api,google-news-scraper,google-play-api,google-play-scraper,pandas,reddit-api,reddit-scraper,source,twitter-api]==0.0.14
+obsei[app-store-scraper,facebook-api,google-news-scraper,google-play-api,google-play-scraper,pandas,reddit-api,reddit-scraper,source,twitter-api]==0.0.13
     # via service (pyproject.toml)
-openai==0.28.0
+openai==1.3.5
     # via service (pyproject.toml)
-orjson==3.9.7
+orjson==3.9.10
     # via prefect
-packaging==23.1
+packaging==23.2
     # via
     #   docker
     #   marshmallow
@@ -259,7 +248,7 @@ packaging==23.1
     #   pytest
     #   pytest-sugar
     #   rakun2
-pandas==2.1.1
+pandas==2.1.3
     # via
     #   obsei
     #   service (pyproject.toml)
@@ -267,7 +256,7 @@ pathspec==0.11.2
     # via prefect
 pendulum==2.1.2
     # via prefect
-pillow==10.0.1
+pillow==10.1.0
     # via
     #   matplotlib
     #   rakun2
@@ -275,17 +264,17 @@ pluggy==1.3.0
     # via pytest
 praw==7.7.1
     # via obsei
-prawcore==2.3.0
+prawcore==2.4.0
     # via praw
-prefect==2.13.2
+prefect==2.14.6
     # via service (pyproject.toml)
-protobuf==4.24.3
+protobuf==4.25.1
     # via
     #   google-api-core
     #   googleapis-common-protos
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.9
     # via service (pyproject.toml)
-pyasn1==0.5.0
+pyasn1==0.5.1
     # via
     #   pyasn1-modules
     #   python-jose
@@ -294,27 +283,28 @@ pyasn1-modules==0.3.0
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic[email]==1.10.12
+pydantic[email]==1.10.13
     # via
     #   fastapi
     #   obsei
+    #   openai
     #   prefect
     #   service (pyproject.toml)
     #   sqlmodel
-pygments==2.16.1
+pygments==2.17.2
     # via rich
 pymongo==3.12.3
     # via gnews
-pymupdf==1.23.3
+pymupdf==1.23.6
     # via rakun2
-pymupdfb==1.23.3
+pymupdfb==1.23.6
     # via pymupdf
 pyparsing==3.1.1
     # via
     #   httplib2
     #   matplotlib
     #   rakun2
-pytest==7.4.2
+pytest==7.4.3
     # via
     #   pytest-sugar
     #   rakun2
@@ -330,6 +320,7 @@ python-dateutil==2.8.2
     #   obsei
     #   pandas
     #   pendulum
+    #   prefect
     #   rakun2
     #   searchtweets-v2
 python-dotenv==0.19.2
@@ -346,6 +337,7 @@ python-slugify==8.0.1
     # via prefect
 pytz==2023.3.post1
     # via
+    #   croniter
     #   dateparser
     #   obsei
     #   pandas
@@ -365,13 +357,13 @@ readchar==4.0.5
     # via prefect
 reddit-rss-reader==1.3.2
     # via obsei
-redis==5.0.0
+redis==5.0.1
     # via service (pyproject.toml)
-referencing==0.30.2
+referencing==0.31.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2023.8.8
+regex==2023.10.3
     # via
     #   dateparser
     #   nltk
@@ -385,7 +377,6 @@ requests==2.26.0
     #   google-api-core
     #   kubernetes
     #   obsei
-    #   openai
     #   prawcore
     #   python-facebook-api
     #   reddit-rss-reader
@@ -399,9 +390,9 @@ requests-oauthlib==1.3.1
     #   apprise
     #   kubernetes
     #   python-facebook-api
-rich==13.5.3
+rich==13.7.0
     # via prefect
-rpds-py==0.10.3
+rpds-py==0.13.1
     # via
     #   jsonschema
     #   referencing
@@ -409,13 +400,13 @@ rsa==4.9
     # via
     #   google-auth
     #   python-jose
-ruamel-yaml==0.17.32
+ruamel-yaml==0.18.5
     # via prefect
-ruamel-yaml-clib==0.2.7
+ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-s3transfer==0.6.2
+s3transfer==0.7.0
     # via boto3
-scipy==1.11.2
+scipy==1.11.4
     # via rakun2
 searchtweets-v2==1.1.1
     # via obsei
@@ -432,22 +423,24 @@ sniffio==1.3.0
     # via
     #   anyio
     #   asgi-lifespan
-    #   httpcore
     #   httpx
+    #   prefect
 soupsieve==2.5
     # via beautifulsoup4
-sqlalchemy[asyncio]==1.4.49
+sqlalchemy[asyncio]==1.4.41
     # via
     #   alembic
     #   obsei
     #   prefect
     #   sqlmodel
-sqlalchemy2-stubs==0.0.2a35
+sqlalchemy2-stubs==0.0.2a37
     # via sqlmodel
-sqlmodel==0.0.6
+sqlmodel==0.0.8
     # via service (pyproject.toml)
 starlette==0.27.0
-    # via fastapi
+    # via
+    #   fastapi
+    #   prefect
 stopwordsiso==0.6.1
     # via service (pyproject.toml)
 termcolor==2.3.0
@@ -469,6 +462,7 @@ typing-extensions==4.8.0
     # via
     #   alembic
     #   fastapi
+    #   openai
     #   prefect
     #   pydantic
     #   sqlalchemy2-stubs
@@ -478,40 +472,39 @@ typing-inspect==0.9.0
     # via dataclasses-json
 tzdata==2023.3
     # via pandas
-tzlocal==5.0.1
+tzlocal==5.2
     # via dateparser
+ujson==5.8.0
+    # via prefect
 update-checker==0.18.0
     # via praw
 uritemplate==4.1.1
     # via google-api-python-client
-urllib3==1.26.16
+urllib3==1.26.18
     # via
     #   botocore
     #   docker
-    #   google-auth
     #   kubernetes
     #   requests
-uvicorn[standard]==0.23.2
+uvicorn[standard]==0.24.0.post1
     # via
     #   prefect
     #   service (pyproject.toml)
-uvloop==0.17.0 ; sys_platform != "win32" and sys_platform != "cygwin"
+uvloop==0.19.0 ; sys_platform != "win32" and sys_platform != "cygwin"
     # via
     #   service (pyproject.toml)
     #   uvicorn
-watchfiles==0.20.0
+watchfiles==0.21.0
     # via uvicorn
-websocket-client==1.6.3
+websocket-client==1.6.4
     # via
     #   docker
     #   kubernetes
     #   praw
-websockets==11.0.3
+websockets==12.0
     # via
     #   prefect
     #   uvicorn
-yarl==1.9.2
-    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
