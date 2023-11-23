@@ -130,15 +130,15 @@ def review_analysis(tenant_id: UUID, reviews: list[UnstructuredDataRequest]) -> 
 
     return [
         StructuredData(
-            raw_data_id=review_data[0].raw_data_id,  # -------------- input
-            tags=review_data[1].tags,  # ---------------------------- gpt - classifier
-            terms=review_data[1].terms,  # -------------------------- gpt - classifier
-            categories=[],  # --------------------------------------- constant
-            people=reviews_people[review_data[0].raw_data_id],  # --- gpt - people names
-            emotion=review_data[2].sentiment,  # -------------------- gpt - sentiment analysis
-            text_length=len(review_data[0].raw_text),  # ------------ calc
-            text_language='en',  # ---------------------------------- constant
-            remark=None  # ------------------------------------------ constant
+            raw_data_id=review_data[0].raw_data_id,  # ---------------------- input
+            tags=review_data[1].tags,  # ------------------------------------ gpt - classifier
+            terms=review_data[1].terms,  # ---------------------------------- gpt - classifier
+            categories=[],  # ----------------------------------------------- constant
+            people=reviews_people.get(review_data[0].raw_data_id, []),  # --- gpt - people names
+            emotion=review_data[2].sentiment,  # ---------------------------- gpt - sentiment analysis
+            text_length=len(review_data[0].raw_text),  # -------------------- calc
+            text_language='en',  # ------------------------------------------ constant
+            remark=None  # -------------------------------------------------- constant
         )
         for review_data in zip(reviews, classified_reviews, reviews_sentiment)
     ]
