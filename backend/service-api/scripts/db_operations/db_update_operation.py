@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.orm import Session
@@ -23,20 +24,32 @@ logger = logging.getLogger(__name__)
 
 mapping_file = os.path.dirname(__file__) + "/name_mapping.json"
 with open(mapping_file) as f:
-    name_mappings = json.load(f)
+    name_mappings: dict[str, Optional[str | list[str]]] = json.load(f)
 
 for k, v in name_mappings.items():
-    if k.lower() == v.lower():
+    if isinstance(v, str) and k.lower() == v.lower():
         raise ValueError(f"Key and value same for name_mappings: {k}")
 
 
-def get_name(name: str) -> str:
+def get_name(name: str) -> Optional[str | list[str]]:
     if name:
         if name in name_mappings:
             return name_mappings[name]
         if not is_pascal_case(name):
             return convert_to_pascal(name)
     return name
+
+
+def names_conversion(names: list[str]) -> list[str]:
+    new_names = []
+    for name in names:
+        if name:
+            new_name = get_name(name)
+            if isinstance(new_name, list):
+                new_names.extend(new_name)
+            elif new_name:
+                new_names.append(new_name)
+    return new_names
 
 
 def update_unprocessed_data(tenant_id: UUID):
@@ -48,10 +61,10 @@ def update_unprocessed_data(tenant_id: UUID):
         for record in existing_records:
             if record.people:
                 old_names = record.people
-                record.people = [get_name(name) for name in record.people if name]
+                record.people = names_conversion(record.people)
                 if old_names != record.people:
                     flag_modified(record, "people")
-                    logger.info("%s => %s", old_names, record.people)
+                    logger.info("%d: %s => %s", record.identifier, old_names, record.people)
 
         session.commit()
 
