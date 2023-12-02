@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
 
-from sqlalchemy import Column, DateTime
+from sqlalchemy import Column, DateTime, update
 from sqlmodel import SQLModel, Field, Session
 
 from service.common.infra.db.db_utils import get_tenant_engine
@@ -35,3 +35,14 @@ def insert_structured_data(tenant_id: UUID, data_entity: ProcessedDataEntity) ->
         session.commit()
         session.refresh(data_entity)
         return data_entity.identifier
+
+
+def update_structured_data(tenant_id: UUID, update_processed_data: dict) -> int:
+    with Session(get_tenant_engine(tenant_id)) as session:
+        statement = update(ProcessedDataEntity) \
+            .where(ProcessedDataEntity.raw_data_id == update_processed_data['raw_data_id']) \
+            .values(**update_processed_data)
+
+        result = session.execute(statement)
+        session.commit()
+        return result.rowcount  # type: ignore

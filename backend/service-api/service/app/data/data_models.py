@@ -51,3 +51,28 @@ class RawData(BaseModel):
     raw_text: str
     unstructured_data: Optional[Dict[str, Any]]
     event_time: datetime
+
+
+class TextAnalysisUpdateData(BaseModel):
+    sentiment: Optional[str]
+    departments: Optional[List[str]]
+    activities: Optional[List[str]]
+    people: Optional[List[str]]
+
+    class Config:
+        extra = "forbid"
+
+
+class AnalysisData(BaseModel):
+    id: int
+    text: str
+    source: str
+    link: Optional[str]
+    sentiment: str
+    departments: list[str]
+    activities: list[str]
+    people: list[str]
+    rating: Optional[int]
+    timestamp: int
+    owner_answer_timestamp: Optional[int]
+    likes: Optional[int]

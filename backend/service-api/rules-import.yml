@@ -38,6 +38,7 @@ rules:
     from: service.app.**
     to:
       - service.common.models
+      - service.app.common.**
       - service.app.**.*_models.*
 
   - title: Domain layer access db_provider and other domain service
@@ -70,6 +71,11 @@ rules:
     to:
       - service.common.infra.db.**
       - service.**.reflection_utils
+
+  - title: App common is allowed to access db
+    type: allowed
+    from: service.app.common.**
+    to: service.common.infra.db.**
 
   - title: All apps can call model converter
     type: allowed

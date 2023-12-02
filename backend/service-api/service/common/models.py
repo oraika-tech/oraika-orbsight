@@ -89,6 +89,7 @@ class FilterQueryParams(BaseModel):
     observer_type: Optional[str] = None
     emotion: Optional[str] = None
     limit: Optional[int] = None
+    raw_data_id: Optional[int] = None
 
     @validator('entity_name', 'lang_code', 'observer_type', 'emotion', 'term', 'tags', 'observer_name')
     def set_all_as_none(cls, value):  # noqa

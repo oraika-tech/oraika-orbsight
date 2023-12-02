@@ -6,7 +6,7 @@
 #
 aiosqlite==0.19.0
     # via prefect
-alembic==1.12.1
+alembic==1.13.0
     # via prefect
 anyio==3.7.1
     # via
@@ -30,7 +30,7 @@ attrs==23.1.0
     # via
     #   jsonschema
     #   referencing
-bcrypt==4.0.1
+bcrypt==4.1.1
     # via service (pyproject.toml)
 beautifulsoup4==4.9.3
     # via
@@ -38,9 +38,9 @@ beautifulsoup4==4.9.3
     #   gnews
     #   obsei
     #   reddit-rss-reader
-boto3==1.29.6
+boto3==1.33.5
     # via service (pyproject.toml)
-botocore==1.32.6
+botocore==1.33.5
     # via
     #   boto3
     #   s3transfer
@@ -79,7 +79,7 @@ coolname==2.2.0
     # via prefect
 croniter==2.0.1
     # via prefect
-cryptography==41.0.5
+cryptography==41.0.7
     # via
     #   prefect
     #   python-jose
@@ -112,7 +112,7 @@ feedparser==6.0.10
     #   app-store-reviews-reader
     #   gnews
     #   reddit-rss-reader
-fonttools==4.45.0
+fonttools==4.45.1
     # via
     #   matplotlib
     #   rakun2
@@ -122,9 +122,9 @@ gnews==0.3.6
     # via obsei
 google-api-core==2.14.0
     # via google-api-python-client
-google-api-python-client==2.108.0
+google-api-python-client==2.109.0
     # via obsei
-google-auth==2.23.4
+google-auth==2.24.0
     # via
     #   google-api-core
     #   google-api-python-client
@@ -160,13 +160,13 @@ httplib2==0.22.0
     #   google-auth-httplib2
 httptools==0.6.1
     # via uvicorn
-httpx[http2]==0.25.1
+httpx[http2]==0.25.2
     # via
     #   openai
     #   prefect
 hyperframe==6.0.1
     # via h2
-idna==3.4
+idna==3.6
     # via
     #   anyio
     #   email-validator
@@ -188,7 +188,7 @@ jsonpointer==2.4
     # via jsonpatch
 jsonschema==4.20.0
     # via prefect
-jsonschema-specifications==2023.11.1
+jsonschema-specifications==2023.11.2
     # via jsonschema
 kiwisolver==1.4.5
     # via
@@ -235,7 +235,7 @@ oauthlib==3.2.2
     #   requests-oauthlib
 obsei[app-store-scraper,facebook-api,google-news-scraper,google-play-api,google-play-scraper,pandas,reddit-api,reddit-scraper,source,twitter-api]==0.0.13
     # via service (pyproject.toml)
-openai==1.3.5
+openai==1.3.6
     # via service (pyproject.toml)
 orjson==3.9.10
     # via prefect
@@ -266,7 +266,7 @@ praw==7.7.1
     # via obsei
 prawcore==2.4.0
     # via praw
-prefect==2.14.6
+prefect==2.14.9
     # via service (pyproject.toml)
 protobuf==4.25.1
     # via
@@ -295,9 +295,9 @@ pygments==2.17.2
     # via rich
 pymongo==3.12.3
     # via gnews
-pymupdf==1.23.6
+pymupdf==1.23.7
     # via rakun2
-pymupdfb==1.23.6
+pymupdfb==1.23.7
     # via pymupdf
 pyparsing==3.1.1
     # via
@@ -359,7 +359,7 @@ reddit-rss-reader==1.3.2
     # via obsei
 redis==5.0.1
     # via service (pyproject.toml)
-referencing==0.31.0
+referencing==0.31.1
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -392,7 +392,7 @@ requests-oauthlib==1.3.1
     #   python-facebook-api
 rich==13.7.0
     # via prefect
-rpds-py==0.13.1
+rpds-py==0.13.2
     # via
     #   jsonschema
     #   referencing
@@ -404,7 +404,7 @@ ruamel-yaml==0.18.5
     # via prefect
 ruamel-yaml-clib==0.2.8
     # via ruamel-yaml
-s3transfer==0.7.0
+s3transfer==0.8.2
     # via boto3
 scipy==1.11.4
     # via rakun2
@@ -424,6 +424,7 @@ sniffio==1.3.0
     #   anyio
     #   asgi-lifespan
     #   httpx
+    #   openai
     #   prefect
 soupsieve==2.5
     # via beautifulsoup4
@@ -443,7 +444,7 @@ starlette==0.27.0
     #   prefect
 stopwordsiso==0.6.1
     # via service (pyproject.toml)
-termcolor==2.3.0
+termcolor==2.4.0
     # via pytest-sugar
 text-unidecode==1.3
     # via python-slugify

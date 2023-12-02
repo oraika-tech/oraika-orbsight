@@ -1,4 +1,5 @@
 from typing import List, Set
+from uuid import UUID
 
 from cachetools import TTLCache, cached
 
@@ -61,3 +62,11 @@ def get_word_cloud(filter_query_params: FilterQueryParams):
 def get_key_phrases(filter_query_params: FilterQueryParams):
     data = db_provider.get_text_analysis_data_dp(filter_query_params)
     return generate_key_phrases(data=data) if data else []
+
+
+def update_text_analysis_data(tenant_id: UUID, text_analysis_update_data: dict) -> int:
+    return db_provider.update_text_analysis_data_dp(tenant_id, text_analysis_update_data)
+
+
+def get_analysis_data(tenant_id: UUID, raw_data_id: int):
+    return db_provider.get_analysis_data_dp(tenant_id, raw_data_id)

@@ -37,6 +37,7 @@ class ProcessedDataView(SQLModel, table=True):
     taxonomy_tags: List[str] = SqlField(default='{}', sa_column=Column(ARRAY(Text)))
     taxonomy_terms: List[str] = SqlField(default='{}', sa_column=Column(ARRAY(Text)))
     categories: List[str] = SqlField(default='{}', sa_column=Column(ARRAY(Text)))
+    people: List[str] = SqlField(default='{}', sa_column=Column(ARRAY(Text)))
 
 
 def _get_updated_query_with_params(data, query, params: FilterQueryParams):
@@ -66,6 +67,9 @@ def _get_updated_query_with_params(data, query, params: FilterQueryParams):
 
     if params.emotion and params.emotion != 'All':
         query = query.filter(data.emotion == params.emotion)
+
+    if params.raw_data_id is not None:
+        query = query.filter(data.raw_data_id == params.raw_data_id)
 
     return query
 

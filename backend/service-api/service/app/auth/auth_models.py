@@ -16,3 +16,14 @@ class UserInfo(BaseModel):
     tenants: List[TenantInfo]
     name: Optional[str]
     email: str
+
+
+class ApiAuthInfo(BaseModel):
+    identifier: UUID
+    name: str
+    hashed_key: str
+
+
+class AuthInfo(BaseModel):
+    identifier: UUID
+    tenant_id: UUID

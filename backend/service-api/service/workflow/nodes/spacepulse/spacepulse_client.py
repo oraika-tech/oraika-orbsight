@@ -29,6 +29,7 @@ class SpacePulsePostRequest:
     sentiment: str
     departments: list[str]
     activities: list[str]
+    people: list[str]
     rating: Optional[int]
     timestamp: int
     owner_answer_timestamp: Optional[int]

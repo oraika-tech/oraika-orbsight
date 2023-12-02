@@ -30,6 +30,7 @@ def get_unsent_processed_data_dp(tenant_id: UUID, min_event_time: datetime) -> L
             sentiment=processed_data.emotion,
             departments=processed_data.taxonomy_tags,
             activities=processed_data.taxonomy_terms,
+            people=processed_data.people if processed_data.people else [],
             source="Google Reviews",
             link=dict_get(raw_data.unstructured_data, "review_link"),
             rating=dict_get(raw_data.unstructured_data, "review_rating"),

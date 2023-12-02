@@ -1,5 +1,8 @@
+from typing import Optional
+
 from fastapi import Header, Cookie
 from starlette import status
+from starlette.datastructures import Headers
 from starlette.exceptions import HTTPException
 
 from service.common.config.app_settings import app_settings
@@ -34,3 +37,13 @@ def get_session_id(origin: str = Header(),
         raise HTTPException(status_code=status_code, detail="Empty session")
 
     return session_id
+
+
+def get_session_id_from_header(headers: Headers, cookies: dict) -> Optional[str]:
+    """ To be used by api logger"""
+    if headers:
+        origin = headers.get("origin")
+        if origin:
+            if is_prod_url(origin):
+                return cookies.get("orb-session-id")
+    return None

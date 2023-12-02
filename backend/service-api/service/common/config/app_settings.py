@@ -5,10 +5,10 @@ from pydantic import BaseSettings, Field
 
 class AppSettings(BaseSettings):
     # Mandatory fields
-    OPENAI_API_KEY: str
-    SPACEPULSE_URL: str
-    SPACEPULSE_API_KEY: str
-    SPACEPULSE_API_SECRET: str
+    OPENAI_API_KEY: str = ""
+    SPACEPULSE_URL: str = ""
+    SPACEPULSE_API_KEY: str = ""
+    SPACEPULSE_API_SECRET: str = ""
 
     # Fields with default values
     DB_HOST: str = "localhost:5432"
@@ -51,6 +51,11 @@ class AppSettings(BaseSettings):
         for origin_url in origin_urls:
             if origin_url:
                 self.CORS_ORIGINS.append(origin_url)
+
+        if not self.DB_HOST.startswith("localhost"):
+            for field in [self.OPENAI_API_KEY, self.SPACEPULSE_URL, self.SPACEPULSE_API_KEY, self.SPACEPULSE_API_SECRET]:
+                if not field:
+                    raise ValueError(f"{field} is not set")
 
     class Config:
         case_sensitive = True

@@ -50,6 +50,15 @@ def get_all_demo_tenants() -> List[TenantEntity]:
         ).all()
 
 
+def get_tenant_by_code(tenant_code: str) -> Optional[TenantEntity]:
+    with Session(core_db_engine) as session:
+        return session.query(TenantEntity).filter(
+            TenantEntity.code == tenant_code,
+            TenantEntity.is_enabled == true(),
+            TenantEntity.is_deleted == false()
+        ).first()
+
+
 def get_tenant_by_id(tenant_id: UUID) -> Optional[TenantEntity]:
     with Session(core_db_engine) as session:
         return session.query(TenantEntity).filter(
