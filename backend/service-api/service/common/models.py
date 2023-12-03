@@ -7,6 +7,7 @@ from pydantic import BaseModel, validator
 
 
 class TenantType(int, Enum):
+    TEST = -1
     DEMO = 0
     CORPORATE = 1
     GOV = 2
