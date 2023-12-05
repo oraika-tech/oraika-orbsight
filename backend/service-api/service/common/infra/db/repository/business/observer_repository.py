@@ -10,7 +10,6 @@ from service.common.infra.db.db_utils import get_tenant_engine
 
 class ObserverEntity(SQLModel, table=True):
     __tablename__ = "config_observer"
-    # __table_args__ = {'extend_existing': True}
 
     identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
     name: str
@@ -34,7 +33,6 @@ def get_all_observers(tenant_id: UUID, enabled: Optional[bool] = None) -> List[O
             query = query.filter(
                 ObserverEntity.is_enabled == enabled
             )
-
         return query.all()
 
 

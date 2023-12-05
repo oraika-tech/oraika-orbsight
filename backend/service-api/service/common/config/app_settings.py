@@ -45,6 +45,8 @@ class AppSettings(BaseSettings):
     CORS_ORIGINS: List[str] = Field([])
     ALLOWED_HOSTS: List[str] = Field(["*"])
 
+    IS_GRAPHQL: bool = False
+
     def __init__(self, **values: Any):
         super().__init__(**values)
         origin_urls = [self.HOME_URL, self.WWW_URL, self.ORB_URL, self.DEMO_URL]

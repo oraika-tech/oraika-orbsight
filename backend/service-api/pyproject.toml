@@ -29,6 +29,7 @@ dependencies = [
     "requests",
     "sqlmodel==0.0.8",
     "stopwordsiso",
+    "strawberry-graphql[fastapi]",
     "tiktoken",
     "uvicorn[standard]",
     'uvloop ; sys_platform != "win32" and sys_platform != "cygwin"',

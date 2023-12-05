@@ -13,6 +13,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from service.app import api_router
 from service.app.common.api_logger import log_requests
 from service.app.common.exception_handler import http_exception_handler, validation_exception_handler
+from service.app.generic import graphql_apis
 from service.common.config.app_settings import app_settings
 
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
@@ -22,6 +23,7 @@ logging.basicConfig(
     level=LOGLEVEL
 )
 logger = logging.getLogger(__name__)
+logger.setLevel(LOGLEVEL)
 logging.getLogger("httpx").setLevel(logging.WARNING)  # stop prefect verbose logging
 
 PORT = app_settings.SERVICE_PORT
@@ -53,12 +55,17 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler)
 
 app.include_router(api_router, prefix=app_settings.API_V1_STR)
 
+if app_settings.IS_GRAPHQL:
+    app.include_router(graphql_apis.routes)
+
 
 @app.on_event("startup")
 def app_init():
-    logger.info(f"Open http://127.0.0.1:{PORT}/redoc")
+    # logger.info(f"Open http://127.0.0.1:{PORT}/redoc")
     logger.info(f"Open http://127.0.0.1:{PORT}/docs")
     logger.info(f"Open http://127.0.0.1:{PORT}/openapi.json")
+    if app_settings.IS_GRAPHQL:
+        logger.info(f"Open http://127.0.0.1:{PORT}/graphql")
 
 
 is_multi_process = False
