@@ -6,8 +6,8 @@ from uuid import UUID
 import strawberry
 from strawberry.scalars import ID, JSON
 
-from service.app.generic.generic_db_provider import get_all_entities, get_by_id, search
-from service.app.generic.generic_models import Taxonomy, Observer, Entity, EntityInput
+from service.app.generic.graphql.graphql_db_provider import get_all_entities, get_by_id, search
+from service.app.generic.graphql.graphql_models import TaxonomyInfo, ObserverInfo, EntityInput, EntityInfo
 
 
 def get_domain_value(entity_obj, domain_field: dataclasses.Field):
@@ -35,9 +35,9 @@ def entity_to_domain(entity_obj, domain_model: type):
 
 
 table_name_to_model_name = {
-    'config_entity': Entity,
-    'config_observer': Observer,
-    'config_taxonomy': Taxonomy
+    'config_entity': EntityInfo,
+    'config_observer': ObserverInfo,
+    'config_taxonomy': TaxonomyInfo
 }
 
 
@@ -60,29 +60,29 @@ def fetch_data(table_name: str | type, identifier: Optional[UUID], search_terms:
 class Query:
 
     @strawberry.field(name="entity")
-    def entity(self, id: ID) -> Entity:
+    def entity(self, id: ID) -> EntityInfo:
         return fetch_data('config_entity', UUID(id), None)[0]
 
     @strawberry.field(name="entities")
     def entities(self, sort: Optional[str] = None, where: Optional[JSON] = None,  # type: ignore
-                 start: Optional[int] = None, limit: Optional[int] = None) -> List[Entity]:
+                 start: Optional[int] = None, limit: Optional[int] = None) -> List[EntityInfo]:
         return fetch_data('config_entity', None, None)
 
     @strawberry.field(name="observers")
-    def observers(self, identifier: Optional[UUID] = None, search_terms: Optional[str] = None) -> List[Observer]:
+    def observers(self, identifier: Optional[UUID] = None, search_terms: Optional[str] = None) -> List[ObserverInfo]:
         return fetch_data('config_observer', identifier, search_terms)
 
     @strawberry.field(name="taxonomies")
-    def taxonomies(self, identifier: Optional[UUID] = None, search_terms: Optional[str] = None) -> List[Taxonomy]:
+    def taxonomies(self, identifier: Optional[UUID] = None, search_terms: Optional[str] = None) -> List[TaxonomyInfo]:
         return fetch_data('config_taxonomy', identifier, search_terms)
 
 
 @strawberry.type
 class Mutation:
     @strawberry.mutation
-    def create_entity(self, entity: EntityInput) -> Entity:
-        return Entity(identifier=UUID('8283c1f2-2ea6-457b-883a-b37e7d7d98d4'), name=entity.name, tags=entity.tags, is_enabled=entity.is_enabled)
+    def create_entity(self, entity: EntityInput) -> EntityInfo:
+        return EntityInfo(identifier=UUID('8283c1f2-2ea6-457b-883a-b37e7d7d98d4'), name=entity.name, tags=entity.tags, is_enabled=entity.is_enabled)
 
     @strawberry.mutation
-    def update_entity(self, entity: EntityInput) -> Entity:
-        return Entity(identifier=UUID('123'), name=entity.name, tags=entity.tags, is_enabled=entity.is_enabled)
+    def update_entity(self, entity: EntityInput) -> EntityInfo:
+        return EntityInfo(identifier=UUID('123'), name=entity.name, tags=entity.tags, is_enabled=entity.is_enabled)

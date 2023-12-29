@@ -24,6 +24,7 @@ svc-validate-imports:
 
 svc-api-run:
 	cd $(svc_api_dir); \
+	source ~/.oraika/backend.env; \
 	uvicorn service.app.main:app --reload --port=$(port)
 
 svc-api-test:

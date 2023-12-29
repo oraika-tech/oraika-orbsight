@@ -2,6 +2,7 @@ from typing import Any, Dict
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.engine import Engine
 from sqlmodel import Session, create_engine
 
 from service.common.config.app_settings import app_settings
@@ -13,8 +14,8 @@ core_db_engine = create_engine(
     pool_size=2, pool_pre_ping=True)
 
 
-def get_tenant_engine(tenant_id: UUID):
-    if tenant_id not in tenant_db_engines or tenant_db_engines[tenant_id]:
+def get_tenant_engine(tenant_id: UUID) -> Engine:
+    if tenant_id not in tenant_db_engines or not tenant_db_engines[tenant_id]:
         with Session(core_db_engine) as session:
             query = select(TenantGlobalConfig) \
                 .filter(TenantGlobalConfig.tenant_id == tenant_id) \

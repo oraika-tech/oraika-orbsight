@@ -6,6 +6,19 @@ from uuid import UUID
 from pydantic import BaseModel, validator
 
 
+class TableName(Enum):
+    CONFIG_CATEGORY = 'config_category'
+    CONFIG_ENTITY = 'config_entity'
+    CONFIG_OBSERVER = 'config_observer'
+    CONFIG_TAXONOMY = 'config_taxonomy'
+    INSIGHT_PROCESSED_DATA = 'insight_processed_data'
+    INSIGHT_RAW_DATA = 'insight_raw_data'
+    TENANT_CONFIG = 'tenant_config'
+    VIZ_CHART = 'viz_chart'
+    VIZ_DASHBOARD = 'viz_dashboard'
+    WORKFLOW_NODE_META = 'workflow_node_meta'
+
+
 class TenantType(int, Enum):
     TEST = -1
     DEMO = 0
@@ -23,7 +36,8 @@ class NodeMetaState(str, Enum):
     FAILED = 'FAILED'
 
 
-# Base Models
+# --------------- Base Models ---------------------------
+
 class HeaderAlias(BaseModel):
     column: str
     header: str
@@ -39,7 +53,8 @@ class FieldValue(BaseModel):
     value: Any
 
 
-# Dependent Models
+# --------------- Dependent Models ---------------------------
+
 class DataSourceSeriesDO(BaseModel):
     name: Optional[str]
     query: str

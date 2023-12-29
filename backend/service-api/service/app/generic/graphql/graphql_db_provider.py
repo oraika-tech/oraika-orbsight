@@ -1,12 +1,22 @@
 import logging
 from datetime import datetime
+from typing import Type, Callable, Any
 from uuid import UUID
 
+from pydantic import BaseModel
 from sqlalchemy import MetaData, false
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
+from sqlmodel import SQLModel
 
+from service.app.business.business_models import CategoryInfo, EntityInfo, ObserverInfo, OBSERVER_TYPE, TaxonomyInfo
+from service.app.generic.graphql.graphql_models import ObserverData
 from service.common.infra.db.db_utils import get_tenant_engine
+from service.common.infra.db.repository.business.category_repository import CategoryEntity
+from service.common.infra.db.repository.business.entity_repository import Entity
+from service.common.infra.db.repository.business.observer_repository import ObserverEntity
+from service.common.infra.db.repository.business.taxonomy_repository import TaxonomyEntity
+from service.common.utils.utils import search_dict
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +33,61 @@ metadata.reflect(engine, only=exposed_tables)
 Base = automap_base(metadata=metadata)
 Base.prepare()
 current_time = datetime.now()
+
+
+def convert_to_model_category(entity) -> CategoryInfo:
+    return CategoryInfo(
+        identifier=entity.identifier,
+        name=entity.name,
+        is_enabled=entity.is_enabled,
+    )
+
+
+def convert_to_model_entity(self) -> EntityInfo:
+    return EntityInfo(
+        identifier=self.identifier,
+        name=self.name,
+        tags=self.tags,
+        is_enabled=self.is_enabled,
+    )
+
+
+def convert_to_model_observer(self) -> ObserverInfo:
+    data_json = self.config_data
+    official_handle = next(search_dict(data_json, 'official_handle'), None)
+    url = next(search_dict(data_json, 'url'), None)
+    observer_type_str = OBSERVER_TYPE.get(self.type)
+    return ObserverInfo(
+        identifier=self.identifier,
+        name=self.name,
+        entity_id=self.entity_id,
+        entity_name=self.entity.name if self.entity else '',
+        is_enabled=self.is_enabled,
+        type=observer_type_str,
+        config_data=ObserverData(
+            official_handle=official_handle,
+            url=url
+        )
+    )
+
+
+def convert_to_model_config(self) -> TaxonomyInfo:
+    return TaxonomyInfo(
+        identifier=self.identifier,
+        term=self.term,
+        keyword=self.keyword,
+        description=self.description,
+        tags=self.tags,
+        is_enabled=self.is_enabled
+    )
+
+
+entity_converter: dict[Type[SQLModel], Callable[[Any], BaseModel]] = {
+    CategoryEntity: convert_to_model_category,
+    Entity: convert_to_model_entity,
+    ObserverEntity: convert_to_model_observer,
+    TaxonomyEntity: convert_to_model_config
+}
 
 
 def get_table_objects() -> dict:

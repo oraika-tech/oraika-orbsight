@@ -1,5 +1,6 @@
 import logging
-from typing import Optional
+from typing import Optional, Any
+from uuid import UUID
 
 from fastapi import HTTPException, status
 from fastapi.exceptions import RequestValidationError
@@ -58,11 +59,19 @@ def validation_exception_handler(request: Request, exc: RequestValidationError):
         raise e
 
 
+def clean_value(value: Any) -> Any:
+    if isinstance(value, UUID):
+        return str(value)
+    else:
+        return value
+
+
 def http_exception(status_code: int, msg: str, data: Optional[dict] = None) -> HTTPException:
     if data:
+        clean_data = {k: clean_value(v) for k, v in data.items() if v is not None}
         return HTTPException(
             status_code=status_code,
-            detail=ErrorData(message=msg, data=data)
+            detail=ErrorData(message=msg, data=clean_data)
         )
     else:
         return HTTPException(

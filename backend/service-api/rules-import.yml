@@ -29,6 +29,7 @@ rules:
     type: allowed
     from: service.app.*.*_apis
     to:
+      - service.*.*_controller**
       - service.*.*_service.**
       - service.**.domain.**
       - service.app.auth.domain.user_service.get_current_user
@@ -43,7 +44,9 @@ rules:
 
   - title: Domain layer access db_provider and other domain service
     type: allowed
-    from: service.app.**.*_service
+    from:
+      - service.app.**.*_service
+      - service.app.**.*_controller
     to:
       - service.app.**.*_service.**
       - service.app.**.*_db_provider**
@@ -67,7 +70,9 @@ rules:
 
   - title: Only db_provider is allowed to access db
     type: allowed
-    from: service.**.*_db_provider
+    from:
+      - service.**.*_db_provider
+      - service.app.generic.rest.dynamic_entities
     to:
       - service.common.infra.db.**
       - service.**.reflection_utils
@@ -99,7 +104,15 @@ rules:
       - service.common.infra.db.db_utils.**
       - service.common.models.**
 
-  - title: Repositories can's access anything except common utils & models
+  - title: Curd repository can access only common utils & models
+    type: allow
+    from: service.common.infra.db.repository.generic.crud_repository
+    to:
+      - service.common.infra.db.repository.generic.crud_models.**
+      - service.common.infra.db.db_utils.**
+      - service.common.models.**
+
+  - title: Repositories can't access anything except common utils & models
     type: forbidden
     from: service.common.infra.db.repository.**
     to: service.**

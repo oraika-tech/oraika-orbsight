@@ -12,7 +12,7 @@ class EntityInput:
 
 
 @strawberry.type
-class Entity:
+class EntityInfo:
     identifier: UUID
     name: str
     tags: Optional[List[str]]
@@ -30,7 +30,7 @@ class ObserverData:
 
 
 @strawberry.type
-class Observer:
+class ObserverInfo:
     identifier: Optional[UUID]
     name: str
     type: str
@@ -40,7 +40,7 @@ class Observer:
 
 
 @strawberry.type
-class Taxonomy:
+class TaxonomyInfo:
     identifier: Optional[UUID]
     keyword: str
     term: str

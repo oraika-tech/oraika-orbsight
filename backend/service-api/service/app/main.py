@@ -13,7 +13,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from service.app import api_router
 from service.app.common.api_logger import log_requests
 from service.app.common.exception_handler import http_exception_handler, validation_exception_handler
-from service.app.generic import graphql_apis
+from service.app.generic.graphql import graphql_apis
 from service.common.config.app_settings import app_settings
 
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()

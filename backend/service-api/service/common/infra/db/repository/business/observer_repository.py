@@ -10,6 +10,7 @@ from service.common.infra.db.db_utils import get_tenant_engine
 
 class ObserverEntity(SQLModel, table=True):
     __tablename__ = "config_observer"
+    extend_existing = True  # todo: remove this after migration
 
     identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
     name: str

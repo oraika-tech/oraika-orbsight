@@ -2,7 +2,7 @@ import strawberry
 from fastapi import APIRouter
 from strawberry.asgi import GraphQL
 
-from service.app.generic.generic_service import Query, Mutation
+from service.app.generic.graphql.graphql_service import Query, Mutation
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
