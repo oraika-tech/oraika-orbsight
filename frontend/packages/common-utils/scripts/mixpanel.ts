@@ -6,7 +6,7 @@ const enabled = process.env.NEXT_PUBLIC_MIX_PANEL_ENABLED === 'true';
 export function mixPanelSetup() {
     const token = process.env.NEXT_PUBLIC_MIX_PANEL_TOKEN;
 
-    if (enabled) {
+    if (enabled && token) {
         mixpanel.init(token);
         mixpanel.track('Oraika Loaded');
     }

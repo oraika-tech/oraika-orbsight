@@ -55,17 +55,17 @@ export default function App(props: AppProps) {
                 />
             </Head>
 
-            {process.env.NEXT_PUBLIC_GA_ID &&
+            {process.env.NEXT_PUBLIC_GA_ENABLED === 'true' &&
                 <Script
                     async
                     src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
                 />
             }
-            {process.env.NEXT_PUBLIC_GA_ID &&
+            {process.env.NEXT_PUBLIC_GA_ENABLED === 'true' &&
                 <Script id="google-analytics"> {googleAnalyticsScript} </Script>
             }
 
-            {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID &&
+            {process.env.NEXT_PUBLIC_CLARITY_ENABLED === 'true' &&
                 <Script id="clarity-tracking"> {clarityScript} </Script>
             }
 
@@ -77,8 +77,7 @@ export default function App(props: AppProps) {
                 </AuthProvider>
             </MDXProvider>
 
-            {
-                process.env.NEXT_PUBLIC_TAWK_WIDGET_ID &&
+            {process.env.NEXT_PUBLIC_TAWK_ENABLED === 'true' &&
                 <TawkMessenger
                     propertyId={process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID}
                     widgetId={process.env.NEXT_PUBLIC_TAWK_WIDGET_ID}
