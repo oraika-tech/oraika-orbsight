@@ -18,8 +18,6 @@ import {
     IconMail,
     IconMoodSmile
 } from '@tabler/icons-react';
-import image from 'assets/images/demo-login-background.png';
-import brand from 'assets/images/oraika-logo.png';
 import { EMAIL_FORMAT_ERROR, doDemoLogin, getProfile } from 'common-utils/service/auth-service';
 import { emailValidation, getRandomNumber } from 'common-utils/utils';
 import AlertMessage from 'mantine-components/components/AlertMessage';
@@ -27,6 +25,8 @@ import { UserContext } from 'mantine-components/components/Auth/AuthProvider';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useRef, useState } from 'react';
+import image from '../../assets/images/demo-login-background.png';
+import brand from '../../assets/images/oraika-logo.png';
 
 import classes from './DemoLogin.module.css';
 

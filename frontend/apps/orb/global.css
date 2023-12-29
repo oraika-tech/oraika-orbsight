@@ -2,6 +2,10 @@ link {
     text-decoration: none;
 }
 
+body {
+    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-5));
+}
+
 h1 {
     align-items: center;
     color: light-dark(

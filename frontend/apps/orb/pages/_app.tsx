@@ -1,4 +1,4 @@
-import { Box, MantineProvider, Text, Title } from '@mantine/core';
+import { MantineProvider, Text, Title } from '@mantine/core';
 import '@mantine/core/styles.css';
 import { MDXProvider } from '@mdx-js/react';
 import { MDXComponents } from '@mdx-js/react/lib';
@@ -14,6 +14,7 @@ import Head from 'next/head';
 import Script from 'next/script';
 import { getLoginUrl } from '../business-logic/login/loginUtility';
 import { globalTheme } from '../business-logic/theme/theme';
+import WithRefine from '../components/Refine/WithRefine';
 import '../global.css';
 import classes from './_app.module.css';
 
@@ -33,57 +34,56 @@ export default function App(props: AppProps) {
 
     return (
         <MantineProvider theme={{ ...globalTheme }}>
-            <Box>
-                <Head>
-                    <title>Orbsight</title>
-                    <meta
-                        name="viewport"
-                        content="minimum-scale=1, initial-scale=1, width=device-width"
-                    />
-                    <link rel="shortcut icon" href="/favicon.png" />
+            <Head>
+                <title>Orbsight</title>
+                <meta
+                    name="viewport"
+                    content="minimum-scale=1, initial-scale=1, width=device-width"
+                />
+                <link rel="shortcut icon" href="/favicon.png" />
 
-                    <meta name="twitter:title" content="Orbsight" />
-                    <meta
-                        name="google-site-verification"
-                        content="JQGIVVDWGeihwo5GRrGZkhx3DUc8rMy9FaV0_qQecGM"
-                    />
-                    <meta
-                        name="description"
-                        // eslint-disable-next-line max-len
-                        content="Unlock the potential of your technical infrastructure with our expert team
+                <meta name="twitter:title" content="Orbsight" />
+                <meta
+                    name="google-site-verification"
+                    content="JQGIVVDWGeihwo5GRrGZkhx3DUc8rMy9FaV0_qQecGM"
+                />
+                <meta
+                    name="description"
+                    // eslint-disable-next-line max-len
+                    content="Unlock the potential of your technical infrastructure with our expert team
                     Optimize performance, reduce costs, and achieve success"
-                    />
-                </Head>
+                />
+            </Head>
 
-                {process.env.NEXT_PUBLIC_GA_ID &&
-                    <Script
-                        async
-                        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-                    />
-                }
-                {process.env.NEXT_PUBLIC_GA_ID &&
-                    <Script id="google-analytics"> {googleAnalyticsScript} </Script>
-                }
+            {process.env.NEXT_PUBLIC_GA_ID &&
+                <Script
+                    async
+                    src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+                />
+            }
+            {process.env.NEXT_PUBLIC_GA_ID &&
+                <Script id="google-analytics"> {googleAnalyticsScript} </Script>
+            }
 
-                {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID &&
-                    <Script id="clarity-tracking"> {clarityScript} </Script>
-                }
+            {process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID &&
+                <Script id="clarity-tracking"> {clarityScript} </Script>
+            }
 
-                <MDXProvider components={components}>
-                    <AuthProvider loginUrl={getLoginUrl()}>
+            <MDXProvider components={components}>
+                <AuthProvider loginUrl={getLoginUrl()}>
+                    <WithRefine>
                         <Component {...pageProps} />
-                    </AuthProvider>
-                </MDXProvider>
+                    </WithRefine>
+                </AuthProvider>
+            </MDXProvider>
 
-                {
-                    process.env.NEXT_PUBLIC_TAWK_WIDGET_ID &&
-                    <TawkMessenger
-                        propertyId={process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID}
-                        widgetId={process.env.NEXT_PUBLIC_TAWK_WIDGET_ID}
-                    />
-                }
-
-            </Box>
+            {
+                process.env.NEXT_PUBLIC_TAWK_WIDGET_ID &&
+                <TawkMessenger
+                    propertyId={process.env.NEXT_PUBLIC_TAWK_PROPERTY_ID}
+                    widgetId={process.env.NEXT_PUBLIC_TAWK_WIDGET_ID}
+                />
+            }
         </MantineProvider>
     );
 }

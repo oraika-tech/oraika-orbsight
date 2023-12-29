@@ -13,15 +13,23 @@ export default function ConfirmPanel({ onConfirm, onCancel }: ConfirmPanelProps)
                 size="xs"
                 variant="filled"
                 onClick={onConfirm}
+                pb={0}
+                pt={0}
+                pl={10}
+                pr={10}
             >
-                <IconCheck size={20} />
+                <IconCheck size={15} />
             </Button>
             <Button
                 size="xs"
                 variant="outline"
                 onClick={onCancel}
+                pb={0}
+                pt={0}
+                pl={10}
+                pr={10}
             >
-                <IconX size={20} />
+                <IconX size={15} />
             </Button>
         </Group>
     );

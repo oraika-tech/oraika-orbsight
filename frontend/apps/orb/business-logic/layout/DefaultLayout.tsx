@@ -13,10 +13,6 @@ import {
     IconTextCaption,
     IconTopologyStar2
 } from '@tabler/icons-react';
-import oraikaLogo from 'assets/images/oraika-logo.png';
-import playarenaLogo from 'assets/images/play-arena-logo.png';
-import playjuniorsLogo from 'assets/images/play-juniors-logo.png';
-import shohozLogo from 'assets/images/shohoz-logo.png';
 import { PdfMode, handleDownloadPdf } from 'common-utils/service/pdf-service';
 import { capitalizeFirstLetter, getCurrentDateTimeFormatted } from 'common-utils/utils/common';
 import { UserContext } from 'mantine-components/components/Auth/AuthProvider';
@@ -25,6 +21,10 @@ import { getDesktopLabelForId } from 'mantine-components/utils/routeUtils';
 import { StaticImageData } from 'next/image';
 import { useRouter } from 'next/router';
 import { ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import oraikaLogo from '../../assets/images/oraika-logo.png';
+import playarenaLogo from '../../assets/images/play-arena-logo.png';
+import playjuniorsLogo from '../../assets/images/play-juniors-logo.png';
+import shohozLogo from '../../assets/images/shohoz-logo.png';
 import PdfDialog from '../../components/PdfDialog/PdfDialog';
 import { getDashboards } from '../../lib/service/dashboard-service';
 import { LandingPageHeader } from '../LandingPage/Header/Header';
@@ -35,7 +35,8 @@ interface DefaultLayoutProps {
     children: ReactNode
 }
 
-function routeExist(path: string, data: LinkData[]): boolean {
+function routeExist(rawPath: string, data: LinkData[]): boolean {
+    const [path] = rawPath.split('?');
     for (const link of data) {
         if (link.link === path) {
             return true;

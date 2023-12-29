@@ -22,7 +22,8 @@ export default function UrlBreadcrumbs({ dashboardLinks }: UrlBreadcrumbsProps) 
 
     const dashboardMap = getDesktopLabelForId(dashboardLinks);
 
-    const items = pathnames.map((path: string, index: number) => {
+    const items = pathnames.map((rawPath: string, index: number) => {
+        const [path] = rawPath.split('?');
         if (dashboardMap.has(path)) {
             return <Text key={index}>{dashboardMap.get(path)}</Text>;
         } else if (path.replaceAll('-', '').match(/^[0-9a-f]{32}$/i)) {

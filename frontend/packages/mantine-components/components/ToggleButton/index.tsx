@@ -14,7 +14,6 @@ interface ToggleButtonProps {
 }
 
 export default function ToggleButton({ value, handleToggle }: ToggleButtonProps) {
-    const { id } = value;
     const [isEnabled, setIsEnabled] = useState(value.isEnabled);
     const [buttonState, setButtonState] = useState(ButtonState.Initial);
 
@@ -35,7 +34,7 @@ export default function ToggleButton({ value, handleToggle }: ToggleButtonProps)
 
     const confirmHandler = () => {
         setButtonState(ButtonState.Loading);
-        handleToggle(id, !isEnabled, handlerDone);
+        handleToggle(value.id, !isEnabled, handlerDone);
     };
 
     switch (buttonState) {

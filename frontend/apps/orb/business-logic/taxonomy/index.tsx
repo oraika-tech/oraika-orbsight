@@ -1,11 +1,11 @@
-import { Card, Grid, Space, Stack, Title } from '@mantine/core';
+import { Grid } from '@mantine/core';
 
 // import Category from 'layouts/category';
 import { useEffect, useState } from 'react';
 // import { getTaxonomies } from 'service/taxonomy-service';
 import { getTaxonomies } from '../../lib/service/taxonomy-service';
-import Category from '../category';
-import TaxonomyTable from './TaxonomyTable';
+import CategoryRefine from './CategoryRefine';
+import TaxonomyRefine from './TaxonomyRefine';
 
 interface ResponseTaxonomy {
     identifier: string
@@ -52,21 +52,10 @@ export default function Taxonomy() {
     return (
         <Grid gutter="md">
             <Grid.Col span={{ base: 12, xs: 8 }}>
-                <Card>
-                    <Stack gap="xs">
-                        <Title order={2} style={{ height: '3rem', padding: '0.3rem' }}>Terms</Title>
-                        <TaxonomyTable rows={taxonomies} loading={loading} />
-                    </Stack>
-                </Card>
+                <TaxonomyRefine />
             </Grid.Col>
             <Grid.Col span={{ base: 12, xs: 4 }}>
-                <Card style={{ height: '71vh' }}>
-                    <Stack gap="xl">
-                        <Title order={2} style={{ height: '3rem' }}>Categories</Title>
-                        <Space h="xl" />
-                        <Category />
-                    </Stack>
-                </Card>
+                <CategoryRefine />
             </Grid.Col>
         </Grid>
     );

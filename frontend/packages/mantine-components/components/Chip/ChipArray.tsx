@@ -12,6 +12,7 @@ export interface ChipArrayProps {
 
 export default function ChipArray({ chipList, bgColor, ...props }: ChipArrayProps) {
     const spacing = props.spacing === undefined ? 1 : props.spacing;
+    chipList = chipList || [];
 
     const badgeList = chipList.map((chip: string) => (
         <Badge

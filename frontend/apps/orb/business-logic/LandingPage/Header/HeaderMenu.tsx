@@ -1,10 +1,10 @@
 import { Box, Burger, Button, Center, Group, Image, Menu } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons-react';
-import LOGO from 'assets/images/oraika-logo.png';
 import cx from 'clsx';
 import { ColorSchemeToggle } from 'mantine-components/components/ColorSchemeToggle';
 import { useState } from 'react';
+import LOGO from '../../../assets/images/oraika-logo.png';
 import classes from './HeaderMenu.module.css';
 
 export interface HeaderLink {

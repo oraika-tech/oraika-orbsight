@@ -1,5 +1,5 @@
 import { Meta } from '@storybook/react';
-import ChipArray from '../../components/Chip/ChipArray';
+import ChipArray from './ChipArray';
 
 export default {
     title: 'ChipArray',

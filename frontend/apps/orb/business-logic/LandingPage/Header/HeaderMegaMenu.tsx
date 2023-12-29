@@ -1,12 +1,12 @@
 import { Box, Center, Group, Image, Menu } from '@mantine/core';
 import { IconChevronDown } from '@tabler/icons-react';
-import LOGO from 'assets/images/oraika-logo.png';
 import cx from 'clsx';
 import { ColorSchemeToggle } from 'mantine-components/components/ColorSchemeToggle';
 import { SubLinkData } from 'mantine-components/components/Navbars/NestedNavbar';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import LOGO from '../../../assets/images/oraika-logo.png';
 import LayoutPanel from '../../layout/LayoutPanel';
 import classes from './HeaderMegaMenu.module.css';
 

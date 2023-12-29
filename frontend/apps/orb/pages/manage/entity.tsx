@@ -1,10 +1,10 @@
-import Entity from '../../business-logic/entity';
+import EntityRefine from '../../business-logic/entity/EntityRefine';
 import DefaultLayout from '../../business-logic/layout/DefaultLayout';
 
 export default function EntityPage() {
     return (
         <DefaultLayout>
-            <Entity />
+            <EntityRefine />
         </DefaultLayout>
     );
 }
