@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset girish:insight_ddl_002 runOnChange:true
+--changeset girish:insight_ddl_101 runOnChange:true
 
 CREATE SCHEMA IF NOT EXISTS data_view;
 

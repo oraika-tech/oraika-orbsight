@@ -14,4 +14,3 @@ include $(svc_api_dir)/Makefile
 db_dir=database
 include $(db_dir)/Makefile
 
-tenant_onboarding_dir=src/lambda/tenant_onboarding
