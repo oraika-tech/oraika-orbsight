@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import Column, true, false
 from sqlalchemy.dialects.postgresql import ARRAY, UUID as DB_UUID
-from sqlmodel import Field as SqlField
+from sqlmodel import Field, select
 from sqlmodel import Session, SQLModel
 
 from service.common.infra.db.db_utils import core_db_engine
@@ -12,8 +12,8 @@ from service.common.infra.db.db_utils import core_db_engine
 class UserEntity(SQLModel, table=True):
     __tablename__ = "user_master"
 
-    identifier: Optional[UUID] = SqlField(default=None, primary_key=True)
-    tenant_ids: List[UUID] = SqlField(sa_column=Column(ARRAY(DB_UUID)))
+    identifier: Optional[UUID] = Field(default=None, primary_key=True)
+    tenant_ids: List[UUID] = Field(sa_column=Column(ARRAY(DB_UUID)))
     name: str
     email: str
     hash_password: str
@@ -23,17 +23,21 @@ class UserEntity(SQLModel, table=True):
 
 def get_user_by_id(user_id: str) -> Optional[UserEntity]:
     with Session(core_db_engine) as session:
-        return session.query(UserEntity).filter(
-            UserEntity.identifier == user_id,
-            UserEntity.is_enabled == true(),
-            UserEntity.is_deleted == false()
+        return session.exec(
+            select(UserEntity).where(
+                UserEntity.identifier == user_id,
+                UserEntity.is_enabled == true(),
+                UserEntity.is_deleted == false()
+            )
         ).first()
 
 
 def get_user_by_email(email: str) -> Optional[UserEntity]:
     with Session(core_db_engine) as session:
-        return session.query(UserEntity).filter(
-            UserEntity.is_deleted == false(),
-            UserEntity.is_enabled == true(),
-            UserEntity.email == email
+        return session.exec(
+            select(UserEntity).where(
+                UserEntity.is_deleted == false(),
+                UserEntity.is_enabled == true(),
+                UserEntity.email == email
+            )
         ).first()

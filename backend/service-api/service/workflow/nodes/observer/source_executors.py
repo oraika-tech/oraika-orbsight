@@ -16,7 +16,8 @@ from obsei.source.google_news_source import GoogleNewsSource, GoogleNewsConfig
 from obsei.source.playstore_scrapper import PlayStoreScrapperConfig, PlayStoreScrapperSource
 from obsei.source.reddit_source import RedditSource, RedditConfig, RedditCredInfo
 from obsei.source.twitter_source import TwitterSource, TwitterSourceConfig, TwitterCredentials
-from pydantic import BaseModel, BaseSettings, SecretStr, Field
+from pydantic import BaseModel, SecretStr, Field
+from pydantic_settings import BaseSettings
 
 from service.common.utils.dateutils import convert_to_local_time
 
@@ -38,14 +39,14 @@ class ObserverJobData(BaseModel):
     tenant_id: UUID
     observer_id: UUID
     observer_type: ObserverType  # - app | twitter
-    url: Optional[str]
-    query: Optional[str]
-    country: Optional[str]
-    language: Optional[str]
-    page_id: Optional[str]
-    subreddit: Optional[str]
-    lookup_period: Optional[str]
-    limit_count: Optional[int]
+    url: Optional[str] = None
+    query: Optional[str] = None
+    country: Optional[str] = None
+    language: Optional[str] = None
+    page_id: Optional[str] = None
+    subreddit: Optional[str] = None
+    lookup_period: Optional[str] = None
+    limit_count: Optional[int] = None
 
 
 class SourceConfig(BaseModel):
@@ -55,10 +56,10 @@ class SourceConfig(BaseModel):
 
 class ObseiResponse(BaseModel):
     reference_id: str
-    parent_reference_id: Optional[str]
+    parent_reference_id: Optional[str] = None
     raw_text: str
     event_time: datetime
-    data: Optional[Dict[str, Any]]
+    data: Optional[Dict[str, Any]] = None
 
 
 class BaseObserverExecutor(BaseSettings):
@@ -118,9 +119,9 @@ class BaseObserverExecutor(BaseSettings):
 
 
 class TwitterExecutor(BaseObserverExecutor):
-    type = ObserverType.Twitter
+    type: ObserverType = ObserverType.Twitter
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
-    source = TwitterSource()
+    source: BaseSource = TwitterSource()
     id_column: str = 'id'
     time_column: str = 'created_at'
     drop_columns: List[str] = ['text']
@@ -145,9 +146,9 @@ class TwitterExecutor(BaseObserverExecutor):
 
 
 class PlayStoreExecutor(BaseObserverExecutor):
-    type = ObserverType.Android
+    type: ObserverType = ObserverType.Android
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=10)
-    source = PlayStoreScrapperSource()
+    source: BaseSource = PlayStoreScrapperSource()
     id_column: str = 'reviewId'
     time_column: str = 'at'
     drop_columns: List[str] = ['content']
@@ -163,9 +164,9 @@ class PlayStoreExecutor(BaseObserverExecutor):
 
 
 class AppleStoreExecutor(BaseObserverExecutor):
-    type = ObserverType.iOS
+    type: ObserverType = ObserverType.iOS
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=450)
-    source = AppStoreScrapperSource()
+    source: BaseSource = AppStoreScrapperSource()
     id_column: str = 'id'
     time_column: str = 'date'
     drop_columns: List[str] = ['content']
@@ -180,10 +181,10 @@ class AppleStoreExecutor(BaseObserverExecutor):
 
 
 class GoogleMapsExecutor(BaseObserverExecutor):
-    type = ObserverType.GoogleMaps
-    api_key: Optional[SecretStr] = Field(None, env="OUTSCRAPPER_API_KEY")
+    type: ObserverType = ObserverType.GoogleMaps
+    api_key: Optional[SecretStr] = Field(None, alias="OUTSCRAPPER_API_KEY")
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
-    source = OSGoogleMapsReviewsSource()
+    source: BaseSource = OSGoogleMapsReviewsSource()
     id_column: str = 'review_id'
     time_column: str = 'review_timestamp'
     drop_columns: List[str] = ['review_text', 'google_id', 'author_link', 'author_image', 'author_img_url',
@@ -210,9 +211,9 @@ class GoogleMapsExecutor(BaseObserverExecutor):
 
 class FacebookExecutor(BaseObserverExecutor):
     # TODO: Test it before releasing to client
-    type = ObserverType.Facebook
+    type: ObserverType = ObserverType.Facebook
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
-    source = FacebookSource()
+    source: BaseSource = FacebookSource()
     id_column: str = 'id'
     time_column: str = 'created_time'
     drop_columns: List[str] = ['message']
@@ -232,9 +233,9 @@ class FacebookExecutor(BaseObserverExecutor):
 
 class RedditExecutor(BaseObserverExecutor):
     # TODO: Test it before releasing to client
-    type = ObserverType.Reddit
+    type: ObserverType = ObserverType.Reddit
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
-    source = RedditSource()
+    source: BaseSource = RedditSource()
     id_column: str = 'id'
     time_column: str = 'created_utc'
     drop_columns: List[str] = ['body_html']
@@ -257,9 +258,9 @@ class RedditExecutor(BaseObserverExecutor):
 
 class GoogleNewsExecutor(BaseObserverExecutor):
     # TODO: Test it before releasing to client
-    type = ObserverType.Reddit
+    type: ObserverType = ObserverType.Reddit
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=10)
-    source = GoogleNewsSource()
+    source: BaseSource = GoogleNewsSource()
     drop_id_column: bool = False
     id_column: str = 'url'
     time_column: str = 'published date'
@@ -292,7 +293,7 @@ class GoogleNewsExecutor(BaseObserverExecutor):
             response.meta.pop(column, None)
 
         # Drop publisher.keymap
-        publisher_dict: Dict[str, Any] = response.meta.pop('publisher', None)
+        publisher_dict: Optional[Dict[str, Any]] = response.meta.pop('publisher', None)
         if publisher_dict:
             for k, v in publisher_dict.items():
                 response.meta["publisher_" + k] = v

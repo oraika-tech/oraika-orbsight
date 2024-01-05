@@ -2,9 +2,8 @@ from typing import List, Dict, Any
 from uuid import UUID
 
 from pydantic import BaseModel
-from sqlalchemy import true, func, false
-from sqlalchemy.sql import label
-from sqlmodel import Session
+from sqlalchemy import true, func, false, literal_column, Boolean
+from sqlmodel import Session, select, cast
 
 from service.common.infra.db.db_utils import get_tenant_engine
 from service.common.infra.db.repository.business.category_repository import CategoryEntity
@@ -20,44 +19,41 @@ class EntityCount(BaseModel):
 
 def get_observer_tasks(tenant_id: UUID) -> List[Dict[Any, Any]]:
     with Session(get_tenant_engine(tenant_id)) as session:
-        query = session.query().filter(
+        query = select(ObserverEntity, Entity).where(
             ObserverEntity.is_enabled == true(),
             Entity.is_enabled == true(),
+            ObserverEntity.is_deleted == false(),
+            Entity.is_deleted == false(),
             ObserverEntity.entity_id == Entity.identifier
         )
+        results = session.exec(query.limit(200)).all()
 
-        query = query.add_columns(
-            ObserverEntity.identifier,
-            ObserverEntity.type,
-            label("url", ObserverEntity.config_data["url"].astext if ObserverEntity.config_data is not None else None),
-            label("query", ObserverEntity.config_data["query"].astext if ObserverEntity.config_data is not None else None),
-            label("language", ObserverEntity.config_data["language"].astext if ObserverEntity.config_data is not None else None),
-            label("country", ObserverEntity.config_data["country"].astext if ObserverEntity.config_data is not None else None),
-            label("page_id", ObserverEntity.config_data["page_id"].astext if ObserverEntity.config_data is not None else None),
-            label("subreddit", ObserverEntity.config_data["subreddit"].astext if ObserverEntity.config_data is not None else None),
-        )
-
-        results = query.limit(200).all()
-        return results
+        return [
+            {
+                "identifier": observer.identifier,
+                "type": observer.type,
+                "url": (observer.config_data.get("url") if observer.config_data is not None else None),
+                "query": (observer.config_data.get("query") if observer.config_data is not None else None),
+                "language": (observer.config_data.get("language") if observer.config_data is not None else None),
+                "country": (observer.config_data.get("country") if observer.config_data is not None else None),
+                "page_id": (observer.config_data.get("page_id") if observer.config_data is not None else None),
+                "subreddit": (observer.config_data.get("subreddit") if observer.config_data is not None else None)
+            }
+            for observer, entity in results
+        ]
 
 
 def enabled_categories_count(tenant_id: UUID) -> List[EntityCount]:
     with Session(get_tenant_engine(tenant_id)) as session:
+        total: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(CategoryEntity.is_deleted == false())
+        ).one()
 
-        result_set = session.query(
-            CategoryEntity.is_enabled,
-            func.count(CategoryEntity.is_enabled)
-        ).group_by(
-            CategoryEntity.is_enabled
-        ).filter(
-            CategoryEntity.is_deleted == false(),
-        ).all()
-        total = 0
-        tracked = 0
-        for flag, count in result_set:
-            total += int(count)
-            if flag:
-                tracked = int(count)
+        tracked: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(CategoryEntity.is_deleted == false(), CategoryEntity.is_enabled == true())
+        ).one()
 
         return [
             EntityCount(name="Tracked", count=tracked),
@@ -67,20 +63,15 @@ def enabled_categories_count(tenant_id: UUID) -> List[EntityCount]:
 
 def enabled_entities_count(tenant_id: UUID) -> List[EntityCount]:
     with Session(get_tenant_engine(tenant_id)) as session:
-        result_set = session.query(
-            Entity.is_enabled,
-            func.count(Entity.is_enabled)
-        ).group_by(
-            Entity.is_enabled
-        ).filter(
-            Entity.is_deleted == false(),
-        ).all()
-        total = 0
-        tracked = 0
-        for flag, count in result_set:
-            total += int(count)
-            if flag:
-                tracked = int(count)
+        total: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(Entity.is_deleted == false())
+        ).one()
+
+        tracked: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(Entity.is_deleted == false(), Entity.is_enabled == true())
+        ).one()
 
         return [
             EntityCount(name="Tracked", count=tracked),
@@ -90,27 +81,22 @@ def enabled_entities_count(tenant_id: UUID) -> List[EntityCount]:
 
 def enabled_observers_count(tenant_id: UUID) -> List[EntityCount]:
     with Session(get_tenant_engine(tenant_id)) as session:
-        total_count = session.query(
-            func.count(ObserverEntity.is_enabled)
-        ).filter(
-            ObserverEntity.is_deleted == false(),
-        ).first()
+        total: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(ObserverEntity.is_deleted == false())
+        ).one()
 
-        total = total_count[0]  # type: ignore
-
-        result_set = session.query(
-            func.count(ObserverEntity.is_enabled)
-        ).filter(
-            ObserverEntity.entity_id == Entity.identifier,
-            ObserverEntity.is_enabled == true(),
-            Entity.is_enabled == true(),
-            Entity.is_deleted == false(),
-            ObserverEntity.is_deleted == false(),
-        ).all()
-
-        tracked = 0
-        for count in result_set:
-            tracked += count[0]
+        tracked: int = session.exec(
+            select(func.count(literal_column('*')))
+            .select_from(ObserverEntity)
+            .join(Entity, onclause=cast(ObserverEntity.entity_id == Entity.identifier, Boolean))
+            .where(
+                ObserverEntity.is_deleted == false(),
+                ObserverEntity.is_enabled == true(),
+                Entity.is_enabled == true(),
+                Entity.is_deleted == false()
+            )
+        ).one()
 
         return [
             EntityCount(name="Tracked", count=tracked),
@@ -120,21 +106,15 @@ def enabled_observers_count(tenant_id: UUID) -> List[EntityCount]:
 
 def enabled_taxonomy_count(tenant_id: UUID) -> List[EntityCount]:
     with Session(get_tenant_engine(tenant_id)) as session:
+        total: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(TaxonomyEntity.is_deleted == false())
+        ).one()
 
-        result_set = session.query(
-            TaxonomyEntity.is_enabled,
-            func.count(TaxonomyEntity.is_enabled)
-        ).group_by(
-            TaxonomyEntity.is_enabled
-        ).filter(
-            TaxonomyEntity.is_deleted == false(),
-        ).all()
-        total = 0
-        tracked = 0
-        for flag, count in result_set:
-            total += int(count)
-            if flag:
-                tracked = int(count)
+        tracked: int = session.exec(
+            select(func.count(literal_column('*')))
+            .where(TaxonomyEntity.is_deleted == false(), TaxonomyEntity.is_enabled == true())
+        ).one()
 
         return [
             EntityCount(name="Tracked", count=tracked),

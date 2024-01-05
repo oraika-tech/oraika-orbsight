@@ -5,16 +5,16 @@ from pydantic import BaseModel
 
 
 class TenantInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
     code: str
 
 
 class UserInfo(BaseModel):
     identifier: str
-    preferred_tenant_id: Optional[UUID]
+    preferred_tenant_id: Optional[UUID] = None
     tenants: List[TenantInfo]
-    name: Optional[str]
+    name: Optional[str] = None
     email: str
 
 

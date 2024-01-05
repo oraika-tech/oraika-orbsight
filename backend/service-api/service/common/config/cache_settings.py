@@ -1,9 +1,9 @@
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 
 class CacheSettings(BaseSettings):
-    CACHE_TTL = 300
-    CACHE_MAX_SIZE = 32
+    CACHE_TTL: int = 300
+    CACHE_MAX_SIZE: int = 32
 
     class Config:
         case_sensitive = True

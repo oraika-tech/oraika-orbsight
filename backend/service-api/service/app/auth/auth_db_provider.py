@@ -30,10 +30,11 @@ def get_tenant_by_code_dp(tenant_code: str) -> Optional[TenantInfo]:
 
 def get_user_info_by_entity(user_entity: Optional[UserEntity]) -> Optional[UserInfo]:
     if user_entity:
-        tenants = get_tenant_by_ids(user_entity.tenant_ids)
+        tenant_entities = get_tenant_by_ids(user_entity.tenant_ids)
+        tenants_info = convert_models(tenant_entities, TenantInfo)
         return UserInfo(
             identifier=str(user_entity.identifier),
-            tenants=tenants,
+            tenants=tenants_info,
             name=user_entity.name,
             email=user_entity.email
         )

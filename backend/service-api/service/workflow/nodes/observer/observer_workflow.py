@@ -3,7 +3,6 @@ from typing import Dict, List, Optional, Any, cast
 from uuid import UUID
 
 from prefect import flow, task
-from pydantic import Field
 
 from service.app.business.business_db_provider import insert_raw_data_dp
 from service.app.data.data_models import RawData
@@ -14,8 +13,6 @@ from service.workflow.nodes.observer.source_executors import BaseObserverExecuto
     GoogleNewsExecutor, ObseiResponse, SourceConfig, ObserverType, ObserverJobData
 
 logger = logger_utils.initialize_logger(__name__)
-
-min_raw_text_length: int = Field(20, env='MIN_TEXT_LENGTH')
 
 observer_executors: Dict[ObserverType, BaseObserverExecutor] = {
     ObserverType.Twitter: TwitterExecutor(),

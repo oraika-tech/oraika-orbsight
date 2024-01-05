@@ -8,7 +8,7 @@ class AnalyzerJobRequest(BaseModel):
     tenant_id: UUID
     raw_data_id: int
     raw_text: str
-    message: Optional[Dict]
+    message: Optional[Dict] = None
 
 
 class UnstructuredDataRequest(BaseModel):
@@ -23,9 +23,9 @@ class StructuredData(BaseModel):
     categories: Optional[List[str]] = None
     people: Optional[List[str]] = None
     text_length: int
-    emotion: Optional[str]
+    emotion: Optional[str] = None
     remark: Optional[str] = None
-    text_language: Optional[str]
+    text_language: Optional[str] = None
 
 
 class TaxonomyData(BaseModel):

@@ -7,10 +7,10 @@ from service.common.infra.redis_provider import EntityRedisProvider
 
 
 class UserCache(BaseModel):
-    user_id: Optional[str]
-    user_name: Optional[str]
-    email: Optional[str]
-    preferred_tenant_id: Optional[str]
+    user_id: Optional[str] = None
+    user_name: Optional[str] = None
+    email: Optional[str] = None
+    preferred_tenant_id: Optional[str] = None
     tenant_ids: List[str]
 
     def __init__(self, entries=None, **data: Any):

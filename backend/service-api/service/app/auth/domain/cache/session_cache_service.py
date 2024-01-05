@@ -11,7 +11,7 @@ from service.common.utils.utils import now_epoch
 
 
 class SessionBase(BaseModel):
-    session_id: Optional[str]
+    session_id: Optional[str] = None
 
 
 class SessionCache(SessionBase):
@@ -24,11 +24,11 @@ class SessionCache(SessionBase):
 
 
 class UserSession(SessionCache):
-    email: Optional[str]
-    user_name: Optional[str]
-    preferred_tenant_id: Optional[str]
+    email: Optional[str] = None
+    user_name: Optional[str] = None
+    preferred_tenant_id: Optional[str] = None
     tenants: List[TenantCache]
-    expiry_at: Optional[int]
+    expiry_at: Optional[int] = None
 
 
 _entity_manager = EntityRedisProvider('ssn')

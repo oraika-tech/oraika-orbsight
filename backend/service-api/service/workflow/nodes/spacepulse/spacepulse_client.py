@@ -25,18 +25,15 @@ class SpacePulsePostRequest:
     id: int
     text: str
     source: str
-    link: Optional[str]
     sentiment: str
     departments: list[str]
     activities: list[str]
     people: list[str]
-    rating: Optional[int]
     timestamp: int
-    owner_answer_timestamp: Optional[int]
-    likes: Optional[int]
-
-    # def to_str(self):
-    #     return "\n".join(f"{key}: {value}" for key, value in asdict(self).items())
+    link: Optional[str] = None
+    rating: Optional[int] = None
+    owner_answer_timestamp: Optional[int] = None
+    likes: Optional[int] = None
 
     def to_json(self):
         return json.dumps(asdict(self))

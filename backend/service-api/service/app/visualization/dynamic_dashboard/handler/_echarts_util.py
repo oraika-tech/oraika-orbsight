@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class EchartsDataset(BaseModel):
-    dimensions: Optional[List[str]]
+    dimensions: Optional[List[str]] = None
     source: List[list]
 
 

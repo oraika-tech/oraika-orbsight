@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from enum import Enum
-from typing import Type, Any, Generic
+from typing import Type, Any, Generic, Sequence
 from typing import TypeVar, List, Union, Dict, Optional
 from uuid import UUID
 
@@ -9,8 +9,8 @@ from pydantic import BaseModel
 from sqlalchemy import MetaData, false
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.orm import Session, declarative_base
-from sqlmodel import SQLModel
+from sqlalchemy.orm import declarative_base
+from sqlmodel import SQLModel, Session, select
 
 from service.common.infra.db.db_utils import get_tenant_engine
 from service.common.infra.db.repository.generic.crud_models import get_entity_models
@@ -40,11 +40,11 @@ class CrudTableManager(Generic[ET]):
         self.tenant_engine = tenant_engine
         self.entity_model = entity_model
 
-    def _filter(self, query, field: str, value: Any):
+    def _where(self, query, field: str, value: Any):
         if hasattr(self.entity_model, field) and value is not None:
             if isinstance(value, UUID):
                 value = str(value)
-            query = query.filter(getattr(self.entity_model, field) == value)
+            query = query.where(getattr(self.entity_model, field) == value)
         return query
 
     def _sort(self, query, fields_ordering: list[FieldOrdering]):
@@ -59,15 +59,15 @@ class CrudTableManager(Generic[ET]):
         result.dict()  # Load lazy relationships before session is closed
         return result
 
-    def _complete_results(self, results: List[ET]) -> List[ET]:
+    def _complete_results(self, results: Sequence[ET]) -> List[ET]:
         return [self._complete_result(result) for result in results if result]
 
     def get(self, identifier: Union[int, str, UUID]) -> Optional[ET]:
         with Session(self.tenant_engine) as session:
-            query = session.query(self.entity_model)
-            query = self._filter(query, 'identifier', identifier)
-            query = self._filter(query, 'is_deleted', false())
-            data = query.first()
+            query = select(self.entity_model)
+            query = self._where(query, 'identifier', identifier)
+            query = self._where(query, 'is_deleted', false())
+            data = session.exec(query).first()
             if data:
                 return self._complete_result(data)
             else:
@@ -75,13 +75,13 @@ class CrudTableManager(Generic[ET]):
 
     def search(self, options: Optional[dict[str, Any]] = None, offset: Optional[int] = None, limit: Optional[int] = None) -> List[ET]:
         with Session(self.tenant_engine) as session:
-            query = session.query(self.entity_model)
+            query = select(self.entity_model)
 
-            query = self._filter(query, 'is_deleted', false())
+            query = self._where(query, 'is_deleted', false())
 
             if options:
                 for key, value in options.items():
-                    query = self._filter(query, key, value)
+                    query = self._where(query, key, value)
 
             query = self._sort(query, [
                 FieldOrdering(field='is_enabled', order=SortOrder.DESC),
@@ -94,7 +94,7 @@ class CrudTableManager(Generic[ET]):
             if limit:
                 query = query.limit(limit)
 
-            return self._complete_results(query.all())
+            return self._complete_results(session.exec(query).all())
 
     def create(self, entity_obj: Dict[str, Any]) -> ET:
         with Session(self.tenant_engine) as session:
@@ -106,10 +106,10 @@ class CrudTableManager(Generic[ET]):
 
     def update(self, identifier: Union[int, UUID], entity_obj: Dict[str, Any]) -> Optional[ET]:
         with Session(self.tenant_engine) as session:
-            query = session.query(self.entity_model)
-            query = self._filter(query, 'identifier', identifier)
-            query = self._filter(query, 'is_deleted', false())
-            data = query.first()
+            query = select(self.entity_model)
+            query = self._where(query, 'identifier', identifier)
+            query = self._where(query, 'is_deleted', false())
+            data = session.exec(query).first()
             if data:
                 for k, v in entity_obj.items():
                     setattr(data, k, v)
@@ -122,10 +122,10 @@ class CrudTableManager(Generic[ET]):
 
     def delete(self, identifier: Union[int, UUID]) -> Optional[ET]:
         with Session(self.tenant_engine) as session:
-            query = session.query(self.entity_model)
-            query = self._filter(query, 'identifier', identifier)
-            query = self._filter(query, 'is_deleted', false())
-            data = query.first()
+            query = select(self.entity_model)
+            query = self._where(query, 'identifier', identifier)
+            query = self._where(query, 'is_deleted', false())
+            data = session.exec(query).first()
             if data:
                 if hasattr(data, 'is_deleted'):
                     data.is_deleted = True

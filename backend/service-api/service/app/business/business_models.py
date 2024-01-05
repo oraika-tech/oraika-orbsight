@@ -15,12 +15,12 @@ OBSERVER_TYPE = {
 
 
 class ObserverData(BaseModel):
-    official_handle: Optional[str]
-    url: Optional[str]
+    official_handle: Optional[str] = None
+    url: Optional[str] = None
 
 
 class ObserverInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
     type: str
     entity_id: UUID
@@ -30,7 +30,7 @@ class ObserverInfo(BaseModel):
 
 
 class CategoryInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
     is_enabled: bool
 
@@ -41,21 +41,21 @@ class DashboardData(BaseModel):
 
 
 class EntityInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
     is_enabled: bool
 
 
 class StatsInfo(BaseModel):
     name: str
-    value: Optional[int]
+    value: Optional[int] = None
 
 
 class TaxonomyInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     keyword: str
     term: str
-    description: Optional[str]
-    tags: Optional[List[str]]
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
     is_enabled: bool

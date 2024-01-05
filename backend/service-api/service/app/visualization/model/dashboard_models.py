@@ -14,4 +14,4 @@ class DashboardDO(BaseModel):
     identifier: UUID
     frontend_keys: List[str]
     title: str
-    component_layout: Optional[ComponentLayoutDO]
+    component_layout: Optional[ComponentLayoutDO] = None

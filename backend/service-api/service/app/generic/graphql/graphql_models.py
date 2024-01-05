@@ -7,7 +7,7 @@ import strawberry
 @strawberry.input()
 class EntityInput:
     name: str
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
     is_enabled: bool
 
 
@@ -15,7 +15,7 @@ class EntityInput:
 class EntityInfo:
     identifier: UUID
     name: str
-    tags: Optional[List[str]]
+    tags: Optional[List[str]] = None
     is_enabled: bool
 
     @strawberry.field(name="id")
@@ -31,7 +31,7 @@ class ObserverData:
 
 @strawberry.type
 class ObserverInfo:
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
     type: str
     entity_id: UUID
@@ -41,9 +41,9 @@ class ObserverInfo:
 
 @strawberry.type
 class TaxonomyInfo:
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     keyword: str
     term: str
-    description: Optional[str]
-    tags: Optional[List[str]]
+    description: Optional[str] = None
+    tags: Optional[List[str]] = None
     is_enabled: bool

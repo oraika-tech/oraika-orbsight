@@ -4,9 +4,8 @@ import os
 from typing import Optional
 from uuid import UUID
 
-from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import flag_modified
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from service.common.infra.db.db_utils import get_tenant_engine
 from service.common.infra.db.repository.data.processed_data_repository import ProcessedDataEntity
@@ -52,10 +51,11 @@ def names_conversion(names: list[str]) -> list[str]:
     return new_names
 
 
-def update_unprocessed_data(tenant_id: UUID):
+def update_unprocessed_data(tenant_id: UUID, min_data_id: int):
     with Session(get_tenant_engine(tenant_id)) as session:
-        existing_records = session.query(ProcessedDataEntity).filter(
-            ProcessedDataEntity.raw_data_id >= 85
+        existing_records = session.exec(
+            select(ProcessedDataEntity)
+            .where(ProcessedDataEntity.raw_data_id >= min_data_id)
         ).all()
 
         for record in existing_records:
@@ -69,10 +69,11 @@ def update_unprocessed_data(tenant_id: UUID):
         session.commit()
 
 
-def update_specific_data(tenant_id: UUID):
+def update_specific_data(tenant_id: UUID, data_id: int):
     with Session(get_tenant_engine(tenant_id)) as session:
-        existing_record = session.query(ProcessedDataEntity).filter(
-            ProcessedDataEntity.identifier == 4069
+        existing_record = session.exec(
+            select(ProcessedDataEntity)
+            .where(ProcessedDataEntity.identifier == data_id)
         ).first()
 
         # existing_record.people = ["abc"]
@@ -84,5 +85,5 @@ def update_specific_data(tenant_id: UUID):
 playarena_id = UUID('02ddd60c-2d58-47cc-a445-275d8e621252')
 playjuniors_id = UUID('b6d5a44a-4626-491a-8fc0-3a11344d97f7')
 
-update_unprocessed_data(playjuniors_id)
-# update_specific_data(playarena_id)
+update_unprocessed_data(playjuniors_id, 1)
+# update_specific_data(playarena_id, 1)

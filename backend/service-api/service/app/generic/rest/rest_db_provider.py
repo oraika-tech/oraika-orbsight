@@ -12,7 +12,7 @@ DM = TypeVar('DM', bound=BaseModel)
 
 class RestTableProvider(Generic[DM]):
     domain_model: Type[DM]
-    field_map: Optional[dict[str, str]]
+    field_map: Optional[dict[str, str]] = None
     table_name: TableName
     tenant_table_manager: dict[UUID, CrudTableManager]
 

@@ -9,23 +9,23 @@ from service.common.models import TableName
 
 
 class EntityInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
-    tags: Optional[list[str]]
+    tags: Optional[list[str]] = None
     is_enabled: bool
     created_at: datetime
     updated_at: datetime
 
 
 class ObserverData(BaseModel):
-    official_handle: Optional[str]
-    url: Optional[str]
+    official_handle: Optional[str] = None
+    url: Optional[str] = None
 
 
 class ObserverInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
-    type: str
+    type: int
     entity_id: UUID
     entity_name: str
     config_data: ObserverData
@@ -35,17 +35,17 @@ class ObserverInfo(BaseModel):
 
 
 class CategoryInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     name: str
     is_enabled: bool
 
 
 class TaxonomyInfo(BaseModel):
-    identifier: Optional[UUID]
+    identifier: Optional[UUID] = None
     keyword: str
     term: str
-    description: Optional[str]
-    tags: Optional[list[str]]
+    description: Optional[str] = None
+    tags: Optional[list[str]] = None
     is_enabled: bool
 
 
@@ -53,7 +53,7 @@ class EntityCrudInfo(BaseModel):
     name: str
     controller_model: Type[BaseModel]
     table_name: TableName
-    field_map: Optional[dict[str, str]]
+    field_map: Optional[dict[str, str]] = None
 
 
 crud_entities = [

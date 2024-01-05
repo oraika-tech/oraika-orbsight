@@ -19,4 +19,4 @@ class ConfigData(BaseModel):
     key_columns: List[HeaderAlias]
 
     header: str
-    pivot: Optional[bool]
+    pivot: Optional[bool] = None

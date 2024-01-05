@@ -51,7 +51,7 @@ app.add_middleware(
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(StarletteHTTPException, http_exception_handler)
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
+app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
 
 app.include_router(api_router, prefix=app_settings.API_V1_STR)
 

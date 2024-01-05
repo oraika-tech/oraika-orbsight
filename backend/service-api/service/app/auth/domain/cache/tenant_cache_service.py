@@ -8,7 +8,7 @@ from service.common.infra.redis_provider import EntityRedisProvider
 
 
 class TenantCache(BaseModel):
-    org_id: Optional[str]
+    org_id: Optional[str] = None
     tenant_id: str
     tenant_code: str
     tenant_name: str

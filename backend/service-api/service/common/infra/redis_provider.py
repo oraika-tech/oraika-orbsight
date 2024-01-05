@@ -1,15 +1,16 @@
 from typing import Any, Dict, Optional, Mapping, Union
 
-from pydantic import BaseSettings, PrivateAttr
 from pydantic import Field
+from pydantic import PrivateAttr
+from pydantic_settings import BaseSettings
 from redis import Redis
 
 from service.common.config.app_settings import app_settings
 
 
 class EntityRedisProvider(BaseSettings):
-    host: str = Field("localhost", env='REDIS_HOST')
-    port: int = Field(6379, env='REDIS_PORT')
+    host: str = Field("localhost", alias='REDIS_HOST')
+    port: int = Field(6379, alias='REDIS_PORT')
     _key_prefix: str = PrivateAttr()
     _delimiter: str = PrivateAttr()
     _client: Redis = PrivateAttr()

@@ -8,28 +8,28 @@ from service.common.models import DataSourceSeriesDO, DataSourceType
 
 class FilterDO(BaseModel):
     name: str
-    values: Optional[List[str]]
-    operator: Optional[str]
+    values: Optional[List[str]] = None
+    operator: Optional[str] = None
 
     def __hash__(self):
         return hash((self.name, tuple(self.values), self.operator,))
 
 
 class FieldMappingDO(BaseModel):
-    series_name: Optional[str]
+    series_name: Optional[str] = None
     data_field: str
     chart_field: str
 
 
 class FieldPivotDO(BaseModel):
-    series_name: Optional[str]
+    series_name: Optional[str] = None
     columns: List[str]
-    field_name: Optional[str]
+    field_name: Optional[str] = None
 
 
 class DataTransformerMetaDO(BaseModel):
-    field_mapping: Optional[List[FieldMappingDO]]
-    field_pivoting: Optional[List[FieldPivotDO]]
+    field_mapping: Optional[List[FieldMappingDO]] = None
+    field_pivoting: Optional[List[FieldPivotDO]] = None
 
 
 class DatasetResult(BaseModel):
@@ -46,7 +46,7 @@ class ChartDBO(BaseModel):
     chart_config: dict
     data_source_type: DataSourceType
     data_source_series: List[DataSourceSeriesDO]
-    data_transformer_meta: Optional[DataTransformerMetaDO]
+    data_transformer_meta: Optional[DataTransformerMetaDO] = None
 
 
 class ChartDO(BaseModel):

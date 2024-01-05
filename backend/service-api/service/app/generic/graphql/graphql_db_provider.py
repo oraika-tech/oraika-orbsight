@@ -6,8 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel
 from sqlalchemy import MetaData, false
 from sqlalchemy.ext.automap import automap_base
-from sqlalchemy.orm import Session
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, select, Session
 
 from service.app.business.business_models import CategoryInfo, EntityInfo, ObserverInfo, OBSERVER_TYPE, TaxonomyInfo
 from service.app.generic.graphql.graphql_models import ObserverData
@@ -107,37 +106,39 @@ def _get_entity(table):
 
 
 def get_all_entities(table):
-    Entity = _get_entity(table)
-    return session.query(Entity).all()
+    TableModel = _get_entity(table)
+    return session.exec(select(TableModel)).all()
 
 
 def get_all(table: str | type, page: int = 1, items_per_page: int = 10):
-    Entity = _get_entity(table)
-    return session.query(Entity) \
-        .filter(Entity.is_deleted == false()) \
-        .offset((page - 1) * items_per_page) \
-        .limit(items_per_page) \
-        .all()
+    TableModel = _get_entity(table)
+    return session.exec(
+        select(TableModel)
+        .where(TableModel.is_deleted == false())
+        .offset((page - 1) * items_per_page)
+        .limit(items_per_page)
+    ).all()
 
 
 def get_by_id(table: str | type, identifier: str | int):
-    Entity = _get_entity(table)
-    return session.query(Entity) \
-        .filter(Entity.identifier == identifier, Entity.is_deleted == false()) \
-        .first()
+    TableModel = _get_entity(table)
+    return session.exec(
+        select(TableModel)
+        .where(TableModel.identifier == identifier, TableModel.is_deleted == false())
+    ).first()
 
 
 def search(table: str | type, kwargs: dict):
-    Entity = _get_entity(table)
-    query = session.query(Entity).filter(Entity.is_deleted == false())
+    TableModel = _get_entity(table)
+    query = select(TableModel).where(TableModel.is_deleted == false())
     for key, value in kwargs.items():
-        query = query.filter(getattr(Entity, key) == value)
-    return query.all()
+        query = query.filter(getattr(TableModel, key) == value)
+    return session.exec(query).all()
 
 
 def create(table: str, entity_obj: dict):
-    Entity = _get_entity(table)
-    session.add(Entity(**entity_obj))
+    TableModel = _get_entity(table)
+    session.add(TableModel(**entity_obj))
     session.commit()
 
 

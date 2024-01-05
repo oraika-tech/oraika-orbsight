@@ -63,7 +63,6 @@ async def log_requests(request: Request, call_next) -> Response:
 
     # Clone request body
     request_body = await request.body()
-    await set_body(request, request_body)
 
     start_time = time.time_ns()
     response: Response | StreamingResponse = await call_next(request)

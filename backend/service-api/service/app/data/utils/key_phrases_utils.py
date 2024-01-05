@@ -8,12 +8,12 @@ from service.app.data.utils.text_processor import clean_text, extract_key_phrase
 
 class KeyPhraseWeight(BaseModel):
     phrase: str
-    distance: Optional[float]
+    distance: Optional[float] = None
 
 
 class EmotionKeyPhrases(BaseModel):
     name: str
-    polarity: Optional[int]
+    polarity: Optional[int] = None
     key_phrases: List[KeyPhraseWeight]
 
 

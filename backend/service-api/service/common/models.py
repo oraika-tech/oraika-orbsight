@@ -56,10 +56,10 @@ class FieldValue(BaseModel):
 # --------------- Dependent Models ---------------------------
 
 class DataSourceSeriesDO(BaseModel):
-    name: Optional[str]
+    name: Optional[str] = None
     query: str
-    pivot_columns: Optional[List[str]]
-    header_alias: Optional[List[HeaderAlias]]
+    pivot_columns: Optional[List[str]] = None
+    header_alias: Optional[List[HeaderAlias]] = None
 
 
 class DataMapping(BaseModel):
@@ -68,24 +68,24 @@ class DataMapping(BaseModel):
 
 
 class Component(BaseModel):
-    identifier: Optional[UUID]
-    title: Optional[str]
+    identifier: Optional[UUID] = None
+    title: Optional[str] = None
     type: str
-    xs: Optional[float]
-    sm: Optional[float]
-    md: Optional[float]
-    lg: Optional[float]
-    xl: Optional[float]
-    height: Optional[str]
-    name: Optional[str]
-    class_name: Optional[str]
-    categories: Optional[List[str]]
-    dock_align: Optional[str]  # left, right, top, bottom
-    components: Optional[List['Component']]
+    xs: Optional[float] = None
+    sm: Optional[float] = None
+    md: Optional[float] = None
+    lg: Optional[float] = None
+    xl: Optional[float] = None
+    height: Optional[str] = None
+    name: Optional[str] = None
+    class_name: Optional[str] = None
+    categories: Optional[List[str]] = None
+    dock_align: Optional[str] = None  # left, right, top, bottom
+    components: Optional[List['Component']] = None
 
     inputs: Optional[List[FieldValue]] = []
     outputs: Optional[List[str]] = []
-    disabled: Optional[bool]
+    disabled: Optional[bool] = None
 
 
 class ComponentLayoutDO(BaseModel):

@@ -63,5 +63,5 @@ class TextWordWeight(BaseModel):
 
 class EmotionWordFrequency(BaseModel):
     name: str
-    polarity: Optional[int]
+    polarity: Optional[int] = None
     word_cloud: List[TextWordWeight]

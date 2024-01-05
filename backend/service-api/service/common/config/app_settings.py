@@ -1,6 +1,7 @@
 from typing import List, Any
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class AppSettings(BaseSettings):
@@ -20,23 +21,23 @@ class AppSettings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "default_key"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1
-    ALGORITHM = "HS256"
+    ALGORITHM: str = "HS256"
 
     CUBEJS_SECRET_KEY: str = "default_key"
     CUBEJS_API_ENDPOINT: str = "http://localhost:4000/cubejs-api/v1/load"
 
-    SERVICE_PORT = 8080
+    SERVICE_PORT: int = 8080
 
-    CACHE_TTL = 300
-    CACHE_MAX_SIZE = 32
+    CACHE_TTL: int = 300
+    CACHE_MAX_SIZE: int = 32
 
-    DEFAULT_QUERY_LIMIT = 500
+    DEFAULT_QUERY_LIMIT: int = 500
 
-    DEFAULT_SESSION_TTL_SECONDS = 60 * 60 * 24
-    DEFAULT_MAX_CACHE_TTL_SECONDS = 60 * 60 * 24 * 30
+    DEFAULT_SESSION_TTL_SECONDS: int = 60 * 60 * 24
+    DEFAULT_MAX_CACHE_TTL_SECONDS: int = 60 * 60 * 24 * 30
     COOKIE_SECURE: bool = True  # set False for local testing
-    MAX_WORD_COUNT = 20
-    MAXIMUM_KEY_PHRASES = 16
+    MAX_WORD_COUNT: int = 20
+    MAXIMUM_KEY_PHRASES: int = 16
 
     HOME_URL: str = Field("https://oraika.com")
     WWW_URL: str = Field("https://www.oraika.com")

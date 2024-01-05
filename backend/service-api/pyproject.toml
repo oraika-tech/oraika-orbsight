@@ -27,7 +27,7 @@ dependencies = [
     "rakun2",
     "redis",
     "requests",
-    "sqlmodel==0.0.8",
+    "sqlmodel",
     "stopwordsiso",
     "strawberry-graphql[fastapi]",
     "tiktoken",

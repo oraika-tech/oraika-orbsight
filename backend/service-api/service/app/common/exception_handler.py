@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class ErrorData(BaseModel):
     message: str
-    data: Optional[dict]
+    data: Optional[dict] = None
 
 
 def http_exception_handler(request, exc):  # noqa

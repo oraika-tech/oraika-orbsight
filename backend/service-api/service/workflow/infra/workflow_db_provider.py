@@ -9,6 +9,7 @@ from service.common.infra.db.entity_manager.workflow_entity_manager import get_u
 from service.common.infra.db.repository.core.tenant_repository import get_all_enabled_tenants
 from service.common.infra.db.repository.data.processed_data_repository import ProcessedDataEntity, insert_structured_data
 from service.common.infra.db.repository.workflow.node_meta_repository import update_status, log_wf_error
+from service.common.models import NodeMetaState
 from service.common.utils.reflection_utils import convert_models
 from service.common.utils.utils import dict_get
 from service.workflow.nodes.analyzer.domain_models import StructuredData
@@ -43,7 +44,7 @@ def get_unsent_processed_data_dp(tenant_id: UUID, min_event_time: datetime) -> L
     ]
 
 
-def update_status_dp(tenant_id: UUID, raw_data_id: int, status: str):
+def update_status_dp(tenant_id: UUID, raw_data_id: int, status: NodeMetaState):
     update_status(tenant_id, raw_data_id, status)
 
 
