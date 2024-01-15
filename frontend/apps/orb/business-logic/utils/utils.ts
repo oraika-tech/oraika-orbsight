@@ -9,3 +9,11 @@ export function toPascalCase(str: string) {
 export function getUndefForAll(str: string) {
     return str === 'all' ? undefined : str;
 }
+
+export function cleanObject(obj: object) {
+    return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null));
+}
+
+export function removeNulls(obj: object) {
+    Object.keys(obj).forEach(key => obj[key] == null && delete obj[key]);
+}

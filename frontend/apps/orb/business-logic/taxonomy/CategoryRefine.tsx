@@ -1,4 +1,4 @@
-import { EntityField, FieldType, SpecialField } from '../../components/Refine/Common/CommonUtils';
+import { EntityField, FieldType, SpecialField } from '../../components/Refine/Common/CommonModels';
 import DataPage, { ViewMode } from '../../components/Refine/DataPage/DataPage';
 
 export default function CategoryRefine() {
@@ -8,8 +8,7 @@ export default function CategoryRefine() {
             objectKey: 'identifier',
             type: FieldType.String,
             special: SpecialField.Id,
-            isReadOnly: true,
-            isSummary: false
+            isHide: true
         },
         {
             label: 'Name',

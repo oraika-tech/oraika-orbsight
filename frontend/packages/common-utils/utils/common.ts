@@ -10,7 +10,8 @@ const observerTypeIcons: Record<string, string> = {
     GoogleMaps: 'google_maps.png',
     Facebook: 'facebook.png',
     Reddit: 'reddit.png',
-    GoogleNews: 'googlenews.png'
+    GoogleNews: 'googlenews.png',
+    GoogleSearch: 'google.png'
 };
 const placeholderPath = 'https://cdn.jsdelivr.net/gh/obsei/Banks-in-India/Icons/bi-Placeholder.png';
 export function getLogoFromObserverType(observerType: string) {

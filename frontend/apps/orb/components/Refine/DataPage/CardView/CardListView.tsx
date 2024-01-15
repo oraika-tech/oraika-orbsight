@@ -1,8 +1,9 @@
-import { Flex, Skeleton, Space, Title } from '@mantine/core';
+import { Flex, SimpleGrid, Skeleton, Space, Title } from '@mantine/core';
 import { useList } from '@refinedev/core';
 import Image from 'next/image';
 import DATA_ERROR from '../../../../assets/images/data-fetch-error.png';
-import { ForeignData, convertObjectKeys } from '../../Common/CommonUtils';
+import { ForeignData } from '../../Common/CommonModels';
+import { convertObjectKeys } from '../../Common/CommonUtils';
 import CardView from './CardView';
 
 interface CardViewProps {
@@ -35,14 +36,16 @@ export default function CardListView({ resource, foreignData }: CardViewProps) {
     const cardDataList = data?.data?.map((row) => convertObjectKeys(row));
     return (
         <Flex gap="sm" justify="flex-start" align="flex-start" direction="row" wrap="wrap">
-            {cardDataList.map((cardData) => (
-                <CardView
-                    key={cardData.identifier}
-                    resource={resource}
-                    data={cardData}
-                    foreignData={foreignData}
-                />
-            ))}
+            <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing={10}>
+                {cardDataList.map((cardData) => (
+                    <CardView
+                        key={cardData.identifier}
+                        resource={resource}
+                        data={cardData}
+                        foreignData={foreignData}
+                    />
+                ))}
+            </SimpleGrid>
         </Flex>
     );
 }

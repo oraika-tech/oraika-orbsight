@@ -8,7 +8,6 @@ export function getDashboards(frontendKey: string) {
     if (frontendKey) {
         url += `?frontend_key=${frontendKey}`;
     }
-    console.log('url', url);
     return restApi(url, { method: 'GET' });
 }
 

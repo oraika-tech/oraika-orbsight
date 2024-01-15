@@ -1,4 +1,4 @@
-import { EntityField, FieldType, SpecialField } from '../../components/Refine/Common/CommonUtils';
+import { EntityField, FieldType, SpecialField } from '../../components/Refine/Common/CommonModels';
 import DataPage from '../../components/Refine/DataPage/DataPage';
 
 export default function DataSourceRefine() {
@@ -8,7 +8,7 @@ export default function DataSourceRefine() {
             objectKey: 'identifier',
             type: FieldType.String,
             special: SpecialField.Id,
-            isReadOnly: true
+            isHide: true
         },
         {
             label: 'Name',
@@ -16,7 +16,11 @@ export default function DataSourceRefine() {
             type: FieldType.String,
             isSummary: false,
             isCreatable: true,
-            special: SpecialField.Title
+            special: SpecialField.Title,
+            linkData: {
+                fieldKey: 'config_data',
+                valueKey: 'url'
+            },
         },
         {
             label: 'Entity',
@@ -33,15 +37,20 @@ export default function DataSourceRefine() {
             label: 'Source Type',
             objectKey: 'type',
             data: [
-                { value: '1', label: 'Twitter' },
-                { value: '2', label: 'Android' },
-                { value: '3', label: 'iOS' },
-                { value: '4', label: 'GoogleMaps' },
-                { value: '5', label: 'Facebook' },
-                { value: '6', label: 'Reddit' },
-                { value: '7', label: 'GoogleNews' }
+                { value: 1, label: 'Twitter' },
+                { value: 2, label: 'Android' },
+                { value: 3, label: 'iOS' },
+                { value: 4, label: 'GoogleMaps' },
+                { value: 5, label: 'Facebook' },
+                { value: 6, label: 'Reddit' },
+                { value: 7, label: 'GoogleNews' },
+                { value: 8, label: 'GoogleSearch' }
             ],
+            linkData: {
+                fieldKey: 'config_data'
+            },
             type: FieldType.DropDown,
+            special: SpecialField.SourceType,
             isCreatable: true,
             isSummary: true
         },
@@ -49,7 +58,11 @@ export default function DataSourceRefine() {
             label: 'Data',
             objectKey: 'config_data',
             type: FieldType.Json,
-            isCreatable: true
+            isHide: true,
+            special: SpecialField.Link,
+            linkData: {
+                valueKey: 'url'
+            }
         },
         {
             label: 'Enabled',

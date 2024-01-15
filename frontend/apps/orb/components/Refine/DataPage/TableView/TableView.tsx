@@ -1,16 +1,11 @@
 import { Box, Card, Group, Pagination, Table } from '@mantine/core';
 import { useTable } from '@refinedev/react-table';
 import { ColumnDef, flexRender } from '@tanstack/react-table';
-import { useContext, useMemo } from 'react';
-import {
-    EntityField,
-    EntityMetaContext,
-    FieldType,
-    ForeignData,
-    SpecialField,
-    get_field_view,
-    get_special_field
-} from '../../Common/CommonUtils';
+import { useContext } from 'react';
+import { EntityField, FieldType, ForeignData, SpecialField } from '../../Common/CommonModels';
+import { get_special_field } from '../../Common/CommonUtils';
+import { EntityMetaContext } from '../../Common/EntityMetaContext';
+import FieldView from '../../Common/FieldView';
 import { IModel } from '../../models';
 import ControlButtonsPanel from '../ControlButtons/ControlButtonsPanel';
 import EnableButton from '../ControlButtons/EnableButton';
@@ -37,8 +32,12 @@ function getColumnDef(
                     return <EnableButton resource={resource} id={id} enabled={getValue() as boolean} />;
                 };
             } else {
-                columnObj.cell = function render({ getValue }) {
-                    return get_field_view(getValue(), field, foreignData);
+                columnObj.cell = function render({ row }) {
+                    return FieldView({
+                        rowData: row.original,
+                        fieldMeta: field,
+                        foreignData
+                    });
                 };
             }
             break;
@@ -47,8 +46,12 @@ function getColumnDef(
         case FieldType.Json:
         case FieldType.Array:
         case FieldType.DropDown:
-            columnObj.cell = function render({ getValue }) {
-                return get_field_view(getValue(), field, foreignData);
+            columnObj.cell = function render({ row }) {
+                return FieldView({
+                    rowData: row.original,
+                    fieldMeta: field,
+                    foreignData
+                });
             };
             break;
     }
@@ -64,6 +67,7 @@ function get_columns_from_fields(
         .filter((f) =>
             f.special !== SpecialField.Enabled &&
             f.type !== FieldType.Json &&
+            !f.isHide &&
             (f.special === SpecialField.Title || f.isSummary == null || f.isSummary)
         )
         .map((field: EntityField) => getColumnDef(resource, field, idField, foreignData));
@@ -96,10 +100,7 @@ interface TableViewProps {
 
 export default function TableView({ resource, foreignData, enableFilter, enableSort }: TableViewProps) {
     const { fields } = useContext(EntityMetaContext);
-    const columns = useMemo<ColumnDef<IModel>[]>(
-        () => get_columns_from_fields(resource, fields, foreignData),
-        []
-    );
+    const columns = get_columns_from_fields(resource, fields, foreignData);
 
     const {
         getHeaderGroups,

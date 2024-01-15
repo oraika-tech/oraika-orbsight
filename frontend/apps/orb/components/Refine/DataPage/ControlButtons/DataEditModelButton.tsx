@@ -4,12 +4,10 @@ import { HttpError, useOne } from '@refinedev/core';
 import { EditButton, SaveButton, useModalForm } from '@refinedev/mantine';
 import { useContext } from 'react';
 import { toPascalCase } from '../../../../business-logic/utils/utils';
-import {
-    EntityMetaContext, ExistingDataModelButtonProps,
-    SpecialField,
-    convertObjectKeys, getDefaultValue, get_field_editable,
-    get_special_field_value, transformValues
-} from '../../Common/CommonUtils';
+import { ExistingDataModelButtonProps, SpecialField } from '../../Common/CommonModels';
+import { convertObjectKeys, getDefaultValue, get_special_field_value, transformValues } from '../../Common/CommonUtils';
+import { EntityMetaContext } from '../../Common/EntityMetaContext';
+import FieldEditable from '../../Common/FieldEditable';
 import { IModel } from '../../models';
 
 export function DataEditModelButton(
@@ -82,21 +80,23 @@ export function DataEditModelButton(
                 {buttonChildren}
             </EditButton>
 
-            <Modal size="lg" opened={opened} onClose={close} title={<Title order={2}>{title}</Title>} centered>
+            <Modal size="xl" opened={opened} onClose={close} title={<Title order={2}>{title}</Title>} centered>
                 <Stack>
                     <Table withRowBorders={false}>
                         <Table.Tbody>
-                            {fields.map((field) => (
+                            {fields.filter(field => !field.isHide).map((field) => (
                                 <Table.Tr key={field.label}>
                                     <Table.Td>
                                         <Title order={6}> {field.label} </Title>
                                     </Table.Td>
                                     <Table.Td>
-                                        {get_field_editable(
-                                            modelInfo[field.objectKey],
-                                            field,
-                                            getInputProps(field.objectKey),
-                                            foreignData
+                                        {FieldEditable(
+                                            {
+                                                rowData: modelInfo,
+                                                fieldMeta: field,
+                                                foreignData
+                                            },
+                                            getInputProps
                                         )}
                                     </Table.Td>
                                 </Table.Tr>

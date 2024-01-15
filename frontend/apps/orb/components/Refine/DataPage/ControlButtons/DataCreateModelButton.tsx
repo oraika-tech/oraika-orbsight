@@ -2,14 +2,10 @@ import { Box, Group, Modal, Stack, Table, Title } from '@mantine/core';
 import { CreateButton, SaveButton, useModalForm } from '@refinedev/mantine';
 import { useContext } from 'react';
 import { toPascalCase } from '../../../../business-logic/utils/utils';
-import {
-    EntityMetaContext,
-    ForeignData,
-    ModelButtonProps,
-    getDefaultValue,
-    get_field_editable,
-    transformValues
-} from '../../Common/CommonUtils';
+import { ForeignData, ModelButtonProps } from '../../Common/CommonModels';
+import { getDefaultValue, transformValues } from '../../Common/CommonUtils';
+import { EntityMetaContext } from '../../Common/EntityMetaContext';
+import FieldEditable from '../../Common/FieldEditable';
 
 interface DataCreateModelButtonProps extends ModelButtonProps {
     foreignData: ForeignData;
@@ -61,11 +57,13 @@ export function DataCreateModelButton(
                                         <Title order={6}> {field.label} </Title>
                                     </Table.Td>
                                     <Table.Td>
-                                        {get_field_editable(
-                                            null,
-                                            field,
-                                            getInputProps(field.objectKey),
-                                            foreignData
+                                        {FieldEditable(
+                                            {
+                                                rowData: initialValues,
+                                                fieldMeta: field,
+                                                foreignData
+                                            },
+                                            getInputProps
                                         )}
                                     </Table.Td>
                                 </Table.Tr>

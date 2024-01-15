@@ -1,7 +1,7 @@
 import { Group } from '@mantine/core';
 import { CanAccess } from '@refinedev/core';
 import { DeleteButton } from '@refinedev/mantine';
-import { ForeignData } from '../../Common/CommonUtils';
+import { ForeignData } from '../../Common/CommonModels';
 import { DataEditModelButton } from './DataEditModelButton';
 import { DataShowModelButton } from './DataShowModelButton';
 

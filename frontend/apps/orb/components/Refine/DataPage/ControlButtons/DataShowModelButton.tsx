@@ -1,14 +1,13 @@
-import { Box, Modal, Stack, Table, Title } from '@mantine/core';
+import { Box, Modal, Stack, Table, TextInput, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { HttpError, useOne } from '@refinedev/core';
 import { ShowButton } from '@refinedev/mantine';
 import { useContext } from 'react';
 import { toPascalCase } from '../../../../business-logic/utils/utils';
-import {
-    EntityMetaContext, ExistingDataModelButtonProps, SpecialField, convertObjectKeys,
-    get_field_view,
-    get_special_field_value
-} from '../../Common/CommonUtils';
+import { ExistingDataModelButtonProps, SpecialField } from '../../Common/CommonModels';
+import { convertObjectKeys, get_special_field_value } from '../../Common/CommonUtils';
+import { EntityMetaContext } from '../../Common/EntityMetaContext';
+import FieldView from '../../Common/FieldView';
 import { IModel } from '../../models';
 
 export function DataShowModelButton(
@@ -61,15 +60,22 @@ export function DataShowModelButton(
                 <Stack>
                     <Table withRowBorders={false}>
                         <Table.Tbody>
-                            {fields.map((field) => (
+                            {fields.filter(field => !field.isHide).map((field) => (
                                 <Table.Tr key={field.label}>
                                     <Table.Td>
                                         <Title order={6}> {field.label} </Title>
                                     </Table.Td>
                                     <Table.Td>
-                                        {modelInfo[field.objectKey] && (
-                                            get_field_view(modelInfo[field.objectKey], field, foreignData)
-                                        )}
+                                        {modelInfo[field.objectKey] !== undefined
+                                            ? (
+                                                FieldView({
+                                                    rowData: modelInfo,
+                                                    fieldMeta: field,
+                                                    foreignData
+                                                })
+                                            )
+                                            : <TextInput disabled />
+                                        }
                                     </Table.Td>
                                 </Table.Tr>
                             ))}
