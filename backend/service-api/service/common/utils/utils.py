@@ -1,3 +1,5 @@
+import base64
+import hashlib
 import json
 import logging
 import re
@@ -144,3 +146,8 @@ def extract_json(input_text):
         return json.loads(json_string)
     except json.JSONDecodeError:
         return "No valid JSON found in the input text"
+
+
+def hash_text(text_value: str):
+    link_hash = hashlib.sha256(text_value.encode()).digest()
+    return base64.b64encode(link_hash).decode()

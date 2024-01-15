@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from service.common.models import TableName
+from service.common.models import TableName, TimeBasedSearch
 
 
 class EntityInfo(BaseModel):
@@ -20,6 +20,11 @@ class EntityInfo(BaseModel):
 class ObserverData(BaseModel):
     official_handle: Optional[str] = None
     url: Optional[str] = None
+    query: Optional[str] = None
+    time_based_search: Optional[TimeBasedSearch] = None
+    number_of_pages: Optional[int] = None
+    lookup_period: Optional[str] = None
+    tbs: Optional[str] = None
 
 
 class ObserverInfo(BaseModel):

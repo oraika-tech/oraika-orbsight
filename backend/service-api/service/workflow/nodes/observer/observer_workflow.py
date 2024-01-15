@@ -7,10 +7,11 @@ from prefect import flow, task
 from service.app.business.business_db_provider import insert_raw_data_dp
 from service.app.data.data_models import RawData
 from service.common.utils import logger_utils
+from service.workflow.nodes.observer.executor.base_executor import BaseObserverExecutor, ObserverType, ObserverJobData, SourceConfig, SourceResponse
+from service.workflow.nodes.observer.executor.obsei_executors import TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, GoogleMapsExecutor, \
+    FacebookExecutor, RedditExecutor
+from service.workflow.nodes.observer.executor.outscraper_executors import GoogleNewsOutscraperExecutor, GoogleSearchOutscraperExecutor
 from service.workflow.nodes.observer.observer_db_provider import get_observer_tasks_dp
-from service.workflow.nodes.observer.source_executors import BaseObserverExecutor, \
-    TwitterExecutor, PlayStoreExecutor, AppleStoreExecutor, GoogleMapsExecutor, FacebookExecutor, RedditExecutor, \
-    GoogleNewsExecutor, ObseiResponse, SourceConfig, ObserverType, ObserverJobData
 
 logger = logger_utils.initialize_logger(__name__)
 
@@ -21,11 +22,12 @@ observer_executors: Dict[ObserverType, BaseObserverExecutor] = {
     ObserverType.GoogleMaps: GoogleMapsExecutor(),
     ObserverType.Facebook: FacebookExecutor(),
     ObserverType.Reddit: RedditExecutor(),
-    ObserverType.GoogleNews: GoogleNewsExecutor(),
+    ObserverType.GoogleNews: GoogleNewsOutscraperExecutor(),
+    ObserverType.GoogleSearch: GoogleSearchOutscraperExecutor()
 }
 
 
-def fetch_data(event: ObserverJobData) -> List[ObseiResponse]:
+def fetch_data(event: ObserverJobData) -> List[SourceResponse]:
     source_config: Optional[SourceConfig] = None
     if event.limit_count and event.lookup_period:
         source_config = SourceConfig(
@@ -39,6 +41,9 @@ def fetch_data(event: ObserverJobData) -> List[ObseiResponse]:
 @task
 def handle_job(job: ObserverJobData):
     data_list = fetch_data(job)
+    if not data_list:
+        return 0
+
     data_list.sort(key=attrgetter('event_time'))
     logger.info(f'{job.observer_id} fetch count: {data_list}')
 
@@ -66,7 +71,10 @@ def get_observer_tasks(tenant_id: UUID):
 limit_count_map = {
     ObserverType.Twitter: 100,
     ObserverType.Android: 20,
-    ObserverType.iOS: 100
+    ObserverType.iOS: 100,
+    ObserverType.GoogleMaps: 100,
+    ObserverType.GoogleNews: 1,
+    ObserverType.GoogleSearch: 1
 }
 
 
@@ -89,9 +97,11 @@ def observer_workflow(tenant_id: UUID, lookup_period: str, limit_count: int = 0)
             query=result['query'],
             country=result['country'],
             language=result['language'],
+            number_of_pages=result['number_of_pages'],
             page_id=result['page_id'],
             subreddit=result['subreddit'],
-            limit_count=get_observer_limit(limit_count, result['type'])
+            limit_count=get_observer_limit(limit_count, result['type']),
+            tbs=result['tbs']
         )
         for result in results
     ]

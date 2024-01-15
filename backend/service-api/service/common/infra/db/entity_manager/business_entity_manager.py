@@ -37,7 +37,10 @@ def get_observer_tasks(tenant_id: UUID) -> List[Dict[Any, Any]]:
                 "language": (observer.config_data.get("language") if observer.config_data is not None else None),
                 "country": (observer.config_data.get("country") if observer.config_data is not None else None),
                 "page_id": (observer.config_data.get("page_id") if observer.config_data is not None else None),
-                "subreddit": (observer.config_data.get("subreddit") if observer.config_data is not None else None)
+                "subreddit": (observer.config_data.get("subreddit") if observer.config_data is not None else None),
+                "number_of_pages": (observer.config_data.get("number_of_pages") if observer.config_data is not None else None),
+                "lookup_period": (observer.config_data.get("lookup_period") if observer.config_data is not None else None),
+                "tbs": (observer.config_data.get("tbs") if observer.config_data is not None else None),
             }
             for observer, entity in results
         ]

@@ -18,6 +18,7 @@ dependencies = [
     "nltk",
     "obsei[source]",
     "openai",
+    "outscraper",
     "pandas",
     "prefect",
     "psycopg2-binary",

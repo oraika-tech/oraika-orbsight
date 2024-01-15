@@ -38,9 +38,9 @@ beautifulsoup4==4.12.2
     #   googlenews
     #   obsei
     #   reddit-rss-reader
-boto3==1.34.12
+boto3==1.34.15
     # via service (pyproject.toml)
-botocore==1.34.12
+botocore==1.34.15
     # via
     #   boto3
     #   s3transfer
@@ -119,7 +119,7 @@ fsspec==2023.12.2
     # via prefect
 google-api-core==2.15.0
     # via google-api-python-client
-google-api-python-client==2.111.0
+google-api-python-client==2.113.0
     # via obsei
 google-auth==2.26.1
     # via
@@ -215,7 +215,7 @@ matplotlib==3.8.2
     # via rakun2
 mdurl==0.1.2
     # via markdown-it-py
-mmh3==4.0.1
+mmh3==4.1.0
     # via obsei
 mypy-extensions==1.0.0
     # via typing-inspect
@@ -236,10 +236,12 @@ oauthlib==3.2.2
     #   requests-oauthlib
 obsei[app-store-scraper,facebook-api,google-news-scraper,google-play-api,google-play-scraper,pandas,reddit-api,reddit-scraper,source,twitter-api]==0.0.15
     # via service (pyproject.toml)
-openai==1.6.1
+openai==1.7.0
     # via service (pyproject.toml)
 orjson==3.9.10
     # via prefect
+outscraper==4.1.0
+    # via service (pyproject.toml)
 packaging==23.2
     # via
     #   docker
@@ -267,7 +269,7 @@ praw==7.7.1
     # via obsei
 prawcore==2.4.0
     # via praw
-prefect==2.14.12
+prefect==2.14.13
     # via service (pyproject.toml)
 protobuf==4.25.1
     # via
@@ -367,7 +369,7 @@ reddit-rss-reader==1.3.2
     # via obsei
 redis==5.0.1
     # via service (pyproject.toml)
-referencing==0.32.0
+referencing==0.32.1
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -384,6 +386,7 @@ requests==2.31.0
     #   google-api-core
     #   kubernetes
     #   obsei
+    #   outscraper
     #   prawcore
     #   python-facebook-api
     #   reddit-rss-reader
@@ -449,7 +452,7 @@ starlette==0.32.0.post1
     #   prefect
 stopwordsiso==0.6.1
     # via service (pyproject.toml)
-strawberry-graphql[fastapi]==0.217.0
+strawberry-graphql[fastapi]==0.217.1
     # via service (pyproject.toml)
 termcolor==2.4.0
     # via pytest-sugar

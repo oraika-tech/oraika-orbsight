@@ -1,3 +1,4 @@
+import enum
 from datetime import datetime, date
 from enum import Enum
 from typing import Union, Optional, List, Any
@@ -110,3 +111,11 @@ class FilterQueryParams(BaseModel):
     @validator('entity_name', 'lang_code', 'observer_type', 'emotion', 'term', 'tags', 'observer_name')
     def set_all_as_none(cls, value):  # noqa
         return None if value == 'All' else value
+
+
+class TimeBasedSearch(enum.StrEnum):
+    LAST_HOUR = 'h'
+    LAST_DAY = 'd'
+    LAST_WEEK = 'w'
+    LAST_MONTH = 'm'
+    LAST_YEAR = 'y'

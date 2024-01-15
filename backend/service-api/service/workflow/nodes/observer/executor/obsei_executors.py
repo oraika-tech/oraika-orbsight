@@ -1,105 +1,40 @@
 import logging
-from abc import abstractmethod
+from abc import ABC
 from datetime import datetime
-from enum import Enum
-from typing import Optional, Dict, Any, List
-from uuid import UUID
+from typing import List, Optional, Any, Dict
 
 import dateparser
-import mmh3
 from obsei.payload import TextPayload
 from obsei.source.appstore_scrapper import AppStoreScrapperSource, AppStoreScrapperConfig
 from obsei.source.base_source import BaseSource
 from obsei.source.facebook_source import FacebookSource, FacebookSourceConfig, FacebookCredentials
 from obsei.source.google_maps_reviews import OSGoogleMapsReviewsSource, OSGoogleMapsReviewsConfig
 from obsei.source.google_news_source import GoogleNewsSource, GoogleNewsConfig
-from obsei.source.playstore_scrapper import PlayStoreScrapperConfig, PlayStoreScrapperSource
+from obsei.source.playstore_scrapper import PlayStoreScrapperSource, PlayStoreScrapperConfig
 from obsei.source.reddit_source import RedditSource, RedditConfig, RedditCredInfo
 from obsei.source.twitter_source import TwitterSource, TwitterSourceConfig, TwitterCredentials
-from pydantic import BaseModel, SecretStr, Field
-from pydantic_settings import BaseSettings
+from pydantic import SecretStr, Field
 
 from service.common.utils.dateutils import convert_to_local_time
+from service.workflow.nodes.observer.executor.base_executor import BaseObserverExecutor, ObserverType, ObserverJobData, SourceConfig, SourceResponse
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class ObserverType(int, Enum):
-    Twitter = 1
-    Android = 2
-    iOS = 3
-    GoogleMaps = 4
-    Facebook = 5
-    Reddit = 6
-    GoogleNews = 7
+class BaseObseiExecutor(BaseObserverExecutor, ABC):
 
-
-class ObserverJobData(BaseModel):
-    tenant_id: UUID
-    observer_id: UUID
-    observer_type: ObserverType  # - app | twitter
-    url: Optional[str] = None
-    query: Optional[str] = None
-    country: Optional[str] = None
-    language: Optional[str] = None
-    page_id: Optional[str] = None
-    subreddit: Optional[str] = None
-    lookup_period: Optional[str] = None
-    limit_count: Optional[int] = None
-
-
-class SourceConfig(BaseModel):
-    lookup_period: str = '5m'
-    limit_count: int = 100
-
-
-class ObseiResponse(BaseModel):
-    reference_id: str
-    parent_reference_id: Optional[str] = None
-    raw_text: str
-    event_time: datetime
-    data: Optional[Dict[str, Any]] = None
-
-
-class BaseObserverExecutor(BaseSettings):
-    type: ObserverType
-    default_source_config: SourceConfig
-    source: BaseSource
-    drop_id_column: bool = True
-    id_column: str
-    drop_time_column: bool = True
-    time_column: str
-    drop_columns: List[str] = []
-
-    @abstractmethod
-    def get_config(self, event: ObserverJobData, config: SourceConfig):
-        pass
-
-    def convert_date_column(self, date_value: Any):
-        return convert_to_local_time(date_value)
-
-    def convert_id_column(self, id_value: Any):
-        return id_value
-
-    def get_secret_config(self, event: ObserverJobData):
-        pass
-
-    def fetch_data(self, event: ObserverJobData, config: Optional[SourceConfig] = None) -> List[ObseiResponse]:
-        source_config = self.get_config(event, config or self.default_source_config)
-        responses = self.source.lookup(source_config)
-        return self.create_obsei_response(responses)
-
-    def create_obsei_response(self, responses: List[TextPayload]):
+    def create_source_response(self, responses: List[TextPayload]) -> list[SourceResponse]:
         obsei_response_list = []
 
         for source_response in responses:
+            logger.error(f"source_response: {source_response}")
             reference_id = str(source_response.meta[self.id_column])
             event_time = source_response.meta[self.time_column]
 
             self.drop_unwanted_columns(source_response)
 
-            obsei_response_list.append(ObseiResponse(
+            obsei_response_list.append(SourceResponse(
                 reference_id=self.convert_id_column(reference_id),
                 raw_text=source_response.processed_text,
                 event_time=self.convert_date_column(event_time),
@@ -108,17 +43,8 @@ class BaseObserverExecutor(BaseSettings):
 
         return obsei_response_list
 
-    def drop_unwanted_columns(self, response: TextPayload):
-        # Drop columns
-        if self.drop_time_column:
-            response.meta.pop(self.time_column, None)
-        if self.drop_id_column:
-            response.meta.pop(self.id_column, None)
-        for column in self.drop_columns:
-            response.meta.pop(column, None)
 
-
-class TwitterExecutor(BaseObserverExecutor):
+class TwitterExecutor(BaseObseiExecutor):
     type: ObserverType = ObserverType.Twitter
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
     source: BaseSource = TwitterSource()
@@ -145,7 +71,7 @@ class TwitterExecutor(BaseObserverExecutor):
         return TwitterCredentials()
 
 
-class PlayStoreExecutor(BaseObserverExecutor):
+class PlayStoreExecutor(BaseObseiExecutor):
     type: ObserverType = ObserverType.Android
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=10)
     source: BaseSource = PlayStoreScrapperSource()
@@ -163,7 +89,7 @@ class PlayStoreExecutor(BaseObserverExecutor):
         )
 
 
-class AppleStoreExecutor(BaseObserverExecutor):
+class AppleStoreExecutor(BaseObseiExecutor):
     type: ObserverType = ObserverType.iOS
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=450)
     source: BaseSource = AppStoreScrapperSource()
@@ -180,7 +106,7 @@ class AppleStoreExecutor(BaseObserverExecutor):
         )
 
 
-class GoogleMapsExecutor(BaseObserverExecutor):
+class GoogleMapsExecutor(BaseObseiExecutor):
     type: ObserverType = ObserverType.GoogleMaps
     api_key: Optional[SecretStr] = Field(None, alias="OUTSCRAPPER_API_KEY")
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
@@ -209,7 +135,7 @@ class GoogleMapsExecutor(BaseObserverExecutor):
         return self.api_key.get_secret_value()
 
 
-class FacebookExecutor(BaseObserverExecutor):
+class FacebookExecutor(BaseObseiExecutor):
     # TODO: Test it before releasing to client
     type: ObserverType = ObserverType.Facebook
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
@@ -231,7 +157,7 @@ class FacebookExecutor(BaseObserverExecutor):
         return FacebookCredentials()
 
 
-class RedditExecutor(BaseObserverExecutor):
+class RedditExecutor(BaseObseiExecutor):
     # TODO: Test it before releasing to client
     type: ObserverType = ObserverType.Reddit
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=100)
@@ -256,14 +182,14 @@ class RedditExecutor(BaseObserverExecutor):
         return RedditCredInfo()
 
 
-class GoogleNewsExecutor(BaseObserverExecutor):
+class GoogleNewsExecutor(BaseObseiExecutor):
     # TODO: Test it before releasing to client
-    type: ObserverType = ObserverType.Reddit
+    type: ObserverType = ObserverType.GoogleNews
     default_source_config: SourceConfig = SourceConfig(lookup_period='5m', limit_count=10)
     source: BaseSource = GoogleNewsSource()
     drop_id_column: bool = False
-    id_column: str = 'url'
-    time_column: str = 'published date'
+    id_column: str = 'link'
+    time_column: str = 'datetime'
     drop_columns: List[str] = ['description']
 
     def get_config(self, event: ObserverJobData, config: SourceConfig):
@@ -271,17 +197,21 @@ class GoogleNewsExecutor(BaseObserverExecutor):
             query=event.query,
             lookup_period=config.lookup_period,
             max_results=config.limit_count,
-            language=event.language,
+            language=event.language or "en",
             country=event.country,
             fetch_article=False
         )
 
     def convert_date_column(self, date_value: Any):
+        if isinstance(date_value, datetime):
+            return date_value
         # TODO how to fix if published date is null
         return datetime.now() if not date_value or str(date_value) == "" else dateparser.parse(date_value)
 
     def convert_id_column(self, id_column: Any):
-        return "{:02x}".format(mmh3.hash(id_column, signed=False))
+        # extract google news article id from link
+        # e.g. "news.google.com/articles/CBMiYWh0dHBztcmF0ZS1jdXQtdmlld3PSAQA?hl=en-IN&gl=IN&ceid=IN%3Aen"
+        return id_column.split("/")[-1].split("?")[0]
 
     def drop_unwanted_columns(self, response: TextPayload):
         # Drop columns
