@@ -3,6 +3,7 @@ module.exports = {
     siteUrl: process.env.WEBSITE_URL,
     generateIndexSitemap: false,
     generateRobotsTxt: true,
+    changefreq: 'weekly',
     robotsTxtOptions: {
         policies: [
             {
