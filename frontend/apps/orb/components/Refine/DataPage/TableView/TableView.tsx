@@ -37,7 +37,7 @@ function getColumnDef(
                         rowData: row.original,
                         fieldMeta: field,
                         foreignData
-                    });
+                    }, true);
                 };
             }
             break;
@@ -51,7 +51,7 @@ function getColumnDef(
                     rowData: row.original,
                     fieldMeta: field,
                     foreignData
-                });
+                }, true);
             };
             break;
     }

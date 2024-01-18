@@ -62,7 +62,6 @@ export default function ColumnFilter({ column }: ColumnButtonProps) {
             shadow="xl"
             onClose={close}
             width="256px"
-            withinPortal
         >
             <Menu.Target>
                 <ActionIcon

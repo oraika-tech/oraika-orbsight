@@ -449,6 +449,7 @@ export default function DynamicDashboard({ dashboard_id }: DynamicDashboardProps
                                     <WordCloudPanel
                                         title={wordsTitle}
                                         words={words}
+                                        height={component.height}
                                         isLoading={loading}
                                     />
                                 </Grid.Col>

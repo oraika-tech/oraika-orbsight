@@ -1,7 +1,6 @@
 import { Badge, Card, Group, Stack, Table, Title, useMantineColorScheme } from '@mantine/core';
 import { useContext } from 'react';
 import { dateToString } from '../../../../business-logic/utils/data-utils';
-import WithLink from '../../../WithLInk';
 import { ForeignData, SpecialField } from '../../Common/CommonModels';
 import { get_special_field, get_special_field_value } from '../../Common/CommonUtils';
 import { EntityMetaContext } from '../../Common/EntityMetaContext';
@@ -9,6 +8,7 @@ import FieldView from '../../Common/FieldView';
 import { IModel } from '../../models';
 import ControlButtonsPanel from '../ControlButtons/ControlButtonsPanel';
 import EnableButton from '../ControlButtons/EnableButton';
+import WithLink from 'mantine-components/components/WithLInk';
 
 export interface CardViewProps {
     resource: string;

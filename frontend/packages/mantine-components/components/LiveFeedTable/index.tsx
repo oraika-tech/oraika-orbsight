@@ -1,9 +1,9 @@
-import { Rating } from '@mantine/core';
 import { getTitleWord } from 'common-utils/utils';
 import { getLogoFromObserverType } from 'common-utils/utils/common';
 import type { MRT_ColumnDef } from 'mantine-react-table';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import ChipArray from '../Chip/ChipArray';
 import DataGridCard from '../DataGridCard';
 import IconText from '../IconText';
 import TypographyWrap from '../TypographyWrap';
@@ -61,10 +61,18 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 },
                 rating: row[columnIndex.rating],
                 emotion: getTitleWord(row[columnIndex.emotion]),
-                author_name: row[columnIndex.author]
+                author_name: row[columnIndex.author],
+                taxonomy_tags: row[columnIndex.taxonomyTags]
             });
         }
     }
+
+    const stringToArray = (tags: string): string[] => {
+        if (!tags || tags.trim().length === 0) {
+            return [];
+        }
+        return tags.trim().split(/\s*,\s*/);
+    };
 
     const columns = useMemo<MRT_ColumnDef<LiveFeedType>[]>(
         () => [
@@ -74,12 +82,6 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 size: 150
             },
             {
-                accessorKey: 'rating',
-                header: 'Rating',
-                size: 80,
-                Cell: ({ cell }) => <Rating size="sm" value={cell.getValue<number>()} readOnly />
-            },
-            {
                 accessorKey: 'emotion',
                 header: 'Emotion',
                 size: 80
@@ -87,7 +89,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
             {
                 accessorKey: 'comment',
                 header: 'Comment',
-                size: 500,
+                size: 400,
                 Cell: ({ cell }) =>
                     process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
                         ? (
@@ -103,7 +105,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                                 color="primary"
                                 style={{ textDecoration: 'none' }}
                             >
-                                <TypographyWrap length={cell.getValue<TextLinkType>().text.length}>
+                                <TypographyWrap maw={600} length={cell.getValue<TextLinkType>().text.length}>
                                     {cell.getValue<TextLinkType>().text}
                                 </TypographyWrap>
                             </Link>
@@ -120,6 +122,12 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                     >
                         {cell.getValue<ObserverType>().name}
                     </IconText>
+            },
+            {
+                accessorKey: 'taxonomy_tags',
+                header: 'Tags',
+                size: 100,
+                Cell: ({ cell }) => <ChipArray chipList={stringToArray(cell.getValue<string>())} />
             }
         ],
         []

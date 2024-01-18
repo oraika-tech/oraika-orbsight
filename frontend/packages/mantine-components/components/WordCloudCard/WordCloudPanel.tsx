@@ -6,10 +6,11 @@ import { WordCloudTag } from './SimpleReactWordCloud';
 interface WordCloudPanelProps {
     title: string
     words?: WordCloudTag[]
+    height?: string
     isLoading: boolean
 }
 
-export default function WordCloudPanel({ title, words, isLoading }: WordCloudPanelProps) {
+export default function WordCloudPanel({ title, words, height, isLoading }: WordCloudPanelProps) {
     return (
         <Card style={{ minHeight: '45vh' }}>
             <Title order={2} style={{ fontWeight: 800, textAlign: 'center' }}>
@@ -24,7 +25,7 @@ export default function WordCloudPanel({ title, words, isLoading }: WordCloudPan
                         </Title>
                     )
                     : words.length
-                        ? <WordCloudCard height="40vh" bgColor="lightcyan" data={words} />
+                        ? <WordCloudCard height={height || '40vh'} bgColor="lightcyan" data={words} />
                         : <EmptyData />
             }
         </Card>

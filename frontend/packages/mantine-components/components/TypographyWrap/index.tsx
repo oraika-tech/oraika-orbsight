@@ -4,6 +4,7 @@ import { useState } from 'react';
 interface TypographyWrapProps {
     length: number
     children: React.ReactNode
+    maw?: number
 }
 
 export default function TypographyWrap(props: TypographyWrapProps) {
@@ -22,6 +23,7 @@ export default function TypographyWrap(props: TypographyWrapProps) {
     };
 
     const open = Boolean(anchorEl);
+    const maw = props.maw ?? 1000;
 
     return (
         <Popover opened={open} width={500}>
@@ -33,6 +35,7 @@ export default function TypographyWrap(props: TypographyWrapProps) {
                     onMouseLeave={handlePopoverClose}
                     variant="body2"
                     lineClamp={1}
+                    maw={maw}
                 >
                     {props.children}
                 </Text>
