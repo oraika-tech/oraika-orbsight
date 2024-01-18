@@ -154,8 +154,8 @@ def get_code_to_daterange(code: str):
 
 def create_time_dimension(time_filters: List[FilterDO], is_timeseries: bool):
     time_dimension = {
-        "dimension": "ProcessedDataViewV1.eventTime",
-        "dateRange": "Last 7 days"
+        "dimension": "ProcessedDataViewV1.eventTime"
+        # "dateRange": "Last 7 days"
     }
     for time_filter in time_filters:
         if time_filter.values:

@@ -1,5 +1,6 @@
 import logging
 import re
+import string
 from typing import List, Dict, Pattern
 
 from nltk import word_tokenize
@@ -36,11 +37,16 @@ _rakun_model = get_rakun_keyphrase_detector()
 swu = StopWordUtility()
 
 
+def remove_punctuations(text: str) -> str:
+    return text.translate(str.maketrans('', '', string.punctuation + '›·'))
+
+
 def clean_text(text: str, deep_clean: bool = False, lang_code: str = 'en') -> str:
     cleaned_text = http_regex.sub(regex_substitute, text)
     cleaned_text = mention_regex.sub(regex_substitute, cleaned_text)
     # cleaned_text = hashtags_regex.sub(regex_substitute, cleaned_text)
     cleaned_text = digits_regex.sub(regex_substitute, cleaned_text)
+    cleaned_text = remove_punctuations(cleaned_text)
 
     cleaned_text = cleaned_text.strip()
     if deep_clean:

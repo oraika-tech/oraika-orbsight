@@ -16,6 +16,8 @@ from service.workflow.nodes.analyzer.data.playjuniors_data import activities as 
 from service.workflow.nodes.analyzer.data.playjuniors_data import department_list as playjuniors_department_list
 from service.workflow.nodes.analyzer.data.playjuniors_data import department_sublist as playjuniors_department_sublist
 from service.workflow.nodes.analyzer.data.playjuniors_data import gpt_prompt_department_classification as playjuniors_classification_prompt
+from service.workflow.nodes.analyzer.data.trustpavilion_data import classification_fx as trustpavilion_classification_fx
+from service.workflow.nodes.analyzer.data.trustpavilion_data import gpt_prompt_keyword_classification as trustpavilion_classification_prompt
 from service.workflow.nodes.analyzer.domain_models import UnstructuredDataRequest, StructuredData
 from service.workflow.nodes.analyzer.gpt_client import prompt
 
@@ -45,22 +47,6 @@ class TextPeople(BaseModel):
     people: List[str]
 
 
-tenant_data = {
-    'b6d5a44a-4626-491a-8fc0-3a11344d97f7': {
-        'department_list': playjuniors_department_list,
-        'department_sublist': playjuniors_department_sublist,
-        'classification_prompt': playjuniors_classification_prompt,
-        'activities': playjuniors_activities
-    },
-    '02ddd60c-2d58-47cc-a445-275d8e621252': {
-        'department_list': playarena_department_list,
-        'department_sublist': playarena_department_sublist,
-        'classification_prompt': playarena_classification_prompt,
-        'activities': playarena_activities
-    }
-}
-
-
 def segregate_tags_terms(data, classification_response):
     tags = [department for department in classification_response['departments']
             if department in data['department_list']]
@@ -78,13 +64,56 @@ def segregate_tags_terms(data, classification_response):
     )
 
 
+def get_text_classification(classification_response):
+    return TextClassification(
+        raw_data_id=classification_response['raw_data_id'],
+        tags=classification_response['keywords'],
+        terms=[]
+    )
+
+
+tenant_data = {
+    'b6d5a44a-4626-491a-8fc0-3a11344d97f7': {
+        'is_playarena': True,
+        'department_list': playjuniors_department_list,
+        'department_sublist': playjuniors_department_sublist,
+        'classification_prompt': playjuniors_classification_prompt,
+        'classification_fx': classification_fx,
+        'activities': playjuniors_activities
+    },
+    '02ddd60c-2d58-47cc-a445-275d8e621252': {
+        'is_playarena': True,
+        'department_list': playarena_department_list,
+        'department_sublist': playarena_department_sublist,
+        'classification_prompt': playarena_classification_prompt,
+        'classification_fx': classification_fx,
+        'activities': playarena_activities
+    },
+    '0b020761-b2a3-494d-b777-4024c92fe4ec': {
+        'is_playarena': False,
+        'classification_prompt': trustpavilion_classification_prompt,
+        'classification_fx': trustpavilion_classification_fx
+    }
+}
+
+
 def text_classification(tenant_id: UUID, reviews: list) -> list[TextClassification]:
     data = tenant_data[str(tenant_id)]
     reviews_list = split_array(reviews, 10)
-    response_list = [prompt(data['classification_prompt'], classification_fx, reviews_sublist)
-                     for reviews_sublist in reviews_list]
+    response_list = [
+        prompt(
+            data['classification_prompt'],
+            data['classification_fx'],
+            reviews_sublist
+        )
+        for reviews_sublist in reviews_list
+    ]
     response = flatten_array(response_list)
-    return [segregate_tags_terms(data, response_element) for response_element in response]
+    logger.info("response: %s", response)
+    if data['is_playarena']:
+        return [segregate_tags_terms(data, response_element) for response_element in response]
+    else:
+        return [get_text_classification(response_element) for response_element in response]
 
 
 def text_sentiment_analysis(reviews: list) -> list[TextSentiment]:
@@ -123,7 +152,7 @@ def review_analysis(tenant_id: UUID, reviews: list[UnstructuredDataRequest]) -> 
     if len(reviews) == 0:
         return []
 
-    review_list = [el.dict() for el in reviews]
+    review_list = [el.model_dump() for el in reviews]
     classified_reviews = text_classification(tenant_id, review_list)
     reviews_sentiment = text_sentiment_analysis(review_list)
     reviews_people = {people_info.raw_data_id: people_info.people for people_info in text_people_analysis(review_list)}

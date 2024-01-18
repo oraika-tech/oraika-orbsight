@@ -23,6 +23,7 @@ SELECT
         WHEN obs.type = 5 THEN 'Facebook'
         WHEN obs.type = 6 THEN 'Reddit'
         WHEN obs.type = 7 THEN 'GoogleNews'
+        WHEN obs.type = 8 THEN 'GoogleSearch'
     END) as observer_type,
     entity.name as entity_name,
     -- message info ------
@@ -49,7 +50,8 @@ SELECT
         WHEN obs.type = 2 THEN config_data ->>'url'
         WHEN obs.type = 3 THEN config_data ->>'url'
         WHEN obs.type = 4 THEN unstructured_data ->>'review_link'
-        WHEN obs.type = 7 THEN unstructured_data ->>'url'
+        WHEN obs.type = 7 THEN unstructured_data ->>'link'
+        WHEN obs.type = 8 THEN unstructured_data ->>'link'
     END) as url,
     -- analysis data --------
     taxonomy_tags,

@@ -130,6 +130,11 @@ cube(`ProcessedDataViewV1`, {
       type: `string`
     },
 
+    taxonomyTags: {
+      sql: `array_to_string(taxonomy_tags, ', ')`,
+      type: `string`
+    },
+
     eventTime: {
       sql: `event_time`,
       type: `time`

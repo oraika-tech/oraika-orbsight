@@ -37,7 +37,7 @@ def handle_word_cloud(component_inputs: List[FieldValue],
             is_timeseries=False)
 
         text = "\n".join([result[0] for result in results[1:]])
-        cleaned_text = clean_text(text).lower()
+        cleaned_text = clean_text(text, True).lower()
 
         word_cloud = [
                          TextWordWeight(term=word, weight=frequency)
