@@ -40,14 +40,19 @@ export interface LoginProps {
 interface AuthProviderProps {
     loginUrl: string
     redirectUrl?: string
+    publicPaths?: Set<string>
     children?: React.ReactNode
 }
 
-export default function AuthProvider({ loginUrl, redirectUrl, children }: AuthProviderProps) {
+export default function AuthProvider({ loginUrl, redirectUrl, publicPaths, children }: AuthProviderProps) {
     const router = useRouter();
     const [userInfo, setUserInfo] = useState<UserInfo>(emptyUserInfo);
     const [shouldLogin, setShouldLogin] = useState<boolean | null>(null);
     const [key, setKey] = useState(Math.random());
+
+    if (publicPaths && publicPaths.has(router.asPath)) {
+        return children;
+    }
 
     const refreshPage = () => {
         setKey(Math.random()); // change key state to re-render page

@@ -32,6 +32,8 @@ export default function App(props: AppProps) {
     sentrySetup();
     mixPanelSetup();
 
+    const publicPaths = new Set(['/refund-policy']);
+
     return (
         <MantineProvider theme={{ ...globalTheme }}>
             <Head>
@@ -70,7 +72,7 @@ export default function App(props: AppProps) {
             }
 
             <MDXProvider components={components}>
-                <AuthProvider loginUrl={getLoginUrl()}>
+                <AuthProvider loginUrl={getLoginUrl()} publicPaths={publicPaths}>
                     <WithRefine>
                         <Component {...pageProps} />
                     </WithRefine>
