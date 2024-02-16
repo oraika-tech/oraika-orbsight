@@ -1,12 +1,14 @@
 import logging
 from functools import reduce
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
 from service.app.visualization.cubejs_client import fetch_cubejs_data
-from service.app.visualization.model.chart_models import FieldPivotDO, DatasetResult, FilterDO, DataTransformerMetaDO
-from service.app.visualization.model.common_models import SortOrder, OrderData
+from service.app.visualization.model.chart_models import (
+    DatasetResult, DataTransformerMetaDO, FieldPivotDO, FilterDO)
+from service.app.visualization.model.common_models import OrderData, SortOrder
 from service.common.models import DataSourceType, FieldValue
-from service.common.utils.utils import to_space_camel_case, dedup_list, list_split_by_condition
+from service.common.utils.utils import (dedup_list, list_split_by_condition,
+                                        to_space_camel_case)
 
 logger = logging.getLogger(__name__)
 
@@ -154,13 +156,13 @@ def get_code_to_daterange(code: str):
 
 def create_time_dimension(time_filters: List[FilterDO], is_timeseries: bool):
     time_dimension = {
-        "dimension": "ProcessedDataViewV1.eventTime"
-        # "dateRange": "Last 7 days"
+        "dimension": "ProcessedDataViewV1.eventTime",
+        "dateRange": "Last 7 days"
     }
     for time_filter in time_filters:
         if time_filter.values:
             if time_filter.name == "period":
-                time_dimension["dateRange"] = get_code_to_daterange(time_filter.values[0])
+                time_dimension["dateRange"] = time_filter.values if len(time_filter.values) == 2  else get_code_to_daterange(time_filter.values[0]) 
             elif is_timeseries and time_filter.name == "interval":
                 time_dimension["granularity"] = time_filter.values[0]
     if is_timeseries and "granularity" not in time_dimension:

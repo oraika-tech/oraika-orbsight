@@ -7,6 +7,7 @@ from jose import jwt
 from service.common.config.app_settings import app_settings
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 endpoint: str = app_settings.CUBEJS_API_ENDPOINT
 tenant_tokens: Dict[str, str] = {}
