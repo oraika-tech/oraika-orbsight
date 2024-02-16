@@ -1,12 +1,20 @@
-import { Button, Grid, Select, SimpleGrid } from '@mantine/core';
+import { Button, Flex, Group, Select } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconFilter } from '@tabler/icons-react';
 import { getDateFromString, getTitleSentance } from 'common-utils/utils';
+import { dateRangeToStringRange, dateToMonthRange, monthStringToDate } from 'common-utils/utils/date-period-utils';
+import GenericDateRange, { DateRangeType, GenericDateRangeValue } from './GenericDateRange';
+
+export enum FilterFieldType {
+    DATE = 'DATE',
+    DATE_RANGE = 'DATE_RANGE',
+    AUTO_COMPLETE = 'AUTO_COMPLETE'
+}
 
 export interface AutocompleteOption {
     id?: string
     code: string
-    label: string
+    label?: string
 }
 
 export interface AutocompleteData {
@@ -25,10 +33,11 @@ export interface FilterChangeEvent {
 export interface FilterData {
     id: string
     label: string
-    width: number
-    type: string
+    minWidth?: number
+    maxWidth?: number
+    type: FilterFieldType
     selectedValue: AutocompleteOption | Date | string
-    defaultValue: AutocompleteOption | Date | string
+    defaultValue: AutocompleteOption | Date | string | [string, string]
     options?: Array<AutocompleteOption>
     validations?: Record<string, any>
 }
@@ -56,7 +65,7 @@ interface FilterPanelProps {
 
 function updateOptionsLabel(filters: FilterData[]) {
     for (const filter of filters) {
-        if (filter.type === 'AUTO_COMPLETE') {
+        if (filter.type === FilterFieldType.AUTO_COMPLETE) {
             let options = filter.options
                 ? filter.options.filter(o => o && o.code && o.code.trim().length > 0)
                 : [];
@@ -83,13 +92,13 @@ function updateOptionsLabel(filters: FilterData[]) {
     }
 }
 
-function recalculateWidth(filters: FilterData[], showFilterButton: boolean) {
-    const totalWidth = filters.reduce((acc, filter) => acc + filter.width, 0);
-    const widthFactor = showFilterButton ? 11.2 : 11.9;
-    for (const filter of filters) {
-        filter.width = (widthFactor * filter.width) / totalWidth;
-    }
-}
+// function recalculateWidth(filters: FilterData[], showFilterButton: boolean) {
+//     const totalWidth = filters.reduce((acc, filter) => acc + filter.width, 0);
+//     const widthFactor = showFilterButton ? 11.2 : 11.9;
+//     for (const filter of filters) {
+//         filter.width = (widthFactor * filter.width) / totalWidth;
+//     }
+// }
 
 function handleDateField(
     filter: FilterData,
@@ -126,6 +135,80 @@ function getValueByCode(optionList: Array<AutocompleteOption> | undefined, code:
     return null;
 }
 
+function handleDateRangeField(
+    filter: FilterData,
+    filterHandler: (filterChangeEvent: FilterChangeEvent) => boolean
+) {
+    /**
+     * Value can be:
+     *  1. Month: MMM-yyyy, yyyy-MMM
+     *  2. Date Range: ['yyyy-MM-dd', 'yyyy-MM-dd']
+     *  3. Period: string
+     */
+
+    let value: GenericDateRangeValue = { rangeType: DateRangeType.PERIOD, rangeValue: 'last-7-days' };
+
+    if (filter.defaultValue) {
+        const dv = filter.defaultValue instanceof Object && 'code' in filter.defaultValue
+            ? filter.defaultValue.code : filter.defaultValue;
+        if (dv instanceof Array && dv.length === 2) {
+            value = { rangeType: DateRangeType.CUSTOM, rangeValue: [new Date(dv[0]), new Date(dv[1])] };
+        } else if (dv instanceof Date) {
+            value = { rangeType: DateRangeType.CUSTOM, rangeValue: [dv, dv] };
+        } else {
+            const monthDate = monthStringToDate(dv as string);
+            if (monthDate) {
+                value = { rangeType: DateRangeType.MONTH, rangeValue: monthDate };
+            } else {
+                value = { rangeType: DateRangeType.PERIOD, rangeValue: dv as string };
+            }
+        }
+    }
+
+    const dateRangeChangeHandler = (dateValue: GenericDateRangeValue) => {
+        if (!dateValue) {
+            return;
+        }
+
+        const newValues: string[] = [];
+
+        switch (dateValue.rangeType) {
+            case DateRangeType.PERIOD:
+                newValues.push(dateValue.rangeValue as string);
+                break;
+            case DateRangeType.MONTH:
+                {
+                    const monthRange = dateToMonthRange(dateValue.rangeValue as Date);
+                    const rangeString = dateRangeToStringRange(monthRange);
+                    newValues.push(...rangeString);
+                }
+                break;
+            case DateRangeType.CUSTOM:
+                {
+                    const rangeString = dateRangeToStringRange(dateValue.rangeValue as [Date, Date]);
+                    newValues.push(...rangeString);
+                }
+                break;
+        }
+
+        filterHandler({ name: filter.id, newValues });
+    };
+
+    const allowedDateRange = {
+        start: filter?.validations?.minDate,
+        end: filter?.validations?.maxDate
+    };
+
+    return (
+        <GenericDateRange
+            label={filter.label}
+            dateValue={value}
+            allowedPeriod={allowedDateRange}
+            onChange={dateRangeChangeHandler}
+        />
+    );
+}
+
 function handleAutoCompleteField(
     filter: FilterData,
     filterHandler: (filterChangeEvent: FilterChangeEvent) => boolean
@@ -148,7 +231,7 @@ function handleAutoCompleteField(
     if (filter.selectedValue) {
         const acSelectedValue: AutocompleteOption = filter.selectedValue as AutocompleteOption;
         if (!acSelectedValue.label && acSelectedValue.code) {
-            const labelForCode: string | null = getValueByCode(filter.options, acSelectedValue.code);
+            const labelForCode: string | null | undefined = getValueByCode(filter.options, acSelectedValue.code);
             if (labelForCode) {
                 acSelectedValue.label = labelForCode;
             } else if (filter.id === 'lang') {
@@ -159,12 +242,14 @@ function handleAutoCompleteField(
         }
     }
 
-    const selectedValueToString = (selectedValue: AutocompleteOption | Date | string) => {
+    const selectedValueToString = (selectedValue: AutocompleteOption | Date | string | string[]) => {
         if (typeof selectedValue === 'string') {
             return selectedValue;
         } else if (selectedValue instanceof Date) {
             return selectedValue.toUTCString();
-        } else {
+        } else if (selectedValue instanceof Array) {
+            return selectedValue.join('-');
+        } else { // AutocompleteOption
             return selectedValue.code;
         }
     };
@@ -174,7 +259,7 @@ function handleAutoCompleteField(
     // const filterLabel = filter.label;
     const { defaultValue } = filter;
     const options: { label: string, value: string }[] = filter
-        .options?.map(o => ({ label: o.label, value: o.code })) || [];
+        .options?.map(o => ({ label: o.label || '', value: o.code })) || [];
     const selectedValue: string = selectedValueToString(filter.selectedValue || defaultValue);
     const defaultValueString = selectedValueToString(defaultValue);
 
@@ -190,6 +275,9 @@ function handleAutoCompleteField(
             id={filter.id}
             key={filter.id}
             label={filter.label}
+            style={{ flex: 'auto' }}
+            miw={filter.minWidth}
+            maw={filter.maxWidth}
             data={options}
             value={selectedValue}
             maxDropdownHeight={350}
@@ -199,10 +287,13 @@ function handleAutoCompleteField(
 }
 
 function getRemovedSingleValuedFilters(filters: FilterData[]) {
-    return filters.filter(filter => filter.options && filter.options.filter(o => o.code !== 'all').length > 1);
+    return filters.filter(filter =>
+        filter.type === FilterFieldType.DATE_RANGE ||
+        (filter.options && filter.options.filter(o => o.code !== 'all').length > 1)
+    );
 }
 
-export default function GenericFilterPanel({ filtersData, filterHandler, showFilterButton }: FilterPanelProps) {
+export default function GenericFilterPanel({ filtersData, filterHandler, showFilterButton = false }: FilterPanelProps) {
     const filterButtonClickHandler = () => {
         const filterChangeEvent: FilterChangeEvent = {};
         filterHandler(filterChangeEvent);
@@ -210,46 +301,49 @@ export default function GenericFilterPanel({ filtersData, filterHandler, showFil
 
     updateOptionsLabel(filtersData);
     const visibleFiltersData = getRemovedSingleValuedFilters(filtersData);
-    recalculateWidth(visibleFiltersData, showFilterButton || false);
+    // recalculateWidth(visibleFiltersData, showFilterButton || false);
+    // const ordinaryFiltersData = visibleFiltersData.filter(filter => filter.type !== FilterFieldType.DATE_RANGE);
+    // const dateRangeFiltersData = visibleFiltersData.filter(filter => filter.type === FilterFieldType.DATE_RANGE);
 
     const filterComponents: React.ReactNode[] = [];
     for (const filter of visibleFiltersData) {
         switch (filter.type) {
-            case 'DATE':
+            case FilterFieldType.DATE:
                 filterComponents.push(handleDateField(filter, filterHandler));
                 break;
 
-            case 'AUTO_COMPLETE':
+            case FilterFieldType.AUTO_COMPLETE:
                 filterComponents.push(handleAutoCompleteField(filter, filterHandler));
                 break;
 
-            default:
+            case FilterFieldType.DATE_RANGE:
+                filterComponents.push(handleDateRangeField(filter, filterHandler));
+                break;
+
+            // default:
             // console.error(`Wrong component type: ${filter.type}`);
             // todo: send error to sentry
         }
     }
-
-    const filterCount = filterComponents.length + (showFilterButton ? 1 : 0);
+    // const dateComponents: React.ReactNode[] = dateRangeFiltersData.map(
+    //     filter => handleDateRangeField(filter, filterHandler)
+    // );
 
     return (
-        <SimpleGrid
-            cols={{ base: 2, xs: filterCount / 2, lg: filterCount }}
-            spacing={{ base: 'sm', xs: 'md' }}
-            verticalSpacing="xs"
+        <Flex
+            wrap={{ base: 'wrap', lg: 'nowrap' }}
+            direction="row"
+            gap={{ base: 'sm', sm: 'lg' }}
+            justify={{ base: 'center', xs: 'flex-end' }}
         >
             {filterComponents}
-
             {showFilterButton &&
-                <Grid.Col>
+                <Group w={50} align="flex-end">
                     <Button variant="contained" onClick={filterButtonClickHandler}>
                         <IconFilter />
                     </Button>
-                </Grid.Col>
+                </Group>
             }
-        </SimpleGrid>
+        </Flex>
     );
 }
-
-GenericFilterPanel.defaultProps = {
-    showFilterButton: false
-};

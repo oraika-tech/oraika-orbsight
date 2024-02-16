@@ -2744,6 +2744,13 @@
   dependencies:
     clsx "2.0.0"
 
+"@mantine/dates@7.5.1":
+  version "7.5.1"
+  resolved "https://registry.yarnpkg.com/@mantine/dates/-/dates-7.5.1.tgz#0f0ee0e2bed9fef2df121117dc40bd009d1bcf51"
+  integrity sha512-FReER5Q7gP4YzJPv3a4BqdiufR184MTRAVrITtdPEeTaqTtryAAHuIjiC8QY3f0Q9ge/Pmbt9Khn/ONbULD4XA==
+  dependencies:
+    clsx "2.0.0"
+
 "@mantine/form@^5.10.4":
   version "5.10.5"
   resolved "https://registry.yarnpkg.com/@mantine/form/-/form-5.10.5.tgz#44216eb03de4bb39c1a53e9468d76d2b069dd659"
@@ -3898,6 +3905,13 @@
     "@storybook/global" "^5.0.0"
     ts-dedent "^2.0.0"
 
+"@storybook/addon-styling-webpack@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-styling-webpack/-/addon-styling-webpack-0.0.6.tgz#6e974c7498c8cfe6a8f98344e9ef4c54c1980e95"
+  integrity sha512-JjM2FXFiHpjbJsp7nRUEMhYBRpK6ukBKsbtWzCrAGOfUgoElcGwPY8KhSKSnRknIhebonGK1bxalh3u8bGZ/dw==
+  dependencies:
+    "@storybook/node-logger" "^7.0.12"
+
 "@storybook/addon-toolbars@7.6.5":
   version "7.6.5"
   resolved "https://registry.yarnpkg.com/@storybook/addon-toolbars/-/addon-toolbars-7.6.5.tgz#a7e49640daad1b45926e453e36d8d8fecd88becf"
@@ -4694,6 +4708,11 @@
   version "7.6.5"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.6.5.tgz#2836bcf90f34672535fb2d13d9799357d8e1cbc8"
   integrity sha512-xKw6IH1wLkIssekdBv3bd13xYKUF1t8EwqDR8BYcN8AVjZlqJMTifssqG4bYV+G/B7J3tz4ugJ5nmtWg6RQ0Qw==
+
+"@storybook/node-logger@^7.0.12":
+  version "7.6.13"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.6.13.tgz#bab8256bafa7f54be7d2465db8a72d5f73cec679"
+  integrity sha512-Ci/2Gd0+Qd3fX6GWGS1UAa/bTl0uALsEuMuzOO0meKEPEEYZvBFCoeK6lP1ysMnxWxKaDjxNr01JlTpmjfT6ag==
 
 "@storybook/postinstall@7.6.5":
   version "7.6.5"
@@ -14989,6 +15008,14 @@ postcss-preset-mantine@^1.11.1:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/postcss-preset-mantine/-/postcss-preset-mantine-1.11.1.tgz#73b956cc7dc9b5a105591ffdbf7d8f6160cd2154"
   integrity sha512-BMO+VzLP1X6Tm5sfmnFINpYsgVyN4LJheKz+25kT4JcPqccByIo4N0HCHI9B2zzduvdYadg6O/e+yQV7xLOs4g==
+  dependencies:
+    postcss-mixins "^9.0.4"
+    postcss-nested "^6.0.1"
+
+postcss-preset-mantine@^1.13.0:
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/postcss-preset-mantine/-/postcss-preset-mantine-1.13.0.tgz#43fdef6a3482be23e1c95aec99dfb5700a0353f8"
+  integrity sha512-1bv/mQz2K+/FixIMxYd83BYH7PusDZaI7LpUtKbb1l/5N5w6t1p/V9ONHfRJeeAZyfa6Xc+AtR+95VKdFXRH1g==
   dependencies:
     postcss-mixins "^9.0.4"
     postcss-nested "^6.0.1"
