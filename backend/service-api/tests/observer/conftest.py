@@ -2,7 +2,6 @@ import os
 
 import boto3
 import pytest
-from moto import mock_sqs
 
 
 @pytest.fixture(scope='function')
@@ -17,6 +16,5 @@ def aws_credentials():
 @pytest.fixture(scope='function')
 def sqs_client(aws_credentials):
     # setup
-    with mock_sqs():
-        yield boto3.client('sqs')
+    yield boto3.client('sqs')
     # teardown
