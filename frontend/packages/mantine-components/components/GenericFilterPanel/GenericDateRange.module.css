@@ -1,12 +1,15 @@
 .leftElement {
     border-radius: 5px 0px 0px 5px;
-    @mixin light {
+    /* @mixin light {
         color: var(--mantine-color-dark-3);
     }
     @mixin dark {
         color: var(--mantine-color-dark-1);
-    }
+    } */
     border-color: var(--mantine-color-default-border);
+    @mixin hover {
+        box-shadow: 1px 1px 5px;
+    }
 }
 
 .rightElement {

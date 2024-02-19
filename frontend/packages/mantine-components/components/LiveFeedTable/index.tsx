@@ -61,6 +61,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 },
                 rating: row[columnIndex.rating],
                 emotion: getTitleWord(row[columnIndex.emotion]),
+                people: row[columnIndex.people],
                 author_name: row[columnIndex.author],
                 taxonomy_tags: row[columnIndex.taxonomyTags]
             });
@@ -87,9 +88,14 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 size: 80
             },
             {
+                accessorKey: 'rating',
+                header: 'Rating',
+                size: 80
+            },
+            {
                 accessorKey: 'comment',
                 header: 'Comment',
-                size: 400,
+                size: 300,
                 Cell: ({ cell }) =>
                     process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
                         ? (
@@ -105,7 +111,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                                 color="primary"
                                 style={{ textDecoration: 'none' }}
                             >
-                                <TypographyWrap maw={600} length={cell.getValue<TextLinkType>().text.length}>
+                                <TypographyWrap maw={400} length={cell.getValue<TextLinkType>().text.length}>
                                     {cell.getValue<TextLinkType>().text}
                                 </TypographyWrap>
                             </Link>
@@ -114,7 +120,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
             {
                 accessorKey: 'observer',
                 header: 'Observer Name',
-                size: 200,
+                size: 150,
                 Cell: ({ cell }) =>
                     <IconText
                         icon={getLogoFromObserverType(cell.getValue<ObserverType>().type)}
@@ -128,6 +134,12 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
                 header: 'Tags',
                 size: 100,
                 Cell: ({ cell }) => <ChipArray chipList={stringToArray(cell.getValue<string>())} />
+            },
+            {
+                accessorKey: 'people',
+                header: 'People',
+                size: 100,
+                Cell: ({ cell }) => <ChipArray chipList={stringToArray(cell.getValue<string>())} bgColor="yellow" />
             }
         ],
         []
@@ -141,7 +153,7 @@ export default function LiveFeedTable({ showLoading, dataset }: LiveFeedTablePro
         hideFooter={false}
         // fixedHeader={true}
         // fixedFooter={true}
-        sx={{ padding: '0.5rem', height: '70vh' }}
+        sx={{ padding: '0.5rem', height: '90vh' }}
     />;
 }
 

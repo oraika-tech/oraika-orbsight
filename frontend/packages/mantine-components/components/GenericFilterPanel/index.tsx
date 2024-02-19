@@ -67,9 +67,14 @@ function updateOptionsLabel(filters: FilterData[]) {
     for (const filter of filters) {
         if (filter.type === FilterFieldType.AUTO_COMPLETE) {
             let options = filter.options
-                ? filter.options.filter(o => o && o.code && o.code.trim().length > 0)
+                ? filter.options.filter(o => o && o.code &&
+                    (typeof o.code === 'number' || o.code.trim().length > 0)
+                )
                 : [];
             if (options && options.length > 0) {
+                for (const option of options) {
+                    option.code = option.code.toString();
+                }
                 if (!options[0].label) {
                     if (filter.id === 'lang') {
                         options = options.filter(o => LANG_CODE_TO_NAME[o.code || '']);

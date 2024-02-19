@@ -1,4 +1,4 @@
-import { ActionIcon, Flex, Menu, Select, Stack, Text } from '@mantine/core';
+import { ActionIcon, Flex, Menu, Select, Stack, Text, Tooltip } from '@mantine/core';
 import { DatePickerInput, DateValue, DatesRangeValue, MonthPickerInput } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import { IconArrowAutofitContent, IconArrowAutofitLeft, IconCalendarMonth } from '@tabler/icons-react';
@@ -231,13 +231,15 @@ export default function GenericDateRange({ label, dateValue, allowedPeriod, onCh
             >
                 <Menu>
                     <Menu.Target>
-                        <ActionIcon
-                            size={36}
-                            variant="outline"
-                            className={classes.leftElement}
-                        >
-                            {rangeTypeIcons[rangeTypeState || DateRangeType.PERIOD]}
-                        </ActionIcon>
+                        <Tooltip label="Select Period Type">
+                            <ActionIcon
+                                size={36}
+                                variant="default"
+                                className={classes.leftElement}
+                            >
+                                {rangeTypeIcons[rangeTypeState || DateRangeType.PERIOD]}
+                            </ActionIcon>
+                        </Tooltip>
                     </Menu.Target>
 
                     <Menu.Dropdown>
