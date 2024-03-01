@@ -5,7 +5,7 @@ import logging
 import re
 import time
 from itertools import chain
-from typing import Any, List, Tuple, Optional, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -42,8 +42,16 @@ def is_pascal_case(name: str) -> bool:
 
 def convert_to_pascal(name: str) -> str:
     words = name.split()
-    for i in range(len(words)):
-        words[i] = words[i][0].upper() + words[i][1:].lower()
+    for i, word in enumerate(words):
+        words[i] = word[0].upper() + word[1:].lower()
+    return " ".join(words)
+
+
+def convert_to_pascal_with_abbreviation(name: str) -> str:
+    words = name.split()
+    for i, word in enumerate(words):
+        if not word.isupper():
+            words[i] = word[0].upper() + word[1:].lower()
     return " ".join(words)
 
 
