@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime, timedelta
-from typing import List, Optional, Any
+from typing import Any, List, Optional
 from uuid import UUID
 
 from sqlalchemy import UniqueConstraint, Column, DateTime
@@ -23,7 +23,8 @@ class RawDataEntity(SQLModel, table=True):
     raw_text: str
     unstructured_data: Optional[dict[str, Any]] = Field(default='{}', sa_column=Column(JSONB))
     event_time: datetime
-    updated_at: Optional[datetime] = Field(sa_column=Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow))
+    updated_at: Optional[datetime] = Field(sa_column=Column(
+        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow))
 
 
 def rotate_event_time(tenant_id: UUID, period_days: int):
@@ -37,8 +38,8 @@ def rotate_event_time(tenant_id: UUID, period_days: int):
 
         for item in items_to_update:
             item.event_time += timedelta(days=period_days)
+            session.add(item)
 
-        session.add(items_to_update)
         session.commit()
 
 

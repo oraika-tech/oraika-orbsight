@@ -1,0 +1,43 @@
+FROM prefecthq/prefect:2-python3.11
+
+RUN useradd --create-home user
+WORKDIR /home/user
+
+# env variable
+ENV PIP_DISABLE_PIP_VERSION_CHECK 1
+ENV PIP_NO_CACHE_DIR 1
+
+ENV PREFECT_SERVER_API_HOST=0.0.0.0
+ENV PREFECT_API_URL=http://localhost:4200/api
+ENV SPACEPULSE_URL=https://dev.carvelle.in/capAm/enquiry/partner
+
+ENV DB_HOST localhost:5432
+
+ENV CORE_DB_NAME orb_core
+ENV CORE_DB_USER username
+ENV CORE_DB_PASSWORD password
+
+ENV twitter_consumer_key twitter_consumer_key
+ENV twitter_consumer_secret twitter_consumer_secret
+ENV twitter_bearer_token twitter_bearer_token
+
+# install few required tools
+RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential
+RUN apt-get clean autoclean && apt-get autoremove -y
+RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
+
+COPY ../../pyproject.toml ../../requirements.txt /home/user/
+COPY ../../service /home/user/service
+
+# install as a package
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir gunicorn
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -e .
+RUN python -m nltk.downloader punkt && python -m nltk.downloader stopwords
+
+
+USER user
+
+# Start Python Workflow
+CMD ["python", "service/workflow/workflow.py"]

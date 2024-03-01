@@ -33,9 +33,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-conf
 RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
-COPY pyproject.toml requirements.txt /home/user/
-COPY service /home/user/service
-COPY scripts/entrypoint.sh /home/user/entrypoint.sh
+COPY ../../pyproject.toml ../../requirements.txt /home/user/
+COPY ../../service /home/user/service
 
 # install as a package
 RUN pip install --upgrade pip
@@ -49,4 +48,5 @@ USER user
 EXPOSE 4200
 EXPOSE 8080
 
-ENTRYPOINT ["/home/user/entrypoint.sh"]
+# cmd for running the API
+CMD ["sh", "-c", "gunicorn service.main:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT} --keep-alive ${KEEP_ALIVE}"]
