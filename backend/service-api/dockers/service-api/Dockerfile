@@ -12,21 +12,18 @@ ENV WORKER_TIMEOUT 180
 ENV SERVER_PORT 8080
 ENV WORKER_TYPE uvicorn.workers.UvicornWorker
 ENV KEEP_ALIVE 10
-ENV PREFECT_SERVER_API_HOST=0.0.0.0
-ENV PREFECT_API_URL=http://localhost:4200/api
-ENV SPACEPULSE_URL=https://dev.carvelle.in/capAm/enquiry/partner
 
 ENV DB_HOST localhost:5432
 
 ENV CORE_DB_NAME orb_core
 ENV CORE_DB_USER username
 ENV CORE_DB_PASSWORD password
-ENV PREFECT_DB_NAME prefect
-ENV PREFECT_DB_USER prefect
 
 ENV twitter_consumer_key twitter_consumer_key
 ENV twitter_consumer_secret twitter_consumer_secret
 ENV twitter_bearer_token twitter_bearer_token
+
+ENV APP_NAME service-api
 
 # install few required tools
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential
@@ -43,10 +40,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
 RUN python -m nltk.downloader punkt && python -m nltk.downloader stopwords
 
-
 USER user
-EXPOSE 4200
 EXPOSE 8080
 
 # cmd for running the API
-CMD ["sh", "-c", "gunicorn service.main:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT} --keep-alive ${KEEP_ALIVE}"]
+CMD ["sh", "-c", "gunicorn service.app.main:app -b 0.0.0.0:${SERVER_PORT} -k ${WORKER_TYPE} --workers ${NUM_OF_WORKERS} --timeout ${WORKER_TIMEOUT} --keep-alive ${KEEP_ALIVE}"]

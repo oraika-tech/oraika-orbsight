@@ -21,6 +21,8 @@ ENV twitter_consumer_key twitter_consumer_key
 ENV twitter_consumer_secret twitter_consumer_secret
 ENV twitter_bearer_token twitter_bearer_token
 
+ENV APP_NAME prefect-workers
+
 # install few required tools
 RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-config cmake libncurses5 build-essential
 RUN apt-get clean autoclean && apt-get autoremove -y

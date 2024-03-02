@@ -4,7 +4,7 @@
 #
 #    pip-compile pyproject.toml
 #
-aiosqlite==0.19.0
+aiosqlite==0.20.0
     # via prefect
 alembic==1.13.1
     # via prefect
@@ -24,13 +24,14 @@ apprise==1.7.2
 asgi-lifespan==2.1.0
     # via prefect
 async-timeout==4.0.3
-    # via asyncpg
+    # via
+    #   asyncpg
+    #   redis
 asyncpg==0.29.0
     # via prefect
 attrs==23.2.0
     # via
     #   jsonschema
-    #   outcome
     #   referencing
 bcrypt==4.1.2
     # via service (pyproject.toml)
@@ -39,13 +40,13 @@ beautifulsoup4==4.12.3
     #   googlenews
     #   obsei
     #   reddit-rss-reader
-boto3==1.34.44
+boto3==1.34.54
     # via service (pyproject.toml)
-botocore==1.34.44
+botocore==1.34.54
     # via
     #   boto3
     #   s3transfer
-cachetools==5.3.2
+cachetools==5.3.3
     # via
     #   google-auth
     #   prefect
@@ -77,9 +78,9 @@ contourpy==1.2.0
     # via matplotlib
 coolname==2.2.0
     # via prefect
-croniter==2.0.1
+croniter==2.0.2
     # via prefect
-cryptography==42.0.3
+cryptography==42.0.5
     # via
     #   prefect
     #   python-jose
@@ -96,15 +97,15 @@ dateparser==1.2.0
     #   prefect
 distro==1.9.0
     # via openai
-dnspython==2.6.0
+dnspython==2.6.1
     # via email-validator
 docker==6.1.3
     # via prefect
 ecdsa==0.18.0
     # via python-jose
-email-validator==2.1.0.post1
+email-validator==2.1.1
     # via pydantic
-fastapi==0.109.2
+fastapi==0.110.0
     # via
     #   service (pyproject.toml)
     #   strawberry-graphql
@@ -120,9 +121,9 @@ fsspec==2024.2.0
     # via prefect
 google-api-core==2.17.1
     # via google-api-python-client
-google-api-python-client==2.118.0
+google-api-python-client==2.120.0
     # via obsei
-google-auth==2.28.0
+google-auth==2.28.1
     # via
     #   google-api-core
     #   google-api-python-client
@@ -140,13 +141,9 @@ graphql-core==3.2.3
     # via strawberry-graphql
 graphviz==0.20.1
     # via prefect
-greenback==1.2.0
-    # via prefect
 greenlet==3.0.3
-    # via
-    #   greenback
-    #   sqlalchemy
-griffe==0.40.1
+    # via sqlalchemy
+griffe==0.41.1
     # via prefect
 h11==0.14.0
     # via
@@ -156,7 +153,7 @@ h2==4.1.0
     # via httpx
 hpack==4.0.0
     # via h2
-httpcore==1.0.3
+httpcore==1.0.4
     # via
     #   httpx
     #   prefect
@@ -166,7 +163,7 @@ httplib2==0.22.0
     #   google-auth-httplib2
 httptools==0.6.1
     # via uvicorn
-httpx[http2]==0.26.0
+httpx[http2]==0.27.0
     # via
     #   openai
     #   prefect
@@ -216,7 +213,7 @@ markupsafe==2.1.5
     # via
     #   jinja2
     #   mako
-marshmallow==3.20.2
+marshmallow==3.21.0
     # via dataclasses-json
 matplotlib==3.8.3
     # via rakun2
@@ -243,12 +240,10 @@ oauthlib==3.2.2
     #   requests-oauthlib
 obsei[app-store-scraper,facebook-api,google-news-scraper,google-play-api,google-play-scraper,pandas,reddit-api,reddit-scraper,source,twitter-api]==0.0.15
     # via service (pyproject.toml)
-openai==1.12.0
+openai==1.13.3
     # via service (pyproject.toml)
-orjson==3.9.14
+orjson==3.9.15
     # via prefect
-outcome==1.3.0.post0
-    # via greenback
 outscraper==5.1.0
     # via service (pyproject.toml)
 packaging==23.2
@@ -260,7 +255,7 @@ packaging==23.2
     #   pytest
     #   pytest-sugar
     #   rakun2
-pandas==2.2.0
+pandas==2.2.1
     # via
     #   obsei
     #   service (pyproject.toml)
@@ -278,7 +273,7 @@ praw==7.7.1
     # via obsei
 prawcore==2.4.0
     # via praw
-prefect==2.15.0
+prefect==2.16.1
     # via service (pyproject.toml)
 protobuf==4.25.3
     # via
@@ -295,7 +290,7 @@ pyasn1-modules==0.3.0
     # via google-auth
 pycparser==2.21
     # via cffi
-pydantic[email]==2.6.1
+pydantic[email]==2.6.3
     # via
     #   fastapi
     #   obsei
@@ -304,13 +299,13 @@ pydantic[email]==2.6.1
     #   pydantic-settings
     #   service (pyproject.toml)
     #   sqlmodel
-pydantic-core==2.16.2
+pydantic-core==2.16.3
     # via pydantic
-pydantic-settings==2.2.0
+pydantic-settings==2.2.1
     # via obsei
 pygments==2.17.2
     # via rich
-pymupdf==1.23.22
+pymupdf==1.23.26
     # via rakun2
 pymupdfb==1.23.22
     # via pymupdf
@@ -319,13 +314,13 @@ pyparsing==3.1.1
     #   httplib2
     #   matplotlib
     #   rakun2
-pytest==8.0.1
+pytest==8.0.2
     # via
     #   pytest-sugar
     #   rakun2
 pytest-sugar==1.0.0
     # via rakun2
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   botocore
     #   croniter
@@ -377,7 +372,7 @@ readchar==4.0.5
     # via prefect
 reddit-rss-reader==1.3.2
     # via obsei
-redis==5.0.1
+redis==5.0.2
     # via service (pyproject.toml)
 referencing==0.33.0
     # via
@@ -410,7 +405,7 @@ requests-oauthlib==1.3.1
     #   apprise
     #   kubernetes
     #   python-facebook-api
-rich==13.7.0
+rich==13.7.1
     # via prefect
 rpds-py==0.18.0
     # via
@@ -439,11 +434,10 @@ six==1.16.0
     #   langdetect
     #   python-dateutil
     #   rakun2
-sniffio==1.3.0
+sniffio==1.3.1
     # via
     #   anyio
     #   asgi-lifespan
-    #   greenback
     #   httpx
     #   openai
     #   prefect
@@ -455,7 +449,7 @@ sqlalchemy[asyncio]==2.0.27
     #   obsei
     #   prefect
     #   sqlmodel
-sqlmodel==0.0.14
+sqlmodel==0.0.16
     # via service (pyproject.toml)
 starlette==0.36.3
     # via fastapi
@@ -478,8 +472,9 @@ tqdm==4.66.2
     #   rakun2
 typer==0.9.0
     # via prefect
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via
+    #   aiosqlite
     #   alembic
     #   fastapi
     #   openai

@@ -5,6 +5,8 @@ from pydantic_settings import BaseSettings
 
 
 class AppSettings(BaseSettings):
+    APP_NAME: str
+
     # Mandatory fields
     OPENAI_API_KEY: str = ""
     SPACEPULSE_URL: str = ""
@@ -55,8 +57,9 @@ class AppSettings(BaseSettings):
             if origin_url:
                 self.CORS_ORIGINS.append(origin_url)
 
-        if not self.DB_HOST.startswith("localhost"):
-            for field in [self.OPENAI_API_KEY, self.SPACEPULSE_URL, self.SPACEPULSE_API_KEY, self.SPACEPULSE_API_SECRET]:
+        if not self.DB_HOST.startswith("localhost") and self.APP_NAME == 'prefect-workers':
+            envs = [self.OPENAI_API_KEY, self.SPACEPULSE_URL, self.SPACEPULSE_API_KEY, self.SPACEPULSE_API_SECRET]
+            for field in envs:
                 if not field:
                     raise ValueError(f"{field} is not set")
 
