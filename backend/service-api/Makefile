@@ -43,7 +43,11 @@ prefect-tunneling:
 	cd $(svc_api_dir); \
 	bash scripts/prefect-tunneling.sh
 
-prefect-local-run:
+prefect-server-run:
 	cd $(svc_api_dir); \
-	bash scripts/prefect-run.sh
+	bash scripts/prefect-server-run.sh
 
+prefect-worker-run:
+	cd $(svc_api_dir); \
+	pwd; \
+	bash scripts/prefect-worker-run.sh

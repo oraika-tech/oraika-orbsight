@@ -5,10 +5,10 @@
 SCRIPT_DIR="$(dirname "$0")"
 echo "Running in directory: ${SCRIPT_DIR}"
 
-export DB_HOST={DB_HOST:-localhost:5432}
-export PREFECT_DB_NAME={PREFECT_DB_NAME:-prefect}
-export PREFECT_DB_USER={PREFECT_DB_USER:-prefect}
-export PREFECT_DB_PASSWORD={PREFECT_DB_PASSWORD:-prefect}
+export DB_HOST=${DB_HOST:-localhost:5432}
+export PREFECT_DB_NAME=${PREFECT_DB_NAME:-prefect}
+export PREFECT_DB_USER=${PREFECT_DB_USER:-prefect}
+export PREFECT_DB_PASSWORD=${PREFECT_DB_PASSWORD:-prefect}
 export PREFECT_SERVER_API_HOST=0.0.0.0
 export PREFECT_API_URL="http://127.0.0.1:4200/api"
 
