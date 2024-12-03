@@ -15,13 +15,13 @@ logger = logger_utils.initialize_logger(__name__)
 def workflow_agent():
     tenants = get_all_enabled_tenants_dp()
     demo_tenants = get_all_demo_tenants_dp()
-    work_pool_name = "ECS Workers"
+    # work_pool_name = "ECS Workers"
 
     jobs = ([
         observer_wf.to_deployment(
             name=tenant.name + " - Observer",
             # schedule=CronSchedule(cron="0 1 * * *", timezone="Asia/Kolkata"),
-            work_pool_name=work_pool_name,
+            # work_pool_name=work_pool_name,
             parameters={
                 "tenant_id": tenant.identifier,
                 "lookup_period": "28h",  # Keeping buffer of 3h
@@ -33,7 +33,7 @@ def workflow_agent():
         analyzer_wf.to_deployment(
             name=tenant.name + " - Analyzer",
             # schedule=CronSchedule(cron="15 1 * * *", timezone="Asia/Kolkata"),
-            work_pool_name=work_pool_name,
+            # work_pool_name=work_pool_name,
             parameters={
                 "tenant_id": tenant.identifier,
                 "lookup_period": "3d",  # 3 tries
@@ -45,7 +45,7 @@ def workflow_agent():
         spacepulse_wf.to_deployment(
             name=tenant.name + " - SpacePulse Push",
             # schedule=CronSchedule(cron="30 1 * * *", timezone="Asia/Kolkata"),
-            work_pool_name=work_pool_name,
+            # work_pool_name=work_pool_name,
             parameters={
                 "tenant_id": tenant.identifier,
                 "lookup_period": "1d",  # 1 try
@@ -56,7 +56,7 @@ def workflow_agent():
         event_time_rotator_wf.to_deployment(
             name=tenant.name + ' - Event Time Rotator',
             # schedule=CronSchedule(cron="0 1 * * *", timezone='Asia/Kolkata'),
-            work_pool_name=work_pool_name,
+            # work_pool_name=work_pool_name,
             parameters={
                 'tenant_id': tenant.identifier,
                 'period_days': 30
@@ -66,7 +66,7 @@ def workflow_agent():
     ] + [
         ner_wf.to_deployment(
             name=tenant.name + " - NER",
-            work_pool_name=work_pool_name,
+            # work_pool_name=work_pool_name,
             parameters={
                 "tenant_id": tenant.identifier,
                 "lookup_period": "30d",  # 3 tries

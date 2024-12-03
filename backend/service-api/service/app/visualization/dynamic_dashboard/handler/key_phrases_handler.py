@@ -24,7 +24,7 @@ def handle_key_phrases(component_inputs: List[FieldValue],
             filter_list=filter_list,
             is_timeseries=False)
 
-        text = "\n".join([result[0] for result in results[1:]])
+        text = "\n".join([result[2] for result in results[1:]])
         cleaned_text = clean_text(text)
 
         extracted_phrases = extract_key_phrases(cleaned_text)

@@ -113,7 +113,7 @@ class FilterQueryParams(BaseModel):
         return None if value == 'All' else value
 
 
-class TimeBasedSearch(enum.StrEnum):
+class TimeBasedSearch(str, Enum):
     LAST_HOUR = 'h'
     LAST_DAY = 'd'
     LAST_WEEK = 'w'

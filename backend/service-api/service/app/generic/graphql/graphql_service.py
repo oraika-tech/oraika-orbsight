@@ -18,7 +18,11 @@ def get_domain_value(entity_obj, domain_field: dataclasses.Field):
             for key, value in entity_obj.items()
             if key in fields
         }
-        return domain_field.type(**domain_dict)
+        # Ensure domain_field.type is callable before using it
+        if callable(domain_field.type):
+            return domain_field.type(**domain_dict)
+        else:
+            raise TypeError(f"The type {domain_field.type} is not callable.")
     else:
         return entity_obj
 

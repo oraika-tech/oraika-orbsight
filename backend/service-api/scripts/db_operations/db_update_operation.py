@@ -120,5 +120,5 @@ def update_specific_data(tenant_id: UUID, field_name: str, data_id: int):
 playarena_id = UUID('02ddd60c-2d58-47cc-a445-275d8e621252')
 playjuniors_id = UUID('b6d5a44a-4626-491a-8fc0-3a11344d97f7')
 
-update_unprocessed_data(playarena_id, 'people', 8775)
+update_unprocessed_data(playarena_id, 'people', 1)
 # update_specific_data(playarena_id, 'people', 1)

@@ -66,7 +66,7 @@ WHERE rd.is_deleted = FALSE AND pd.emotion IS NOT NULL
 ORDER BY event_time DESC
 ;
 
-GRANT USAGE ON SCHEMA data_view TO grafana;
-GRANT SELECT ON data_view.processed_data_view_v1 TO grafana;
+GRANT USAGE ON SCHEMA data_view TO orbsight;
+GRANT SELECT ON data_view.processed_data_view_v1 TO orbsight;
 
 --rollback DROP SCHEMA IF EXISTS data_view;

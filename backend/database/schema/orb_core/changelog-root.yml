@@ -4,9 +4,9 @@ databaseChangeLog:
         type: postgresql
 
   - includeAll:
-      path: sql/
+      path: ../common/
       relativeToChangelogFile: true
 
   - includeAll:
-      path: ../common/
+      path: sql/
       relativeToChangelogFile: true

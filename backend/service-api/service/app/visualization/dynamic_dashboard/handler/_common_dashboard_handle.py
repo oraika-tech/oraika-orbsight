@@ -1,6 +1,6 @@
 import logging
 from functools import reduce
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from service.app.visualization.cubejs_client import fetch_cubejs_data
 from service.app.visualization.model.chart_models import (
@@ -155,9 +155,10 @@ def get_code_to_daterange(code: str):
 
 
 def create_time_dimension(time_filters: List[FilterDO], is_timeseries: bool):
+    defaultDateRange: list[str] | Any = "Last 7 days"
     time_dimension = {
         "dimension": "ProcessedDataViewV1.eventTime",
-        "dateRange": "Last 7 days"
+        "dateRange": defaultDateRange
     }
     for time_filter in time_filters:
         if time_filter.values:

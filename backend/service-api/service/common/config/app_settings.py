@@ -14,7 +14,7 @@ class AppSettings(BaseSettings):
     SPACEPULSE_API_SECRET: str = ""
 
     # Fields with default values
-    DB_HOST: str = "localhost:5432"
+    DB_HOST: str = "localhost:5433"
     CORE_DB_NAME: str = "orb_core"
     CORE_DB_USER: str = "orbsight"
     CORE_DB_PASSWORD: str = "orbsight"
@@ -41,9 +41,9 @@ class AppSettings(BaseSettings):
     MAX_WORD_COUNT: int = 20
     MAXIMUM_KEY_PHRASES: int = 16
 
-    HOME_URL: str = Field("https://oraika.com")
-    WWW_URL: str = Field("https://www.oraika.com")
-    ORB_URL: str = Field("https://orb.oraika.com")
+    HOME_URL: str = Field("http://oraika.local:3001")
+    WWW_URL: str = Field("http://www.oraika.local:3001")
+    ORB_URL: str = Field("http://orb.oraika.local:3002")
     DEMO_URL: str = Field("https://demo.oraika.com")
     CORS_ORIGINS: List[str] = Field([])
     ALLOWED_HOSTS: List[str] = Field(["*"])
