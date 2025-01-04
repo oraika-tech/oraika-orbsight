@@ -1,0 +1,40 @@
+version: '3'
+services:
+  api-service-local:
+    image: api-service-local
+    build:
+      context: ./backend/service-api
+      dockerfile: ServiceDockerfile
+    environment:
+      - DB_HOST=host.docker.internal:5432
+      - CORE_DB_USER=orbsight
+      - CORE_DB_PASSWORD=orbsight
+      - PREFECT_DB_USER=orbsight
+      - PREFECT_DB_NAME=prefect_local
+      - PREFECT_DB_PASSWORD=orbsight
+      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - OPENAI_API_KEY=xsdfex
+      - OUTSCRAPPER_API_KEY=styhbgfds
+      - SPACEPULSE_URL=http://host.docker.internal:3001/capAm/enquiry/partner
+      - SPACEPULSE_API_KEY=dummykey
+      - SPACEPULSE_API_SECRET=dummaysecret
+      - APP_NAME=Script
+    ports:
+      - "4200:4200"
+      - "8080:8080"
+    network_mode: "bridge"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dbname
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379" 
