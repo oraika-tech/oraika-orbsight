@@ -6,6 +6,7 @@ import {
 import { UserInfo, getProfile } from 'common-utils/service/auth-service';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
+import LoginPage from './LoginPage';
 
 export interface UserProfile {
     userInfo: UserInfo;
@@ -75,12 +76,12 @@ export default function AuthProvider({ loginUrl, redirectUrl, publicPaths, child
                 } else {
                     setUserInfo(emptyUserInfo);
                     setShouldLogin(true);
-                    router.push(loginUrl);
+                    // router.push(loginUrl);
                 }
             })
             .catch(() => {
                 setShouldLogin(true);
-                router.push(loginUrl);
+                // router.push(loginUrl);
             });
 
         syncUserInfo();
@@ -88,42 +89,50 @@ export default function AuthProvider({ loginUrl, redirectUrl, publicPaths, child
         return () => setUserInfo(emptyUserInfo);
     }, [key]);
 
-    let page = null;
-    if (loginUrl.endsWith(router.asPath)) {
-        page = children;
+    if (shouldLogin === true) {
+        // todo: add support demo login also
+        // todo: pass refresh key instead of shouldlogin. currently passing shouldlogin to do refersh
+        return <LoginPage setShouldLogin={setShouldLogin} />;
+
     } else {
-        switch (shouldLogin) {
-            case null: // loading
-                page = <Center> <Loader variant="dots" /> </Center>;
-                break;
+        let page = null;
+        if (loginUrl.endsWith(router.asPath)) {
+            page = children;
+        } else {
+            switch (shouldLogin) {
+                case null: // loading
+                    page = <Center> <Loader variant="dots" /> </Center>;
+                    break;
 
-            case true: // login require
-                page = <Center> <Loader variant="bars" /> </Center>;
-                break;
+                // case true: // login require
+                //     return <LoginPage />;
+                //     // page = <Center> <Loader variant="bars" /> </Center>;
+                //     break;
 
-            case false: // already logged in
-                page = children;
-                break;
+                case false: // already logged in
+                    page = children;
+                    break;
+            }
         }
+
+        const userProfile = {
+            userInfo,
+            refreshPage,
+            setPreferredTenantId: (tenantId: string) => {
+                setUserInfo((info) => ({ ...info, preferredTenantId: tenantId }));
+            },
+            clearUserInfo: () => {
+                setUserInfo(emptyUserInfo);
+            },
+            isLoggedIn: () => !!userInfo.email
+        };
+
+        return (
+            <UserContext.Provider value={userProfile}>
+                <Box key={key}>
+                    {page}
+                </Box>
+            </UserContext.Provider>
+        );
     }
-
-    const userProfile = {
-        userInfo,
-        refreshPage,
-        setPreferredTenantId: (tenantId: string) => {
-            setUserInfo((info) => ({ ...info, preferredTenantId: tenantId }));
-        },
-        clearUserInfo: () => {
-            setUserInfo(emptyUserInfo);
-        },
-        isLoggedIn: () => !!userInfo.email
-    };
-
-    return (
-        <UserContext.Provider value={userProfile}>
-            <Box key={key}>
-                {page}
-            </Box>
-        </UserContext.Provider>
-    );
 }

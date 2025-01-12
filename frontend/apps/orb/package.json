@@ -23,6 +23,8 @@
         "build-storybook": "storybook build"
     },
     "dependencies": {
+        "@emotion/react": "^11.11.1",
+        "@emotion/server": "^11.11.0",
         "@mantine/carousel": "7.3.2",
         "@mantine/core": "7.3.2",
         "@mantine/dates": "7.3.2",
@@ -58,7 +60,10 @@
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-i18next": "13.5.0",
-        "react-player": "2.14.0"
+        "react-player": "2.14.0",
+        "rehype-autolink-headings": "^7.1.0",
+        "rehype-code-titles": "^1.2.0",
+        "rehype-slug": "^6.0.0"
     },
     "devDependencies": {
         "@babel/core": "^7.23.6",

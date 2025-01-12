@@ -19,13 +19,14 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
 interface LoginPageProps {
+    setShouldLogin: (shouldLogin: boolean|null) => {}
     isForgetPassword?: boolean
 }
 
-export default function LoginPage({ isForgetPassword }: LoginPageProps) {
+export default function LoginPage({ setShouldLogin, isForgetPassword }: LoginPageProps) {
     const router = useRouter();
     const [errorMessage, setErrorMessage] = useState('');
-    const [shouldLogin, setShouldLogin] = useState(false);
+    const [loginRequired, setLoginRequired] = useState(true);
     const form = useForm({
         initialValues: {
             username: '',
@@ -46,15 +47,17 @@ export default function LoginPage({ isForgetPassword }: LoginPageProps) {
         const syncUserInfo = () => getProfile()
             .then(user => {
                 if (user.preferred_tenant_id) {
-                    const orbUrl = process.env.NEXT_PUBLIC_ORB_WEBSITE_URL;
-                    if (orbUrl) {
-                        router.push(orbUrl);
-                    }
+                    // const orbUrl = process.env.NEXT_PUBLIC_ORB_WEBSITE_URL;
+                    // if (orbUrl) {
+                    //     router.push(orbUrl);
+                    // }
+                    // router.push("/");
+                    return redirectTo;
                 } else {
-                    setShouldLogin(true);
+                    setLoginRequired(true);
                 }
             })
-            .catch(() => setShouldLogin(true));
+            .catch(() => setLoginRequired(true));
 
         syncUserInfo();
     }, []);
@@ -64,7 +67,7 @@ export default function LoginPage({ isForgetPassword }: LoginPageProps) {
             .then(
                 loginResponse => {
                     if (loginResponse.status) {
-                        router.push(process.env.NEXT_PUBLIC_ORB_WEBSITE_URL || '/');
+                        setShouldLogin(false);
                     } else {
                         // setErrorMessage();
                         setErrorMessage('Login Failed, Please try again !');
@@ -78,7 +81,7 @@ export default function LoginPage({ isForgetPassword }: LoginPageProps) {
             );
     };
 
-    if (!shouldLogin) {
+    if (!loginRequired) {
         return <Center> <Loader variant="dots" /> </Center>;
     }
 
