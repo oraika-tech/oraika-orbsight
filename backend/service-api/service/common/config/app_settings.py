@@ -14,7 +14,7 @@ class AppSettings(BaseSettings):
     SPACEPULSE_API_SECRET: str = ""
 
     # Fields with default values
-    DB_HOST: str = "localhost:5433"
+    DB_HOST: str = "localhost:5432"
     CORE_DB_NAME: str = "orb_core"
     CORE_DB_USER: str = "orbsight"
     CORE_DB_PASSWORD: str = "orbsight"

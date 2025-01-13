@@ -7,9 +7,9 @@ WORKDIR /home/user
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PIP_NO_CACHE_DIR 1
 
-ENV PREFECT_SERVER_API_HOST=0.0.0.0
-ENV PREFECT_API_URL=http://localhost:4200/api
-ENV SPACEPULSE_URL=https://dev.carvelle.in/capAm/enquiry/partner
+ENV PREFECT_SERVER_API_HOST 0.0.0.0
+ENV PREFECT_API_URL http://localhost:4200/api
+ENV SPACEPULSE_URL https://dev.carvelle.in/capAm/enquiry/partner
 
 ENV DB_HOST localhost:5432
 

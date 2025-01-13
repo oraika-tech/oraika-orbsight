@@ -30,6 +30,7 @@ dependencies = [
     "requests",
     "sqlmodel",
     "stopwordsiso",
+    "setuptools",
     "strawberry-graphql[fastapi]",
     "tiktoken",
     "uvicorn[standard]",

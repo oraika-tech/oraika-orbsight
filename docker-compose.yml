@@ -4,49 +4,48 @@ services:
   orb-app-local:
     image: orb-app-local
     profiles: 
+      - all
       - testing
     build:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
       NODE_ENV: development
+      NEXT_PUBLIC_BE_API_URL: http://localhost:${API_SERVICE_PORT}
       PORT: 3002
     ports:
-      - "3002:3002"
-    network_mode: "bridge"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    # working_dir: /usr/src/app
-    # volumes:
-    #   - .:/usr/src/app
-    #   - /usr/src/app/node_modules
+      - ${ORB_PORT}:3002
 
   api-service-local:
     image: api-service-local
     profiles: 
+      - all
+      - python-src
       - dev
     build:
       context: ./backend/service-api
       dockerfile: ServiceDockerfile
     environment:
-      - DB_HOST=host.docker.internal:5432
+      - DB_HOST=host.docker.internal:${DB_PORT}
       - CORE_DB_USER=orbsight
       - CORE_DB_PASSWORD=orbsight
+      - CUBEJS_API_ENDPOINT=http://host.docker.internal:${CUBEJS_PORT}/cubejs-api/v1/load
       - PREFECT_DB_USER=orbsight
       - PREFECT_DB_NAME=prefect_local
       - PREFECT_DB_PASSWORD=orbsight
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
-      - OPENAI_API_KEY=xsdfex
-      - OUTSCRAPPER_API_KEY=styhbgfds
+      - PREFECT_API_URL=http://host.docker.internal:${PREFECT_PORT}/api
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OUTSCRAPPER_API_KEY=${OUTSCRAPPER_API_KEY}
       - SPACEPULSE_URL=http://host.docker.internal:3001/capAm/enquiry/partner
-      - SPACEPULSE_API_KEY=dummykey
-      - SPACEPULSE_API_SECRET=dummaysecret
-      - APP_NAME=Script
-      - REDIS_PORT=6380
+      - SPACEPULSE_API_KEY=${SPACEPULSE_API_KEY}
+      - SPACEPULSE_API_SECRET=${SPACEPULSE_API_SECRET}
+      - APP_NAME=service
+      - ORB_URL=http://localhost:${ORB_PORT}
+      - COOKIE_SECURE=${COOKIE_SECURE}
+      - REDIS_HOST=host.docker.internal
+      - REDIS_PORT=${REDIS_PORT}
     ports:
-      - "4200:4200"
-      - "8080:8080"
-    network_mode: "bridge"
+      - ${API_SERVICE_PORT}:8080
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -57,29 +56,31 @@ services:
   #    POSTGRES_PASSWORD: password
   #    POSTGRES_DB: dbname
   #  ports:
-  #    - "5432:5432"
+  #    - ${DB_PORT}:5432
 
   redis:
     image: redis:6
     profiles: 
+      - all
       - dev
     ports:
-      - "6380:6379" 
+      - ${REDIS_PORT}:6379
       # Host:Container
 
   cube:
     image: cubejs/cube:v0.36.3
     profiles: 
+      - all
       - dev
     ports:
-      - "4000:4000"
+      - ${CUBEJS_PORT}:4000
     env_file:
       - backend/cubejs/.env
     environment:
       - CUBEJS_DEV_MODE=true
       - CUBEJS_DB_TYPE=postgres
       - CUBEJS_DB_HOST=172.17.0.1
-      - CUBEJS_DB_PORT=5432
+      - CUBEJS_DB_PORT=${DB_PORT}
       - CUBEJS_DB_NAME=orb_tenant_playarena
       - CUBEJS_DB_USER=orbsight
       - CUBEJS_DB_PASS=orbsight
@@ -90,14 +91,15 @@ services:
   prefect-server:
     image: prefecthq/prefect:3-python3.11
     profiles: 
+      - all
       - prefect
     restart: always
     # volumes:
     #   - prefect:/root/.prefect
     entrypoint: ["/opt/prefect/entrypoint.sh", "prefect", "server", "start"]
     environment:
-      - PREFECT_UI_URL=http://127.0.0.1:4200/api
-      - PREFECT_API_URL=http://127.0.0.1:4200/api
+      - PREFECT_UI_URL=http://127.0.0.1:${PREFECT_PORT}/api
+      - PREFECT_API_URL=http://127.0.0.1:${PREFECT_PORT}/api
       # If you want to access Prefect Server UI from anywhere other than the Docker host machine, you will need to change
       # PREFECT_UI_URL and PREFECT_API_URL to match the external hostname/IP of the host machine. For example:
       #- PREFECT_UI_URL=http://external-ip:4200/api
@@ -107,17 +109,17 @@ services:
       # Uncomment the following line if you want to use the 'S3 Bucket' storage block instead of the older 'S3' storage
       # - EXTRA_PIP_PACKAGES=prefect-aws
     ports:
-      - 4200:4200
-    network_mode: "bridge"
+      - ${PREFECT_PORT}:4200
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    # depends_on:
-      # - database
 
   worker-service-local:
     image: worker-service-local
     profiles: 
+      - all
+      - python-src
       - prefect
+      - worker
       - dev
     build:
       context: ./backend/service-api
@@ -129,15 +131,14 @@ services:
       - PREFECT_DB_USER=orbsight
       - PREFECT_DB_NAME=prefect_local
       - PREFECT_DB_PASSWORD=orbsight
-      - PREFECT_API_URL=http://host.docker.internal:4200/api
-      - OPENAI_API_KEY=xsdfex
-      - OUTSCRAPPER_API_KEY=styhbgfds
+      - PREFECT_API_URL=http://host.docker.internal:${PREFECT_PORT}/api
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OUTSCRAPPER_API_KEY=${OUTSCRAPPER_API_KEY}
       - SPACEPULSE_URL=http://host.docker.internal:3001/capAm/enquiry/partner
-      - SPACEPULSE_API_KEY=dummykey
-      - SPACEPULSE_API_SECRET=dummaysecret
-      - APP_NAME=Script
-      - REDIS_PORT=6380
-    network_mode: "bridge"
+      - SPACEPULSE_API_KEY=${SPACEPULSE_API_KEY}
+      - SPACEPULSE_API_SECRET=${SPACEPULSE_API_SECRET}
+      - APP_NAME=prefect-workers
+      - REDIS_PORT=${REDIS_PORT}
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
