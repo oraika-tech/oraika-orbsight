@@ -16,6 +16,10 @@ ifndef db_dir
 	db_dir=.
 endif
 
+include $(db_dir)/../../.env
+export
+
+
 # For all db-* target export db admin credentials - ADMIN_DB_USER, ADMIN_DB_PASSWORD
 
 # Usage:
@@ -23,6 +27,9 @@ endif
 #	make db-create tenant=core username=abc password=123
 db-create:
 	bash $(db_dir)/scripts/db_creation.sh $(db_name) $(username) $(password) && echo "Success"
+
+db-create-tenant:
+	bash $(db_dir)/scripts/create-tenant-db.sh $(tenant)
 
 # make db-sync-changelog tenant=core
 # make db-sync-changelog tenant=rbi

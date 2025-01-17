@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+TENANT=$1
+
+psql postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:${DB_PORT} <<-EOSQL
+  CREATE DATABASE orb_tenant_${TENANT};
+  GRANT ALL PRIVILEGES ON DATABASE orb_core TO ${ORBSIGHT_TENANT_USER};
+EOSQL
+
