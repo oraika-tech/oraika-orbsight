@@ -28,8 +28,11 @@ export
 db-create:
 	bash $(db_dir)/scripts/db_creation.sh $(db_name) $(username) $(password) && echo "Success"
 
+db-init-core:
+	bash $(db_dir)/scripts/init-core-db.sh
+
 db-create-tenant:
-	bash $(db_dir)/scripts/create-tenant-db.sh $(tenant)
+	bash $(db_dir)/scripts/create-tenant-db-data.sh $(tenant) $(email) $(user) $(password)
 
 # make db-sync-changelog tenant=core
 # make db-sync-changelog tenant=rbi

@@ -28,8 +28,8 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y curl git pkg-conf
 RUN apt-get clean autoclean && apt-get autoremove -y
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/
 
+# copy dependency files
 COPY pyproject.toml requirements.txt /home/user/
-COPY service /home/user/service
 
 # install as a package
 RUN pip install --upgrade pip
@@ -38,8 +38,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
 RUN python -m nltk.downloader punkt && python -m nltk.downloader stopwords
 
+# copy source code. Keeping source in the end cause faster build on code changes
+COPY service /home/user/service
 
 USER user
 
 # Start Python Workflow
-CMD ["python", "service/workflow/workflow.py"]
+CMD ["python", "-m", "service.workflow.workflow"]

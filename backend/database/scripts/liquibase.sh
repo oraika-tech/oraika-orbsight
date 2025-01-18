@@ -27,10 +27,6 @@ function liquibase_call() {
     LB_DIR=orb_tenant
   fi
 
-  DB_USER=postgres
-  DB_PASSWORD=postgres
-  
-
   case $CMD in
   drop-all)
     echo "Extremely dangerous operation, do you want to continue !? (y/N) "

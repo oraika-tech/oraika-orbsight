@@ -98,7 +98,8 @@ tenant_data = {
 
 
 def text_classification(tenant_id: UUID, reviews: list) -> list[TextClassification]:
-    data = tenant_data[str(tenant_id)]
+    # TODO: need to change to use tenant_id
+    data = tenant_data.get(str(tenant_id), tenant_data['02ddd60c-2d58-47cc-a445-275d8e621252'])
     reviews_list = split_array(reviews, 10)
     response_list = [
         prompt(

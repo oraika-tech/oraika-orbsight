@@ -18,6 +18,8 @@ class AppSettings(BaseSettings):
     CORE_DB_NAME: str = "orb_core"
     CORE_DB_USER: str = "orbsight"
     CORE_DB_PASSWORD: str = "orbsight"
+    TENANT_DB_USER: str = "orbsight"
+    TENANT_DB_PASSWORD: str = "orbsight"
     DB_ENGINE_NAME: str = "postgresql"
 
     API_V1_STR: str = "/api/v1"

@@ -3,7 +3,7 @@ services:
 
   orb-app-local:
     image: orb-app-local
-    profiles: 
+    profiles:
       - all
       - testing
     build:
@@ -12,14 +12,14 @@ services:
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_BE_API_URL: http://localhost:${API_SERVICE_PORT}
-      PORT: 3000
     ports:
-      - ${ORB_PORT}:3000
+      - ${ORB_PORT}:3002
 
   api-service-local:
     image: api-service-local
-    profiles: 
+    profiles:
       - all
+      - service
       - python-src
       - dev
     build:
@@ -29,6 +29,8 @@ services:
       - DB_HOST=host.docker.internal:${DB_PORT}
       - CORE_DB_USER=${ORBSIGHT_CORE_USER}
       - CORE_DB_PASSWORD=${ORBSIGHT_CORE_PASSWORD}
+      - TENANT_DB_USER=${ORBSIGHT_TENANT_USER}
+      - TENANT_DB_PASSWORD=${ORBSIGHT_TENANT_PASSWORD}
       - CUBEJS_API_ENDPOINT=http://host.docker.internal:${CUBEJS_PORT}/cubejs-api/v1/load
       - PREFECT_DB_NAME=${PREFECT_DB}
       - PREFECT_DB_USER=${PREFECT_USER}
@@ -61,8 +63,7 @@ services:
     ports:
       - ${DB_PORT}:5432
     volumes:
-      - ./postgres-db/postgres-data:/var/lib/postgresql/data
-      - ./postgres-db/db-init:/docker-entrypoint-initdb.d
+      - ./postgres-data:/var/lib/postgresql/data
 
 
   redis:
@@ -90,7 +91,7 @@ services:
       - CUBEJS_DB_PORT=${DB_PORT}
       - CUBEJS_DB_USER=${ORBSIGHT_TENANT_USER}
       - CUBEJS_DB_PASS=${ORBSIGHT_TENANT_PASSWORD}
-      - CUBEJS_DB_SSL=true
+      - CUBEJS_DB_SSL=false
       # - CUBEJS_DB_NAME=orb_tenant_playarena
     volumes:
       - ./backend/cubejs/model:/cube/conf/model
@@ -135,6 +136,8 @@ services:
       - DB_HOST=host.docker.internal:${DB_PORT}
       - CORE_DB_USER=${ORBSIGHT_CORE_USER}
       - CORE_DB_PASSWORD=${ORBSIGHT_CORE_PASSWORD}
+      - TENANT_DB_USER=${ORBSIGHT_TENANT_USER}
+      - TENANT_DB_PASSWORD=${ORBSIGHT_TENANT_PASSWORD}
       - PREFECT_API_URL=http://host.docker.internal:${PREFECT_PORT}/api
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OUTSCRAPPER_API_KEY=${OUTSCRAPPER_API_KEY}
