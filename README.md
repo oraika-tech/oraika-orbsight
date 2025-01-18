@@ -41,32 +41,32 @@ make db-init-core
 make db-sync-schema tenant=core
 ```
 
-### 3. Create core db tables
-```
-make db-sync-schema tenant=core
-```
-
-### 4. Create & initialize tenant database
+### 3. Create & initialize tenant database
 ```
 make db-create-tenant tenant={tenant_name} email={user_email} user={username} password={password}
 ```
 
-### 5. Create tenant db tables
+### 4. Create tenant db tables
 ```
 make db-sync-schema tenant={tenant_name}
 ```
 
-### 6. Insert sample data
+### 5. Insert sample data
  - Download provided tenant zip and unzip in folder
  - Insert data
 ```
 psql -h localhost -p ${DB_PORT} -U ${ORBSIGHT_TENANT_USER} -d ${ORB_TENANT_PLAYARENA} -f {path_to_file}
 ```
 
-### 7. Stop Postgres
+### 6. Stop Postgres
 You may do ctrl-c to stop postgres. If still running, you can stop docker compose.
 ```
 docker compose --profile postgres down
+```
+
+Note: For a fresh start, you may delete the postgres data and start over.
+```
+sudo rm -rf postgres-data
 ```
 
 ## Running Docker Compose
