@@ -32,3 +32,4 @@ def get_charts_by_ids(tenant_id: UUID, chart_ids: List[UUID]) -> list[ChartEntit
                 ChartEntity.is_deleted == false()
             )
         ).all())
+

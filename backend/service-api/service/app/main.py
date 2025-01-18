@@ -13,7 +13,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 from service.app import api_router
 from service.app.common.api_logger import log_requests
 from service.app.common.exception_handler import http_exception_handler, validation_exception_handler
-from service.app.generic.graphql import graphql_apis
+# from service.app.generic.graphql import graphql_apis
 from service.common.config.app_settings import app_settings
 
 LOGLEVEL = os.environ.get('LOGLEVEL', 'INFO').upper()
@@ -55,9 +55,9 @@ app.add_exception_handler(RequestValidationError, validation_exception_handler) 
 
 app.include_router(api_router, prefix=app_settings.API_V1_STR)
 
-if app_settings.IS_GRAPHQL:
-    app.include_router(graphql_apis.routes)
-
+# TODO: need work to expose graphql apis
+# if app_settings.IS_GRAPHQL:
+    # app.include_router(graphql_apis.routes)
 
 @app.on_event("startup")
 def app_init():

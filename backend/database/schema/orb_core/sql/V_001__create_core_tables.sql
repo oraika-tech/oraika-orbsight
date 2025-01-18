@@ -4,7 +4,6 @@
 
 CREATE TABLE tenant_master (
     identifier UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    nile_org_id VARCHAR,
     name VARCHAR NOT NULL,
     code VARCHAR NOT NULL, -- unique name for all internal purpose
     type SMALLINT NOT NULL, -- CORPORATE | GOV | INDIVIDUAL

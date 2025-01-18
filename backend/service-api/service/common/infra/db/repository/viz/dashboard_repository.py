@@ -44,3 +44,4 @@ def get_dashboards(tenant_id: UUID, frontend_key: str) -> List[DashboardEntity]:
                 any_(DashboardEntity.frontend_keys) == frontend_key
             )
         return list(session.exec(query).all())
+

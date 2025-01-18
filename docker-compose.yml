@@ -3,7 +3,7 @@ services:
 
   orb-app-local:
     image: orb-app-local
-    profiles: 
+    profiles:
       - all
       - testing
     build:
@@ -12,14 +12,14 @@ services:
     environment:
       NODE_ENV: development
       NEXT_PUBLIC_BE_API_URL: http://localhost:${API_SERVICE_PORT}
-      PORT: 3002
     ports:
       - ${ORB_PORT}:3002
 
   api-service-local:
     image: api-service-local
-    profiles: 
+    profiles:
       - all
+      - service
       - python-src
       - dev
     build:
@@ -27,12 +27,14 @@ services:
       dockerfile: ServiceDockerfile
     environment:
       - DB_HOST=host.docker.internal:${DB_PORT}
-      - CORE_DB_USER=orbsight
-      - CORE_DB_PASSWORD=orbsight
+      - CORE_DB_USER=${ORBSIGHT_CORE_USER}
+      - CORE_DB_PASSWORD=${ORBSIGHT_CORE_PASSWORD}
+      - TENANT_DB_USER=${ORBSIGHT_TENANT_USER}
+      - TENANT_DB_PASSWORD=${ORBSIGHT_TENANT_PASSWORD}
       - CUBEJS_API_ENDPOINT=http://host.docker.internal:${CUBEJS_PORT}/cubejs-api/v1/load
-      - PREFECT_DB_USER=orbsight
-      - PREFECT_DB_NAME=prefect_local
-      - PREFECT_DB_PASSWORD=orbsight
+      - PREFECT_DB_NAME=${PREFECT_DB}
+      - PREFECT_DB_USER=${PREFECT_USER}
+      - PREFECT_DB_PASSWORD=${PREFECT_PASSWORD}
       - PREFECT_API_URL=http://host.docker.internal:${PREFECT_PORT}/api
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OUTSCRAPPER_API_KEY=${OUTSCRAPPER_API_KEY}
@@ -49,14 +51,20 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  #db:
-  #  image: postgres:14
-  #  environment:
-  #    POSTGRES_USER: user
-  #    POSTGRES_PASSWORD: password
-  #    POSTGRES_DB: dbname
-  #  ports:
-  #    - ${DB_PORT}:5432
+  database:
+    image: postgres:14
+    profiles: 
+      - all
+      - postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: postgres
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
 
   redis:
     image: redis:6
@@ -81,10 +89,10 @@ services:
       - CUBEJS_DB_TYPE=postgres
       - CUBEJS_DB_HOST=172.17.0.1
       - CUBEJS_DB_PORT=${DB_PORT}
-      - CUBEJS_DB_NAME=orb_tenant_playarena
-      - CUBEJS_DB_USER=orbsight
-      - CUBEJS_DB_PASS=orbsight
-      - CUBEJS_DB_SSL=true
+      - CUBEJS_DB_USER=${ORBSIGHT_TENANT_USER}
+      - CUBEJS_DB_PASS=${ORBSIGHT_TENANT_PASSWORD}
+      - CUBEJS_DB_SSL=false
+      # - CUBEJS_DB_NAME=orb_tenant_playarena
     volumes:
       - ./backend/cubejs/model:/cube/conf/model
   
@@ -105,7 +113,7 @@ services:
       #- PREFECT_UI_URL=http://external-ip:4200/api
       #- PREFECT_API_URL=http://external-ip:4200/api
       - PREFECT_SERVER_API_HOST=0.0.0.0
-      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://girish:girish@host.docker.internal:5432/prefect_db
+      - PREFECT_API_DATABASE_CONNECTION_URL=postgresql+asyncpg://${PREFECT_USER}:${PREFECT_PASSWORD}@host.docker.internal:${DB_PORT}/${PREFECT_DB}
       # Uncomment the following line if you want to use the 'S3 Bucket' storage block instead of the older 'S3' storage
       # - EXTRA_PIP_PACKAGES=prefect-aws
     ports:
@@ -125,12 +133,11 @@ services:
       context: ./backend/service-api
       dockerfile: WorkerDockerfile
     environment:
-      - DB_HOST=host.docker.internal:5432
-      - CORE_DB_USER=orbsight
-      - CORE_DB_PASSWORD=orbsight
-      - PREFECT_DB_USER=orbsight
-      - PREFECT_DB_NAME=prefect_local
-      - PREFECT_DB_PASSWORD=orbsight
+      - DB_HOST=host.docker.internal:${DB_PORT}
+      - CORE_DB_USER=${ORBSIGHT_CORE_USER}
+      - CORE_DB_PASSWORD=${ORBSIGHT_CORE_PASSWORD}
+      - TENANT_DB_USER=${ORBSIGHT_TENANT_USER}
+      - TENANT_DB_PASSWORD=${ORBSIGHT_TENANT_PASSWORD}
       - PREFECT_API_URL=http://host.docker.internal:${PREFECT_PORT}/api
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OUTSCRAPPER_API_KEY=${OUTSCRAPPER_API_KEY}

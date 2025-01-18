@@ -4,11 +4,7 @@ set -e
 
 # Migration script naming
 
-# default values for local dev
-DB_USER=${DB_USER:-orbsight}
-DB_PASSWORD=${DB_PASSWORD:-orbsight}
-DB_HOST=${DB_HOST:-localhost:5432}
-LIQUIBASE_EXECUTABLE=${LIQUIBASE_EXECUTABLE:-liquibase}
+# LIQUIBASE_EXECUTABLE=${LIQUIBASE_EXECUTABLE:-liquibase}
 # https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
 # https://jonlabelle.com/snippets/view/shell/assigning-default-values-to-variables-in-bash
 
@@ -18,6 +14,18 @@ function liquibase_call() {
   WS_DIR=$1
   DATABASE=$2
   CMD=$3
+
+  # default values for local dev
+  DB_HOST=localhost:${DB_PORT}
+  if [ "${DATABASE}" = "orb_core" ]; then
+    DB_USER=${ORBSIGHT_CORE_USER}
+    DB_PASSWORD=${ORBSIGHT_CORE_PASSWORD}
+    LB_DIR=orb_core
+  else
+    DB_USER=${ORBSIGHT_TENANT_USER}
+    DB_PASSWORD=${ORBSIGHT_TENANT_PASSWORD}
+    LB_DIR=orb_tenant
+  fi
 
   case $CMD in
   drop-all)
@@ -48,7 +56,7 @@ function liquibase_call() {
   esac
 
   SNAPSHOT_FILE=db_snapshot.json
-  cd "$DIR_PATH/../$WS_DIR"
+  cd "$DIR_PATH/../$WS_DIR/.."
   if ! [[ $CMD =~ diff|snapshot|snapshot|changelog-sync|update|version|drop-all ]]; then
     if [[ ! -f $SNAPSHOT_FILE ]]; then
       echo "Snapshot file not found. Please rectify !"
@@ -64,11 +72,17 @@ function liquibase_call() {
     fi
   fi
   set -x
-  $LIQUIBASE_EXECUTABLE \
-    --url="jdbc:postgresql://$DB_HOST/${DATABASE}" \
-    --username="$DB_USER" \
-    --password="$DB_PASSWORD" \
-    $COMMAND
+  docker run --rm \
+    --env-file ../../../.env \
+    -v $(pwd):/liquibase/changelog \
+    liquibase:4.30 \
+      --driver=org.postgresql.Driver \
+      --url="jdbc:postgresql://172.17.0.1:5433/${DATABASE}" \
+      --username="$DB_USER" \
+      --password="$DB_PASSWORD" \
+      --changeLogFile=changelog/$LB_DIR/changelog-root.yml \
+      --log-level=INFO \
+      $COMMAND
   set +x
 }
 

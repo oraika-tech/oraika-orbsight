@@ -21,9 +21,10 @@ def get_tenant_engine(tenant_id: UUID) -> Engine:
                 .where(TenantGlobalConfig.config_key == "connection_info")
             config = session.exec(query).one().config_value
             core_db_engine_name = config['db_engine_name'] or app_settings.DB_ENGINE_NAME
-            db_user = config.get('db_user', app_settings.CORE_DB_USER)
-            db_password = config.get('db_password', app_settings.CORE_DB_PASSWORD)
+            db_user = config.get('db_user', app_settings.TENANT_DB_USER)
+            db_password = config.get('db_password', app_settings.TENANT_DB_PASSWORD)
             db_name = config['db_name']
             connection_string = f"{core_db_engine_name}://{db_user}:{db_password}@{app_settings.DB_HOST}/{db_name}"
         tenant_db_engines[tenant_id] = create_engine(connection_string, pool_size=2, pool_pre_ping=True)
     return tenant_db_engines[tenant_id]
+
