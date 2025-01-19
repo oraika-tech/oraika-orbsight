@@ -47,7 +47,7 @@ make db-sync-schema tenant={tenant_name}
  - Download provided tenant zip and unzip in folder
  - Insert data
 ```
-psql -h localhost -p ${DB_PORT} -U ${ORBSIGHT_TENANT_USER} -d ${ORB_TENANT_PLAYARENA} -f {path_to_file}
+psql -h localhost -p ${DB_PORT} -U ${ORBSIGHT_TENANT_USER} -d orb_tenat_{tenant_name} -f {path_to_file}
 ```
 
 ### 6. Stop Postgres
@@ -59,6 +59,11 @@ docker compose --profile postgres down
 Note: For a fresh start, you may delete the postgres data and start over.
 ```
 sudo rm -rf postgres-data
+```
+
+## Build Docker Images
+```
+docker compose --profile all build
 ```
 
 ## Running Docker Compose
