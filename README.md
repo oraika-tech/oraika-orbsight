@@ -1,6 +1,6 @@
 # Obsight Mono Repo
 
-![Docker Compose Architecture](./docks/assets/Docker Compose Architecture.png)
+![Docker Compose Architecture](/docs/assets/docker-compose-architecture.png)
 
 
 Install docker and docker-compose before continuing.
