@@ -1,11 +1,11 @@
 # Obsight Mono Repo
 
-![Docker Compose Architecture](/docs/assets/docker-compose-architecture.png)
-
-
 Install docker and docker-compose before continuing.
+Also, install python3 with bcrypt and psycopg2.
 
 # Running Docker Compose
+
+![Docker Compose Architecture](/docs/assets/docker-compose-architecture.png)
 
 Assuming you are using postgres provided by docker compose.
 
