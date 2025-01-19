@@ -1,17 +1,9 @@
 # Obsight Mono Repo
 
-- frontend
-- backend
-    - api_layer
-    - service_layer
-    - db_schema
-- src
-    - db_schema
-    - worker
+![Docker Compose Architecture](./docks/assets/Docker Compose Architecture.png)
 
 
 Install docker and docker-compose before continuing.
-
 
 # Running Docker Compose
 
